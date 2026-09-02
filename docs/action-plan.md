@@ -23,7 +23,7 @@ expensive to reverse once a storage layer exists. Detail in
 
 1. ~~One store.~~ **Decided: separate, by licence.** liquid (open source) does not sit
    on Zetta (closed). lake (enterprise) uses Zetta as much as possible and consumes
-   liquid's store as a library. lake-operator gets its own Zetta state store.
+   liquid's store as a library. lake is a `Lake` CR on orama-operator, which already has its own Zetta state store.
 2. ~~One CRDT.~~ **Decided:** `automerge-cpp`, MIT, shared between liquid and Zetta.
    Only its canonical home is open.
 3. ~~One coroutine substrate.~~ **Decided:** Boost.Capy + Corosio, matching Zetta
