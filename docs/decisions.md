@@ -16,10 +16,11 @@ constraint and is withdrawn.
 control plane, operational state, and its web-serving approach. Because lake must host
 liquid repositories, it consumes liquid's store **as a library** for repository data.
 
-**lake-operator has its own Zetta state store**, in addition to k8s — the Zetta
-operator's model: k8s/etcd is the source of truth for *desired* state (the CRs); Zetta
-holds *observed* state, synced with anti-flap discipline. Reference:
-`orama-cloud-v1-operator/docs/zetta-datastore.md`.
+**lake is deployed by the Orama operator, not a separate one.** `Lake` is a new CR on
+`oramasearch/orama-operator` (renamed from `orama-cloud-v1-operator`), which already has
+its own Zetta observed-state store: k8s/etcd is the source of truth for *desired* state
+(the CRs); Zetta holds *observed* state, synced with anti-flap discipline. See its
+`docs/zetta-datastore.md`.
 
 ## 2. One CRDT — **decided: `automerge-cpp`, and it stays open.**
 
@@ -48,7 +49,7 @@ This is a spec change, not a liquid design choice, and it needs the protocol own
 | | Posture |
 |---|---|
 | liquid, liquify | **Open source, eventually.** Which licence is open. Must never depend on Zetta. |
-| lake, lake-operator | **Enterprise.** |
+| lake, orama-operator | **Enterprise.** |
 | Zetta | Closed / source-available. |
 | k0s | Apache 2.0 upstream; private copy with `LICENSE` + `NOTICE` + stated changes on distribution. |
 | automerge-cpp | MIT — open, shared. |

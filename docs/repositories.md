@@ -8,7 +8,7 @@ What lives where, and the rules for each. All repositories are **private** under
 | [`liquid`](https://github.com/oramasearch/liquid) | `modules/liquid` | The tool — VCS, build, package manager, artifact service, runtime. **The specification for everything** lives here. **Open source eventually; never depends on Zetta.** | C++26 | Bootstrap |
 | [`k0s`](https://github.com/oramasearch/k0s) | `modules/k0s` | Private, upstream-synced copy of `k0sproject/k0s`, modified for drips on the `liquid` branch. `main` is a pristine upstream mirror. | Go | Synced; `liquid` branch has docs only |
 | [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. **Enterprise. Builds on Zetta** (control plane, state, web serving) and consumes liquid's store as a library. | C++26 | Bootstrap |
-| [`lake-operator`](https://github.com/oramasearch/lake-operator) | `modules/lake-operator` | kubebuilder operator deploying lake on k0s; the enterprise on-prem path. **Its own Zetta as observed-state store**, like the Zetta operator. | Go | kubebuilder scaffold; `Lake` CRD stub |
+| [`orama-operator`](https://github.com/oramasearch/orama-operator) | `modules/orama-operator` | **The Orama operator** — renamed from `orama-cloud-v1-operator`. The Zetta operator, extended with a **`Lake` CR** that deploys lake. Already has its own Zetta observed-state store. | Go | Production on AKS; `Lake` CR in progress |
 
 ## Related, not modules of this bridge
 
@@ -17,7 +17,6 @@ What lives where, and the rules for each. All repositories are **private** under
 | [`homer6/automerge-cpp`](https://github.com/homer6/automerge-cpp) | The CRDT liquid specifies. Still under `homer6`. Subject to the one-CRDT decision. |
 | [`oramasearch/oramacore-cpp`](https://github.com/oramasearch/oramacore-cpp) | BM25F search engine liquid specifies. Scaffold. |
 | [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. Subject to the one-store decision. Bridged by `zetta-bridge`. |
-| [`oramasearch/orama-cloud-v1-operator`](https://github.com/oramasearch/orama-cloud-v1-operator) | **The Zetta operator, and the reference pattern for `lake-operator`.** The name is historical — do not read it as Cloud-v1-only. Read its `DESIGN.md`. |
 | [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`, per the org procedure. Default branch `orama-main`, 2 commits ahead of upstream `develop`: one real fix — `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2). **Not upstreamed** as of 2026-09-02 (`EPOLLRDHUP` absent from upstream `develop`). **liquid and lake must consume this, not `cppalliance` directly.** |
 | `cppalliance/capy` | **No private copy exists.** Zetta consumes upstream `develop` directly. Create `oramasearch/capy` only when there is a patch to carry — the procedure is for carrying patches, not for mirroring. |
 | [`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge) | The org umbrella. Authoritative for conventions. |
@@ -30,9 +29,12 @@ deliberately invalid. Procedure in its `ORAMA-FORK.md`. Apache 2.0: distributing
 modified binaries requires `LICENSE`, `NOTICE`, and stating that files changed — the
 branch split satisfies the last by construction.
 
-**`lake-operator`** — follow `orama-cloud-v1-operator` (the Zetta operator): one umbrella CRD, thin install
-chart (operator + CRDs + RBAC only), `helmfile.yaml` for platform operators, decisions
-in `DESIGN.md`. `config/` is generated and committed; `bin/` is ignored.
+**`orama-operator`** — **runs in production on AKS.** PR-based: never fast-forward
+`main`; open a PR and leave it open for review. `Lake` is a new CR alongside
+`OramaCloudV1` and `OramaZettaCluster`, in the same group (`orama.cloud`). The Go
+module path, image name and chart name still read `orama-cloud-v1-operator` after the
+GitHub rename — changing them changes the deployed artifact and is a separate,
+deliberate step. `config/` is generated and committed; `bin/` is ignored.
 
 **`liquid`** — must never take a dependency on Zetta; it is open source eventually.
 **`lake`** — builds on Zetta wherever possible. The two are on opposite sides of a

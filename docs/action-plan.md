@@ -55,14 +55,16 @@ first thing anyone can look at.
   `liquid --version` runs, one passing test. No Zetta dependency, ever.
 - **lake** — same build shape; a binary that serves a hello page over HTTP using
   **Zetta's web-serving approach**, since lake builds on Zetta.
-- **lake-operator** — `make build test` green; a `Lake` CR reconciles into a running
-  hello deployment on a local cluster; a `docs/zetta-datastore.md` describing its own
-  Zetta observed-state store, modelled on the Zetta operator's.
+- **orama-operator** — a `Lake` CR (new, alongside `OramaCloudV1` and
+  `OramaZettaCluster`) reconciles into a running hello deployment, first on our AKS
+  cluster in a disposable namespace, then on k0s. Landed by PR — the operator is in
+  production.
 - **k0s** — our `liquid` branch builds.
 - **liquify** — deferred to Phase 4; not part of hello world.
 
-**Exit:** `lake` answers HTTP on a local k0s, deployed by `lake-operator` from a `Lake`
-CR; `liquid --version` prints; every module has a green build from a clean clone.
+**Exit:** `lake` answers HTTP, deployed by `orama-operator` from a `Lake` CR — on AKS
+first, then k0s; `liquid --version` prints; every module has a green build from a clean
+clone.
 
 ---
 
@@ -161,7 +163,7 @@ attestations.
 
 ## Phase 6 — lake
 
-**Repos:** `lake`, `lake-operator`, `k0s`.
+**Repos:** `lake`, `orama-operator`, `k0s`.
 
 In this order, because each surface depends on the one before:
 
@@ -172,8 +174,8 @@ In this order, because each surface depends on the one before:
    attester; short-lived certs issued *to* TAAP keys; dynamic secrets; one CA.
 3. **The forge.** Change-based review with cursors that survive rebase; no CI YAML —
    the build graph already knows.
-4. **The operator.** `Lake` CRD reconciling the whole service on k0s; the enterprise
-   on-prem install path.
+4. **The `Lake` CR on orama-operator**, reconciling the whole service on k0s; the
+   enterprise on-prem install path.
 5. **Search.** oramacore-cpp BM25F plus the positional trigram index, indexed by blob
    once, change-atomic publication.
 6. **Models and datasets.** The Hugging Face surface — training provenance attached to
@@ -181,7 +183,7 @@ In this order, because each surface depends on the one before:
 7. **The drive.** CFAPI, File Provider, FUSE; the three-tree reconciler; version history
    as a query.
 
-**Exit:** a customer installs k0s and lake-operator on their own hardware, applies one
+**Exit:** a customer installs k0s and orama-operator on their own hardware, applies one
 `Lake` resource, and has a private forge + registry + identity provider whose every
 artifact verifies against a witnessed log — with no connection to `lake.live` required.
 
@@ -189,7 +191,7 @@ artifact verifies against a witnessed log — with no connection to `lake.live` 
 
 ## Phase 7 — The runtime
 
-**Repos:** `k0s` (`liquid` branch), `lake-operator`, `lake`.
+**Repos:** `k0s` (`liquid` branch), `orama-operator`, `lake`.
 
 - Chunk-aware node integration: nodes fetch only chunks they lack, across images.
 - Deploy on drip, driven by the fan-out rather than a CI trigger.
