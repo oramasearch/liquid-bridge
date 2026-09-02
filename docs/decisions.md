@@ -35,11 +35,11 @@ Zetta's CRDT as "from-scratch C++ Automerge, ~90M ops/sec on 30 cores", and Zett
 the decision is where the canonical copy lives and whether it moves under
 `oramasearch`. If they are not, pick one and retire the other.
 
-## 3. One coroutine substrate
+## 3. One coroutine substrate — **decided**
 
-Zetta uses **Corosio** (cppalliance, vendored). `oramacore-cpp` uses **Boost.Capy**.
-liquid's implementation doc names stdexec or Capy. Corosio and Capy may compose —
-establish that — but three products in one org should not have three async models.
+**Boost.Capy for coroutines, Corosio for networking**, across liquid and lake — the
+same stack Zetta and `oramacore-cpp` already use. stdexec, which liquid's docs had
+named as an alternative, is not used. Recorded in liquid's `CLAUDE.md`.
 
 ## 4. TAAP content-addressed subjects
 

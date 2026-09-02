@@ -25,8 +25,8 @@ expensive to reverse once a storage layer exists. Detail in
    objects. liquid specifies the same kind of store. There will be one.
 2. **One CRDT.** `homer6/automerge-cpp` versus Zetta's own Automerge implementation —
    which may already be the same lineage. Establish that first.
-3. **One coroutine substrate.** Zetta uses Corosio; `oramacore-cpp` uses Boost.Capy;
-   liquid's docs name stdexec or Capy. Pick one.
+3. ~~One coroutine substrate.~~ **Decided:** Boost.Capy + Corosio, matching Zetta
+   and `oramacore-cpp`.
 4. **TAAP content-addressed subjects.** Documents, drips and artifacts cannot hold keys.
    The spec needs an object-subject form. This blocks attribution of anything that is
    not an actor.
