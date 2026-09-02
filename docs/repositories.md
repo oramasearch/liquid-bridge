@@ -5,9 +5,9 @@ What lives where, and the rules for each. All repositories are **private** under
 
 | Repository | Module path | What it is | Language | Status |
 |---|---|---|---|---|
-| [`liquid`](https://github.com/oramasearch/liquid) | `modules/liquid` | The tool — VCS, build, package manager, artifact service, runtime. **The specification for everything** lives here. **Open source eventually; never depends on Zetta.** | C++26 | Bootstrap |
+| [`liquid`](https://github.com/oramasearch/liquid) | `modules/liquid` | The tool — VCS, build, package manager, artifact service, runtime. **The specification for everything** lives here. **Open source eventually; never depends on Zetta.** | C++26 | Hello world: builds, `liquid version`, 1 test green |
 | [`k0s`](https://github.com/oramasearch/k0s) | `modules/k0s` | Private, upstream-synced copy of `k0sproject/k0s`, modified for drips on the `liquid` branch. `main` is a pristine upstream mirror. | Go | Synced; `liquid` branch has docs only |
-| [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. **Enterprise. Builds on Zetta** (control plane, state, web serving) and consumes liquid's store as a library. | C++26 | Bootstrap |
+| [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. **Enterprise. Builds on Zetta** (control plane, state, web serving) and consumes liquid's store as a library. | C++26 | Hello world serves: `GET /`, `/style.css`, `/v1/server_info`, JSON 404 |
 | [`orama-operator`](https://github.com/oramasearch/orama-operator) | `modules/orama-operator` | **The Orama operator** — renamed from `orama-cloud-v1-operator`. The Zetta operator, extended with a **`Lake` CR** that deploys lake. Already has its own Zetta observed-state store. | Go | Production on AKS; `Lake` CR in progress |
 
 ## Related, not modules of this bridge
@@ -36,6 +36,11 @@ branch split satisfies the last by construction.
 module path, image name and chart name still read `orama-cloud-v1-operator` after the
 GitHub rename — changing them changes the deployed artifact and is a separate,
 deliberate step. `config/` is generated and committed; `bin/` is ignored.
+The operator's own `CLAUDE.md` names the AKS cluster `orama-production-cluster-01` the
+**sandbox** and `make run` the standard dev loop — but the deployed operator holds the
+leader lease and `make run` defaults to `leader-elect=false`, so a local run reconciles
+the live `OramaZettaCluster`s a second time. Get a nod (scale the deployment down, or
+run with `--leader-elect`) before smoke-testing the `Lake` CR against AKS.
 
 **`liquid`** — must never take a dependency on Zetta; it is open source eventually.
 **`lake`** — builds on Zetta wherever possible. The two are on opposite sides of a

@@ -26,7 +26,7 @@ This file adds only what is specific to working *across* the modules.
 |---|---|---|
 | `modules/liquid` | `oramasearch/liquid` | `CLAUDE.md`, then `docs/research/99-synthesis/README.md` |
 | `modules/k0s` | `oramasearch/k0s` | `ORAMA-FORK.md` — branch model and sync. **Never commit to `main`.** |
-| `modules/lake` | `oramasearch/lake` | `CLAUDE.md`. No code until Phase 0 is done. |
+| `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — hello world serves on Zetta's stack; its adapter-TU and trailing-404 rules live there. |
 | `modules/orama-operator` | `oramasearch/orama-operator` | Its `CLAUDE.md` and `DESIGN.md`. **The Zetta operator, extended with a `Lake` CR.** Production on AKS: PR-based workflow, never fast-forward `main`. |
 
 ## Reading Zetta and the Orama operator

@@ -51,15 +51,20 @@ Before the store, before the graph: every module builds, runs, and shows *someth
 This proves the toolchain, the repo layout, and the cross-module wiring, and it is the
 first thing anyone can look at.
 
-- **liquid** — C++26 CMake + Ninja, Clang 17+ auto-selected as Zetta does, Catch2,
-  `liquid --version` runs, one passing test. No Zetta dependency, ever.
-- **lake** — same build shape; a binary that serves a hello page over HTTP using
-  **Zetta's web-serving approach**, since lake builds on Zetta.
+- **liquid** — **done** (`400b718`). C++26 CMake + Ninja, Clang 17+ auto-selected as Zetta
+  does, GoogleTest; `liquid version` and `liquid hello` run, one passing test. No Zetta
+  dependency, ever.
+- **lake** — **done** (`3f0d95a`). Same build shape; serves the hello page, `/style.css`
+  and `GET /v1/server_info` over **Zetta's web-serving approach** (Beast2 on
+  Capy/Corosio, one adapter TU, trailing 404), since lake builds on Zetta. Port 4900.
 - **orama-operator** — a `Lake` CR (new, alongside `OramaCloudV1` and
   `OramaZettaCluster`) reconciles into a running hello deployment, first on our AKS
   cluster in a disposable namespace, then on k0s. Landed by PR — the operator is in
-  production.
-- **k0s** — our `liquid` branch builds.
+  production. **CR landed** on PR #118 (green, fake-client tests); the AKS smoke
+  test is pending a decision on running `make run` beside the deployed operator (see
+  `repositories.md`).
+- **k0s** — **done.** Our `liquid` branch builds (`go build ./cmd/k0s`); GitHub Actions
+  are disabled on the private copy.
 - **liquify** — deferred to Phase 4; not part of hello world.
 
 **Exit:** `lake` answers HTTP, deployed by `orama-operator` from a `Lake` CR — on AKS

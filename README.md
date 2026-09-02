@@ -24,7 +24,7 @@ All modules are **private** — you need SSH access to the `oramasearch` org.
 |---|---|
 | [`modules/liquid`](modules/liquid/) | The tool, and **the specification for everything** — research, features, standards. Start with its `docs/research/99-synthesis/`. |
 | [`modules/k0s`](modules/k0s/) | Private, upstream-synced copy of k0s. Our changes on the `liquid` branch. |
-| [`modules/lake`](modules/lake/) | The lake binary — the hosted service. |
+| [`modules/lake`](modules/lake/) | The lake binary — the hosted service. Hello world serves on Zetta's web stack (Beast2 on Capy/Corosio). |
 | [`modules/orama-operator`](modules/orama-operator/) | **The Orama operator** (renamed from `orama-cloud-v1-operator`; the Zetta operator). lake is deployed as a `Lake` CR on it — no separate lake operator. Runs in production on AKS. |
 
 ## Docs
