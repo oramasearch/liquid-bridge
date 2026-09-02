@@ -53,3 +53,13 @@ This is a spec change, not a liquid design choice, and it needs the protocol own
 | Zetta | Closed / source-available. |
 | k0s | Apache 2.0 upstream; private copy with `LICENSE` + `NOTICE` + stated changes on distribution. |
 | automerge-cpp | MIT — open, shared. |
+
+## 6. lake's planes — **decided: control plane on Postgres (for now), data plane on Zetta.**
+
+lake's operational and control state (accounts, organisations, the repository index, review
+state, jobs) lives in a **Postgres** the operator provisions per `Lake` through its existing
+CloudNativePG path — the same `<name>-controldb` pattern `OramaCloudV1` uses — on by default
+(`spec.postgres`), reaching lake as `LAKE_CONTROL_DB_URI`. The **data plane** — the
+content-addressed store, drips, search — is **Zetta**, provisioned per `Lake` as an owned
+`OramaZettaCluster` (tracked on orama-operator). "For now" is deliberate: Postgres is a known
+control plane today; moving control state into Zetta is a later, explicit decision.

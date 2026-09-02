@@ -26,7 +26,8 @@ expensive to reverse once a storage layer exists. Detail in
 
 1. ~~One store.~~ **Decided: separate, by licence.** liquid (open source) does not sit
    on Zetta (closed). lake (enterprise) uses Zetta as much as possible and consumes
-   liquid's store as a library. lake is a `Lake` CR on orama-operator, which already has its own Zetta state store.
+   liquid's store as a library. Control plane: Postgres (CNPG via the operator) for now;
+   data plane: Zetta (`decisions.md` §6). lake is a `Lake` CR on orama-operator, which already has its own Zetta state store.
 2. ~~One CRDT.~~ **Decided:** `automerge-cpp`, MIT, shared between liquid and Zetta.
    Only its canonical home is open.
 3. ~~One coroutine substrate.~~ **Decided:** Boost.Capy + Corosio, matching Zetta
@@ -189,7 +190,8 @@ In this order, because each surface depends on the one before:
 3. **The forge.** Change-based review with cursors that survive rebase; no CI YAML —
    the build graph already knows.
 4. **The `Lake` CR on orama-operator**, reconciling the whole service on k0s; the
-   enterprise on-prem install path.
+   enterprise on-prem install path. Already provisions the control-plane Postgres
+   (`spec.postgres`, CNPG); the owned Zetta data plane is next.
 5. **Search.** oramacore-cpp BM25F plus the positional trigram index, indexed by blob
    once, change-atomic publication.
 6. **Models and datasets.** The Hugging Face surface — training provenance attached to
