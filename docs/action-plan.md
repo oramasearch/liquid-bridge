@@ -71,7 +71,9 @@ first thing anyone can look at.
   `host`, `dnsSecretRef`.
 - **k0s** — **done.** Our `liquid` branch builds (`go build ./cmd/k0s`); GitHub Actions
   are disabled on the private copy.
-- **liquify** — deferred to Phase 4; not part of hello world.
+- **liquify** — **done.** Its own repo (`oramasearch/liquify`, private for now): a native,
+  cross-platform window on SDL3 + Dear ImGui (Zetta's headed stack), `liquify version` and a
+  `--smoke` self-test, one passing test. Not an editor extension.
 
 **Exit:** `lake` answers HTTP, deployed by `orama-operator` from a `Lake` CR — on AKS
 first, then k0s; `liquid version` prints; every module has a green build from a clean
@@ -138,14 +140,15 @@ remote failure.
 
 ## Phase 4 — The incremental engine
 
-**Repos:** `liquid`, `liquify` (as a VS Code extension inside `liquid` for now).
+**Repos:** `liquid`, `liquify`.
 
 - The demand-driven query graph — fingerprints, red-green validation, early cutoff,
   durability tiers.
 - The daemon. Graph stays warm; drips invalidate the minimum.
 - Continuous clean-rebuild validation against incremental results.
-- **liquify stage 1:** a VS Code extension and LSP server backed by the graph. Instant
-  open of any repository at any size; diagnostics from the same graph the build uses.
+- **liquify on the graph:** the native editor surface backed by liquid's query graph and VFS.
+  Instant open of any repository at any size; diagnostics from the same graph the build
+  uses, with no second parse.
 
 **Exit:** a one-line change in a large C++ project recompiles one translation unit and
 relinks in the time a save takes; the editor shows the diagnostic before the build
@@ -222,7 +225,7 @@ an unattested image is refused at admission.
 
 - **Multiplayer and agents:** private speculative replicas, semantic leasing, epoch
   compaction, agent attribution and scoped authority.
-- **liquify native**, only if stage 1 proves insufficient.
+- **liquify beyond the graph:** the multiplayer surface, agent presence, the plugin ABI.
 - **Hot update**, tiers 0–2, with restart as a first-class outcome.
 - **Metis go-to-market:** the forward-deployed motion on an instrumented estate.
 

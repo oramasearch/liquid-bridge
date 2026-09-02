@@ -11,3 +11,6 @@
 [submodule "modules/orama-operator"]
 	path = modules/orama-operator
 	url = git@github.com:oramasearch/orama-operator.git
+[submodule "modules/liquify"]
+	path = modules/liquify
+	url = git@github.com:oramasearch/liquify.git
