@@ -17,7 +17,8 @@ What lives where, and the rules for each. All repositories are **private** under
 | [`homer6/automerge-cpp`](https://github.com/homer6/automerge-cpp) | The CRDT liquid specifies. Still under `homer6`. Subject to the one-CRDT decision. |
 | [`oramasearch/oramacore-cpp`](https://github.com/oramasearch/oramacore-cpp) | BM25F search engine liquid specifies. Scaffold. |
 | [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. lake builds on it. **Read it only via `orama-work/modules/zetta-bridge/modules/zetta`** — standalone clones go stale. |
-| [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`, per the org procedure. Default branch `orama-main`, 2 commits ahead of upstream `develop`: one real fix — `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2). **Not upstreamed** as of 2026-09-02 (`EPOLLRDHUP` absent from upstream `develop`). **liquid and lake must consume this, not `cppalliance` directly.** |
+| [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`. Branch `orama-main`, 2 commits ahead of upstream: `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2), **not upstreamed** as of 2026-09-02. Zetta consumes it; **liquid and lake must too, never `cppalliance` directly.** |
+| [`oramasearch/http`](https://github.com/oramasearch/http) | **Private patch carrier** for `cppalliance/http` (the sans-I/O HTTP + router beast2 rides on). Branch `zetta-patches`. Consume this, never upstream directly. |
 | `cppalliance/capy` | **No private copy exists.** Zetta consumes upstream `develop` directly. Create `oramasearch/capy` only when there is a patch to carry — the procedure is for carrying patches, not for mirroring. |
 | [`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge) | The org umbrella. Authoritative for conventions. |
 
@@ -40,19 +41,24 @@ deliberate step. `config/` is generated and committed; `bin/` is ignored.
 **`lake`** — builds on Zetta wherever possible. The two are on opposite sides of a
 licence boundary, and that boundary is the reason they have separate stores.
 
-## A drift to know about
+## Corrected: there was no corosio drift
 
-Zetta's `.gitmodules` points `modules/corosio` at **`cppalliance/corosio`**, pinned at
-`7c636ac97` — which is the *base* of `orama-main`, not its head. **Zetta is therefore
-not consuming its own epoll fix.** Either the submodule was never repointed after the
-private copy was made, or it was repointed back. On Linux this means a hung-up fd can
-still spin. Repoint to `oramasearch/corosio` `orama-main`, or upstream the fix — but
-note upstream `develop` has since taken a breaking `refactor!:` (timers → stateless
-delay/timeout, 2026-07-08) and ported to capy's `io_result` alias, so rebasing
-`orama-main` is not a fast-forward.
+An earlier version of this page claimed Zetta's `modules/corosio` pointed at upstream
+`cppalliance` and so was missing the epoll fix. **That was wrong** — it was read from a
+standalone `~/dev/oramasearch/zetta` clone 1,053 commits behind. The bridge's Zetta
+(`orama-work/modules/zetta-bridge/modules/zetta`) pins:
 
-liquid and lake should not repeat this: point at `oramasearch/corosio` from the first
-commit.
+| Submodule | Source | Pin |
+|---|---|---|
+| `modules/corosio` | **`oramasearch/corosio`** branch `orama-main` | `1c1a6abf8` — the epoll-fix merge |
+| `modules/http` | **`oramasearch/http`** branch `zetta-patches` | `af0353a5b` — a second private patch carrier, for `cppalliance/http` |
+| `modules/beast2` | `cppalliance/beast2` | `fb0a9c8dc` |
+| `modules/capy` | `cppalliance/capy` branch `develop` | `ce1c7d710` |
+| `modules/automerge-cpp` | `homer6/automerge-cpp` | `4dd795513` |
+| `modules/oramacore-cpp` | `oramasearch/oramacore-cpp` | `9b74ce177` |
+
+lake vendors the HTTP stack at **these same pins** so the two binaries agree. Read Zetta
+only via the bridge — this mistake is why.
 
 ## Copies of public upstreams
 
