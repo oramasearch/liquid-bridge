@@ -65,7 +65,7 @@ first thing anyone can look at.
   `OramaZettaCluster`) reconciles into a running hello deployment, first on our AKS
   cluster in a disposable namespace, then on k0s. Landed by PR — the operator is in
   production. **Deployed** 2026-09-02: the operator on AKS runs the PR #118 branch image
-  `oramasearch/orama-operator:lake-crd-8058ab5` (helm revision 8), **`Lake/prod`** (namespace
+  `oramasearch/orama-operator:lake-crd-f4457e1` (helm revision 13), **`Lake/prod`** (namespace
   `lake`, 3 replicas, 50Gi Postgres control plane with the schema applied) runs the lake image
   `oramasearch/lake:20260902c` (control surface: REST `/v1`, OpenAPI, MCP, repositories, pages) and answers at **https://lake.oramadev.net** (hello
   page, `/v1/server_info`, JSON 404) through the shared nginx Ingress and an owned Cloudflare
