@@ -60,9 +60,11 @@ first thing anyone can look at.
 - **orama-operator** — a `Lake` CR (new, alongside `OramaCloudV1` and
   `OramaZettaCluster`) reconciles into a running hello deployment, first on our AKS
   cluster in a disposable namespace, then on k0s. Landed by PR — the operator is in
-  production. **CR landed** on PR #118 (green, fake-client tests); the AKS smoke
-  test is pending a decision on running `make run` beside the deployed operator (see
-  `repositories.md`).
+  production. **Deployed** 2026-09-02: the operator on AKS runs the PR #118 branch image
+  `oramasearch/orama-cloud-v1-operator:lake-crd-20260902` (helm revision 3), `Lake/hello` is
+  Ready in `lake-dev`, and with `ingressEnabled` + `host` + `dnsSecretRef` it answers at
+  **https://lake.oramadev.net** through the shared nginx Ingress and an owned Cloudflare
+  record. The workload is still `hashicorp/http-echo`; the lake image is the next step.
 - **k0s** — **done.** Our `liquid` branch builds (`go build ./cmd/k0s`); GitHub Actions
   are disabled on the private copy.
 - **liquify** — deferred to Phase 4; not part of hello world.
