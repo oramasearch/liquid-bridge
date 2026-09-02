@@ -21,26 +21,54 @@ Nothing in Phase 1 should be written until these are answered, because each is
 expensive to reverse once a storage layer exists. Detail in
 [`decisions.md`](decisions.md).
 
-1. **One store.** Zetta is a running C++26 CRDT-replicated clustered store with large
-   objects. liquid specifies the same kind of store. There will be one.
-2. **One CRDT — largely settled.** Zetta vendors `automerge-cpp` as a submodule, so
-   they are already the same code. Remaining: whether the canonical copy moves under
-   `oramasearch`.
+1. ~~One store.~~ **Decided: separate, by licence.** liquid (open source) does not sit
+   on Zetta (closed). lake (enterprise) uses Zetta as much as possible and consumes
+   liquid's store as a library. lake-operator gets its own Zetta state store.
+2. ~~One CRDT.~~ **Decided:** `automerge-cpp`, MIT, shared between liquid and Zetta.
+   Only its canonical home is open.
 3. ~~One coroutine substrate.~~ **Decided:** Boost.Capy + Corosio, matching Zetta
    and `oramacore-cpp`.
 4. **TAAP content-addressed subjects.** Documents, drips and artifacts cannot hold keys.
    The spec needs an object-subject form. This blocks attribution of anything that is
    not an actor.
-5. **Licence** for liquid, lake and the operator.
+5. **Licence — posture decided.** liquid/liquify open source eventually; lake and the
+   operator enterprise. Which open licence is still open.
 
-**Exit:** each decision recorded in liquid's `CLAUDE.md` *Decisions not to drift past*
-with the option chosen and why. The TAAP change landed in the spec.
+**Exit:** each decision recorded in liquid's `CLAUDE.md` *Decisions* with the option
+chosen and why. The TAAP change landed in the spec.
+
+**Status: the gate is lifted for hello-world scaffolding.** Decisions 1, 2, 3 and 5
+are recorded; 4 (TAAP object subjects) is the one still needing the protocol owner and
+does not block scaffolding.
+
+---
+
+## Phase 0.5 — Hello world, every component
+
+**Repos:** all.
+
+Before the store, before the graph: every module builds, runs, and shows *something*.
+This proves the toolchain, the repo layout, and the cross-module wiring, and it is the
+first thing anyone can look at.
+
+- **liquid** — C++26 CMake + Ninja, Clang 17+ auto-selected as Zetta does, Catch2,
+  `liquid --version` runs, one passing test. No Zetta dependency, ever.
+- **lake** — same build shape; a binary that serves a hello page over HTTP using
+  **Zetta's web-serving approach**, since lake builds on Zetta.
+- **lake-operator** — `make build test` green; a `Lake` CR reconciles into a running
+  hello deployment on a local cluster; a `docs/zetta-datastore.md` describing its own
+  Zetta observed-state store, modelled on the Zetta operator's.
+- **k0s** — our `liquid` branch builds.
+- **liquify** — deferred to Phase 4; not part of hello world.
+
+**Exit:** `lake` answers HTTP on a local k0s, deployed by `lake-operator` from a `Lake`
+CR; `liquid --version` prints; every module has a green build from a clean clone.
 
 ---
 
 ## Phase 1 — The store
 
-**Repos:** `liquid` (first code), `zetta` if converged.
+**Repos:** `liquid`.
 
 - Content-defined chunk store — FastCDC, BLAKE3, packs with range fetch, the
   billion-entry index.

@@ -5,10 +5,10 @@ What lives where, and the rules for each. All repositories are **private** under
 
 | Repository | Module path | What it is | Language | Status |
 |---|---|---|---|---|
-| [`liquid`](https://github.com/oramasearch/liquid) | `modules/liquid` | The tool — VCS, build, package manager, artifact service, runtime. **The specification for everything** lives here (`docs/research/`, `docs/features/`, `docs/standards/`). | C++26 (planned) | Design; no code |
+| [`liquid`](https://github.com/oramasearch/liquid) | `modules/liquid` | The tool — VCS, build, package manager, artifact service, runtime. **The specification for everything** lives here. **Open source eventually; never depends on Zetta.** | C++26 | Bootstrap |
 | [`k0s`](https://github.com/oramasearch/k0s) | `modules/k0s` | Private, upstream-synced copy of `k0sproject/k0s`, modified for drips on the `liquid` branch. `main` is a pristine upstream mirror. | Go | Synced; `liquid` branch has docs only |
-| [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. Forge, drive, platform, registry, identity, secrets, PKI, search. | C++26 (planned) | Skeleton; no code |
-| [`lake-operator`](https://github.com/oramasearch/lake-operator) | `modules/lake-operator` | kubebuilder operator deploying lake on k0s; the lake enterprise on-prem install path. | Go | kubebuilder scaffold; `Lake` CRD stub |
+| [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. **Enterprise. Builds on Zetta** (control plane, state, web serving) and consumes liquid's store as a library. | C++26 | Bootstrap |
+| [`lake-operator`](https://github.com/oramasearch/lake-operator) | `modules/lake-operator` | kubebuilder operator deploying lake on k0s; the enterprise on-prem path. **Its own Zetta as observed-state store**, like the Zetta operator. | Go | kubebuilder scaffold; `Lake` CRD stub |
 
 ## Related, not modules of this bridge
 
@@ -34,9 +34,9 @@ branch split satisfies the last by construction.
 chart (operator + CRDs + RBAC only), `helmfile.yaml` for platform operators, decisions
 in `DESIGN.md`. `config/` is generated and committed; `bin/` is ignored.
 
-**`liquid` and `lake`** — no source, build files or CI until Phase 0 of the
-[action plan](action-plan.md) is complete. The temptation to start coding before the
-store decision is the most expensive mistake available.
+**`liquid`** — must never take a dependency on Zetta; it is open source eventually.
+**`lake`** — builds on Zetta wherever possible. The two are on opposite sides of a
+licence boundary, and that boundary is the reason they have separate stores.
 
 ## A drift to know about
 
