@@ -23,8 +23,9 @@ expensive to reverse once a storage layer exists. Detail in
 
 1. **One store.** Zetta is a running C++26 CRDT-replicated clustered store with large
    objects. liquid specifies the same kind of store. There will be one.
-2. **One CRDT.** `homer6/automerge-cpp` versus Zetta's own Automerge implementation —
-   which may already be the same lineage. Establish that first.
+2. **One CRDT — largely settled.** Zetta vendors `automerge-cpp` as a submodule, so
+   they are already the same code. Remaining: whether the canonical copy moves under
+   `oramasearch`.
 3. ~~One coroutine substrate.~~ **Decided:** Boost.Capy + Corosio, matching Zetta
    and `oramacore-cpp`.
 4. **TAAP content-addressed subjects.** Documents, drips and artifacts cannot hold keys.

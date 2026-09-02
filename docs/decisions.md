@@ -25,15 +25,17 @@ Same kind of system, same language, same team. Options, from liquid
 Recorded recommendation: **C, arrived at via B** — build liquid's chunk store as a
 component designed for Zetta to adopt, prove it in liquid, converge.
 
-## 2. One CRDT
+## 2. One CRDT — **largely settled by inspection**
 
-`homer6/automerge-cpp` is a from-scratch C++23 Automerge. `zetta-bridge` describes
-Zetta's CRDT as "from-scratch C++ Automerge, ~90M ops/sec on 30 cores", and Zetta was
-"imported from `homer6/zetta`".
+`zetta`'s README and `CMakeLists.txt` show it **vendors `automerge-cpp` as a git
+submodule** under `modules/`, alongside `capy` and `corosio`. Zetta's CRDT and
+`homer6/automerge-cpp` are therefore **the same code**, not a shared lineage — there is
+already one CRDT.
 
-**First establish whether these are the same code or a shared lineage.** If they are,
-the decision is where the canonical copy lives and whether it moves under
-`oramasearch`. If they are not, pick one and retire the other.
+What remains is only where the canonical copy lives: it is still `homer6/automerge-cpp`,
+consumed by an `oramasearch` product. Decide whether it moves under `oramasearch` (and
+whether liquid consumes it as a submodule the way Zetta does) before liquid takes a
+dependency on it.
 
 ## 3. One coroutine substrate — **decided**
 
