@@ -46,6 +46,31 @@ applies to the operator at
 checkout may sit on an in-flight feature branch, so cut PR branches from a clean clone of
 `origin/main` rather than from the bridge worktree.
 
+## Documentation is part of every change
+
+**Every change to the system is documented in `docs/<topic>/*.md` of the repository that owns
+it, in the same commit.** This is a must, not a nicety: the system is documented internally *as
+it is built*. "Change" means code, a CR field, a schema, deployed state (a namespace, a Secret, a
+DNS record, a helm revision), a build recipe, or a decision. `README.md` and `CLAUDE.md` are
+summaries that point at the docs; they never carry the only copy of anything.
+
+| Component | Documents in | Topics so far |
+|---|---|---|
+| liquid | `modules/liquid/docs/<topic>/` (research, features, standards are topics too) | `library/` (libliquid) |
+| lake | `modules/lake/docs/<topic>/` | `serving/`, `control-plane/`, `deployment/`, `build/`, `api/` |
+| liquify | `modules/liquify/docs/<topic>/` | `app-shell/` |
+| orama-operator | `modules/orama-operator/docs/` (its flat convention) + `docs/lake/` for the Lake CR; `docs/crd-reference.md` is the field reference | `lake/` |
+| k0s | `modules/k0s/docs/liquid/` on the `liquid` branch (upstream docs are CC-BY-SA; ours sit beside them) | — |
+| this bridge | `docs/` for anything cross-module: the plan, decisions, the repository map, topology | `action-plan.md`, `decisions.md`, `repositories.md` |
+
+A doc page says **what** exists, **why**, **how to verify** it, and **how to change** it. One
+folder per topic, one file per subject, a `docs/README.md` index per repo. Full URLs for
+cross-repo links.
+
+**Every server component also exposes its capabilities as an API and as MCP**, in Zetta's
+shape: REST under `/v1`, `/v1/openapi.json`, `POST /mcp`; the capability registry is the single
+source all three adapters read, and each capability gets a page under `docs/api/`.
+
 ## Working across modules
 
 - **Submodule pointers are commits.** After landing a change in a module, push the
