@@ -49,7 +49,9 @@ checkout may sit on an in-flight feature branch, so cut PR branches from a clean
 ## Working across modules
 
 - **Submodule pointers are commits.** After landing a change in a module, push the
-  module first, then update the pointer here and push the bridge. A pointer to an
+  module first, then update the pointer here and push the bridge. **liquify pins liquid
+  too** (`modules/liquify/modules/liquid`, library-only): a liquid change reaches liquify only
+  by a deliberate pin bump inside liquify, never by editing liquid through liquify's copy. A pointer to an
   unpushed commit breaks every clone.
 - **The plan is the sequencing authority.** If a change belongs to a later phase than
   the one in progress, it waits. The most expensive mistake available is writing
