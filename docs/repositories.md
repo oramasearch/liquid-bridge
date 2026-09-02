@@ -18,6 +18,8 @@ What lives where, and the rules for each. All repositories are **private** under
 | [`oramasearch/oramacore-cpp`](https://github.com/oramasearch/oramacore-cpp) | BM25F search engine liquid specifies. Scaffold. |
 | [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. Subject to the one-store decision. Bridged by `zetta-bridge`. |
 | [`oramasearch/orama-cloud-v1-operator`](https://github.com/oramasearch/orama-cloud-v1-operator) | **The Zetta operator, and the reference pattern for `lake-operator`.** The name is historical — do not read it as Cloud-v1-only. Read its `DESIGN.md`. |
+| [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`, per the org procedure. Default branch `orama-main`, 2 commits ahead of upstream `develop`: one real fix — `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2). **Not upstreamed** as of 2026-09-02 (`EPOLLRDHUP` absent from upstream `develop`). **liquid and lake must consume this, not `cppalliance` directly.** |
+| `cppalliance/capy` | **No private copy exists.** Zetta consumes upstream `develop` directly. Create `oramasearch/capy` only when there is a patch to carry — the procedure is for carrying patches, not for mirroring. |
 | [`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge) | The org umbrella. Authoritative for conventions. |
 
 ## Rules that differ per repository
@@ -35,6 +37,20 @@ in `DESIGN.md`. `config/` is generated and committed; `bin/` is ignored.
 **`liquid` and `lake`** — no source, build files or CI until Phase 0 of the
 [action plan](action-plan.md) is complete. The temptation to start coding before the
 store decision is the most expensive mistake available.
+
+## A drift to know about
+
+Zetta's `.gitmodules` points `modules/corosio` at **`cppalliance/corosio`**, pinned at
+`7c636ac97` — which is the *base* of `orama-main`, not its head. **Zetta is therefore
+not consuming its own epoll fix.** Either the submodule was never repointed after the
+private copy was made, or it was repointed back. On Linux this means a hung-up fd can
+still spin. Repoint to `oramasearch/corosio` `orama-main`, or upstream the fix — but
+note upstream `develop` has since taken a breaking `refactor!:` (timers → stateless
+delay/timeout, 2026-07-08) and ported to capy's `io_result` alias, so rebasing
+`orama-main` is not a fast-forward.
+
+liquid and lake should not repeat this: point at `oramasearch/corosio` from the first
+commit.
 
 ## Copies of public upstreams
 
