@@ -1,0 +1,13 @@
+[submodule "modules/liquid"]
+	path = modules/liquid
+	url = git@github.com:oramasearch/liquid.git
+[submodule "modules/k0s"]
+	path = modules/k0s
+	url = git@github.com:oramasearch/k0s.git
+	branch = liquid
+[submodule "modules/lake"]
+	path = modules/lake
+	url = git@github.com:oramasearch/lake.git
+[submodule "modules/lake-operator"]
+	path = modules/lake-operator
+	url = git@github.com:oramasearch/lake-operator.git
