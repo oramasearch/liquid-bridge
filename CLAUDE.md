@@ -29,6 +29,22 @@ This file adds only what is specific to working *across* the modules.
 | `modules/lake` | `oramasearch/lake` | `CLAUDE.md`. No code until Phase 0 is done. |
 | `modules/orama-operator` | `oramasearch/orama-operator` | Its `CLAUDE.md` and `DESIGN.md`. **The Zetta operator, extended with a `Lake` CR.** Production on AKS: PR-based workflow, never fast-forward `main`. |
 
+## Reading Zetta and the Orama operator
+
+**Read Zetta only from the umbrella bridge**, never from a standalone clone:
+
+```
+/Users/stevesperandeo/dev/homer6/orama-work/modules/zetta-bridge/modules/zetta
+```
+
+`orama-bridge` (cloned locally as `orama-work`) pins the intended commit. A standalone
+`~/dev/oramasearch/zetta` clone was found **1,053 commits behind** and missing the entire
+`include/zetta/api/` HTTP layer — reading from it produced a wrong conclusion. The same
+applies to the operator at
+`orama-work/modules/orama-cloud-v1-bridge/modules/orama-cloud-v1-operator`; note that
+checkout may sit on an in-flight feature branch, so cut PR branches from a clean clone of
+`origin/main` rather than from the bridge worktree.
+
 ## Working across modules
 
 - **Submodule pointers are commits.** After landing a change in a module, push the

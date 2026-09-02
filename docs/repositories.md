@@ -16,7 +16,7 @@ What lives where, and the rules for each. All repositories are **private** under
 |---|---|
 | [`homer6/automerge-cpp`](https://github.com/homer6/automerge-cpp) | The CRDT liquid specifies. Still under `homer6`. Subject to the one-CRDT decision. |
 | [`oramasearch/oramacore-cpp`](https://github.com/oramasearch/oramacore-cpp) | BM25F search engine liquid specifies. Scaffold. |
-| [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. Subject to the one-store decision. Bridged by `zetta-bridge`. |
+| [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. lake builds on it. **Read it only via `orama-work/modules/zetta-bridge/modules/zetta`** — standalone clones go stale. |
 | [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`, per the org procedure. Default branch `orama-main`, 2 commits ahead of upstream `develop`: one real fix — `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2). **Not upstreamed** as of 2026-09-02 (`EPOLLRDHUP` absent from upstream `develop`). **liquid and lake must consume this, not `cppalliance` directly.** |
 | `cppalliance/capy` | **No private copy exists.** Zetta consumes upstream `develop` directly. Create `oramasearch/capy` only when there is a patch to carry — the procedure is for carrying patches, not for mirroring. |
 | [`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge) | The org umbrella. Authoritative for conventions. |
