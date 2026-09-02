@@ -32,6 +32,7 @@ All modules are **private** — you need SSH access to the `oramasearch` org.
 - [`docs/action-plan.md`](docs/action-plan.md) — the phases, in dependency order.
 - [`docs/repositories.md`](docs/repositories.md) — what lives where and the rules per repo.
 - [`docs/decisions.md`](docs/decisions.md) — the decisions that gate Phase 1.
+- Issues: the tracking epic https://github.com/oramasearch/liquid-bridge/issues/7 links every phase epic across the repos.
 
 ## Conventions
 

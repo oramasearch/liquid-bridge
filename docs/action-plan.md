@@ -5,7 +5,10 @@ is met, and the exit criteria are things you can check, not things you can feel.
 
 Each phase names the repositories it touches. The repository map is in
 [`repositories.md`](repositories.md); the decisions that gate Phase 1 are in
-[`decisions.md`](decisions.md).
+[`decisions.md`](decisions.md). **Work is tracked as GitHub issues:** one epic per phase in
+the repo that owns it, all linked from the tracking epic
+https://github.com/oramasearch/liquid-bridge/issues/7 (decisions and follow-ups live here;
+Phases 1–5 and 8 on `liquid`, Phase 6 on `lake` + `orama-operator`, Phase 7 on `k0s`).
 
 The ordering is forced by dependencies, not preference. The most visible products —
 the forge, the IDE, the consumer drive — are the *payoff*, and every one of them depends
