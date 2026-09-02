@@ -27,7 +27,7 @@ This file adds only what is specific to working *across* the modules.
 | `modules/liquid` | `oramasearch/liquid` | `CLAUDE.md`, then `docs/research/99-synthesis/README.md` |
 | `modules/k0s` | `oramasearch/k0s` | `ORAMA-FORK.md` — branch model and sync. **Never commit to `main`.** |
 | `modules/lake` | `oramasearch/lake` | `CLAUDE.md`. No code until Phase 0 is done. |
-| `modules/lake-operator` | `oramasearch/lake-operator` | `CLAUDE.md`, then `orama-cloud-v1-operator/DESIGN.md` — the reference pattern. |
+| `modules/lake-operator` | `oramasearch/lake-operator` | `CLAUDE.md`, then `orama-cloud-v1-operator/DESIGN.md` — **the Zetta operator**, and the reference pattern. |
 
 ## Working across modules
 
