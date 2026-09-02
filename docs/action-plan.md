@@ -61,17 +61,18 @@ first thing anyone can look at.
   `OramaZettaCluster`) reconciles into a running hello deployment, first on our AKS
   cluster in a disposable namespace, then on k0s. Landed by PR — the operator is in
   production. **Deployed** 2026-09-02: the operator on AKS runs the PR #118 branch image
-  `oramasearch/orama-cloud-v1-operator:lake-crd-20260902` (helm revision 3), `Lake/hello` is
-  Ready in `lake-dev`, and with `ingressEnabled` + `host` + `dnsSecretRef` it answers at
-  **https://lake.oramadev.net** through the shared nginx Ingress and an owned Cloudflare
-  record. The workload is still `hashicorp/http-echo`; the lake image is the next step.
+  `oramasearch/orama-operator:lake-crd-01a31d5` (helm revision 5), `Lake/hello` runs the real
+  lake image `oramasearch/lake:20260902` and answers at **https://lake.oramadev.net** (hello
+  page, `/v1/server_info`, JSON 404) through the shared nginx Ingress and an owned Cloudflare
+  record. The `Lake` CR is image-agnostic: `pullSecretName`, `port`, `args`, `ingressEnabled`,
+  `host`, `dnsSecretRef`.
 - **k0s** — **done.** Our `liquid` branch builds (`go build ./cmd/k0s`); GitHub Actions
   are disabled on the private copy.
 - **liquify** — deferred to Phase 4; not part of hello world.
 
 **Exit:** `lake` answers HTTP, deployed by `orama-operator` from a `Lake` CR — on AKS
-first, then k0s; `liquid --version` prints; every module has a green build from a clean
-clone.
+first, then k0s; `liquid version` prints; every module has a green build from a clean
+clone. **Met on AKS 2026-09-02** (k0s deployment is Phase 7).
 
 ---
 
