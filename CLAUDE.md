@@ -26,8 +26,8 @@ This file adds only what is specific to working *across* the modules.
 |---|---|---|
 | `modules/liquid` | `oramasearch/liquid` | `CLAUDE.md`, then `docs/research/99-synthesis/README.md` |
 | `modules/k0s` | `oramasearch/k0s` | `ORAMA-FORK.md` — branch model and sync. **Never commit to `main`.** |
-| `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — hello world serves on Zetta's stack; its adapter-TU and trailing-404 rules live there. |
-| `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native IDE; hello window. Never depends on Zetta. |
+| `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — the control surface (one capability registry → REST `/v1`, OpenAPI, MCP) over the Postgres control plane, users/organizations/customers/repositories, server-rendered pages behind the admin sign-in; `Lake/prod` runs it on AKS. Its adapter-TU, one-registry and trailing-404 rules live there. |
+| `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native cross-platform IDE (SDL3 + Dear ImGui); hello window; links **libliquid** through its own pinned `modules/liquid` submodule. Never depends on Zetta. |
 | `modules/orama-operator` | `oramasearch/orama-operator` | Its `CLAUDE.md` and `DESIGN.md`. **The Zetta operator, extended with a `Lake` CR.** Production on AKS: PR-based workflow, never fast-forward `main`. |
 
 ## Reading Zetta and the Orama operator
@@ -57,7 +57,7 @@ summaries that point at the docs; they never carry the only copy of anything.
 | Component | Documents in | Topics so far |
 |---|---|---|
 | liquid | `modules/liquid/docs/<topic>/` (research, features, standards are topics too) | `library/` (libliquid) |
-| lake | `modules/lake/docs/<topic>/` | `serving/`, `control-plane/`, `deployment/`, `build/`, `api/` |
+| lake | `modules/lake/docs/<topic>/` | `serving/`, `control-plane/`, `deployment/`, `build/`, `api/`, `ui/` |
 | liquify | `modules/liquify/docs/<topic>/` | `app-shell/` |
 | orama-operator | `modules/orama-operator/docs/` (its flat convention) + `docs/lake/` for the Lake CR; `docs/crd-reference.md` is the field reference | `lake/` |
 | k0s | `modules/k0s/docs/liquid/` on the `liquid` branch (upstream docs are CC-BY-SA; ours sit beside them) | — |
@@ -74,15 +74,21 @@ source all three adapters read, and each capability gets a page under `docs/api/
 ## Working across modules
 
 - **Submodule pointers are commits.** After landing a change in a module, push the
-  module first, then update the pointer here and push the bridge. **liquify pins liquid
+  module first, then update the pointer here and push the bridge.
+- **Deploy hygiene** (learned the hard way on 2026-09-02): `docker build` contexts are
+  absolute paths, always; `docker image inspect` the entrypoint before any push; every
+  pushed image gets an immutable tag and helm points at that tag (a node caches a mutable tag).
+  Runbooks: lake `docs/deployment/aks.md`, operator `docs/lake/README.md`. **liquify pins liquid
   too** (`modules/liquify/modules/liquid`, library-only): a liquid change reaches liquify only
   by a deliberate pin bump inside liquify, never by editing liquid through liquify's copy. A pointer to an
   unpushed commit breaks every clone.
 - **The plan is the sequencing authority.** If a change belongs to a later phase than
   the one in progress, it waits. The most expensive mistake available is writing
   storage code before the Phase 0 store decision.
-- **Phase 0 is not optional.** [`docs/decisions.md`](docs/decisions.md) lists five
-  decisions. None of `liquid` or `lake` gets source until they are recorded.
+- **Phase 0 is decided** ([`docs/decisions.md`](docs/decisions.md), six entries): separate stores by
+  licence, automerge-cpp, Capy + Corosio, TAAP object subjects (still open, spec change), licence
+  posture (text open), and lake's planes (Postgres control plane for now, Zetta data plane).
+  Phase 0.5 hello world was met on AKS on 2026-09-02; Phase 1 (the store) starts inside libliquid.
 - **Documentation discipline applies here too.** A new module updates `.gitmodules`,
   `README.md`, this file and `docs/repositories.md` in the same change.
 
