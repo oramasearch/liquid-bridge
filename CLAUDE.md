@@ -74,17 +74,17 @@ source all three adapters read, and each capability gets a page under `docs/api/
 ## Working across modules
 
 - **Submodule pointers are commits.** After landing a change in a module, push the
-  module first, then update the pointer here and push the bridge.
+  module first, then update the pointer here and push the bridge. A pointer to an unpushed
+  commit breaks every clone. **liquify pins liquid too** (`modules/liquify/modules/liquid`,
+  library-only): a liquid change reaches liquify only by a deliberate pin bump inside liquify,
+  never by editing liquid through liquify's copy.
 - **Deploy hygiene** (learned the hard way on 2026-09-02): `docker build` contexts are
   absolute paths, always; `docker image inspect` the entrypoint before any push; every
   pushed image gets an immutable tag and helm points at that tag (a node caches a mutable tag).
-  Runbooks: lake `docs/deployment/aks.md`, operator `docs/lake/README.md`. **liquify pins liquid
-  too** (`modules/liquify/modules/liquid`, library-only): a liquid change reaches liquify only
-  by a deliberate pin bump inside liquify, never by editing liquid through liquify's copy. A pointer to an
-  unpushed commit breaks every clone.
+  Runbooks: lake `docs/deployment/aks.md`, operator `docs/lake/README.md`.
 - **The plan is the sequencing authority.** If a change belongs to a later phase than
-  the one in progress, it waits. The most expensive mistake available is writing
-  storage code before the Phase 0 store decision.
+  the one in progress, it waits. The most expensive mistake available is storage code
+  that ignores the Phase 0 decisions (separate stores by licence; automerge-cpp; Capy + Corosio).
 - **Phase 0 is decided** ([`docs/decisions.md`](docs/decisions.md), six entries): separate stores by
   licence, automerge-cpp, Capy + Corosio, TAAP object subjects (still open, spec change), licence
   posture (text open), and lake's planes (Postgres control plane for now, Zetta data plane).
