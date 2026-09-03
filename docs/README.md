@@ -8,3 +8,4 @@ module's own `docs/`; liquid's `docs/` holds the full specification.
 | [`action-plan.md`](action-plan.md) | The phases, in dependency order, with exit criteria. No durations. |
 | [`repositories.md`](repositories.md) | What lives where, per-repository rules, and the related repositories that are not modules here. |
 | [`decisions.md`](decisions.md) | The Phase 0 decisions that gate everything else. |
+| [`tracking.md`](tracking.md) | How work is tracked: the master epic, the phase and repository epics, labels, issue shape, and the generator under `tools/issues/`. |

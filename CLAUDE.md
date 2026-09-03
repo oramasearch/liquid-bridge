@@ -63,7 +63,7 @@ summaries that point at the docs; they never carry the only copy of anything.
 | orama-operator | `modules/orama-operator/docs/` (its flat convention) + `docs/lake/` for the Lake CR; `docs/crd-reference.md` is the field reference | `lake/` |
 | k0s | `modules/k0s/docs/liquid/` on the `liquid` branch (upstream docs are CC-BY-SA; ours sit beside them) | — |
 | marketing-bridge | `modules/marketing-bridge/docs/<topic>/` | `brand/` (positioning; the lineup strategy is `brand/get-the-right-data.md`), `cold-email/`, `campaigns/`, `analytics/`, `runbooks/` |
-| this bridge | `docs/` for anything cross-module: the plan, decisions, the repository map, topology | `action-plan.md`, `decisions.md`, `repositories.md` |
+| this bridge | `docs/` for anything cross-module: the plan, decisions, the repository map, topology, how work is tracked | `action-plan.md`, `decisions.md`, `repositories.md`, `tracking.md` |
 
 A doc page says **what** exists, **why**, **how to verify** it, and **how to change** it. One
 folder per topic, one file per subject, a `docs/README.md` index per repo. Full URLs for
@@ -93,6 +93,11 @@ source all three adapters read, and each capability gets a page under `docs/api/
   Phase 0.5 hello world was met on AKS on 2026-09-02; Phase 1 (the store) starts inside libliquid.
 - **Documentation discipline applies here too.** A new module updates `.gitmodules`,
   `README.md`, this file and `docs/repositories.md` in the same change.
+- **Work is tracked as GitHub issues under one master epic**
+  (https://github.com/oramasearch/liquid-bridge/issues/7, structure in
+  [`docs/tracking.md`](docs/tracking.md)). A deliverable the specification names gets a leaf issue
+  in the owning repo under its phase epic; a feature doc that names work with no issue is the
+  drift to catch. The generators live in `tools/issues/` and are idempotent.
 
 ## Confidentiality
 

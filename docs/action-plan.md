@@ -6,9 +6,9 @@ is met, and the exit criteria are things you can check, not things you can feel.
 Each phase names the repositories it touches. The repository map is in
 [`repositories.md`](repositories.md); the decisions that gate Phase 1 are in
 [`decisions.md`](decisions.md). **Work is tracked as GitHub issues:** one epic per phase in
-the repo that owns it, all linked from the tracking epic
-https://github.com/oramasearch/liquid-bridge/issues/7 (decisions and follow-ups live here;
-Phases 1–5 and 8 on `liquid`, Phase 6 on `lake` + `orama-operator`, Phase 7 on `k0s`).
+the repo that owns it, plus repository epics for cross-phase work, all linked from the
+**master epic** https://github.com/oramasearch/liquid-bridge/issues/7. The structure, labels and
+generator are in [`tracking.md`](tracking.md).
 
 The ordering is forced by dependencies, not preference. The most visible products —
 the forge, the IDE, the consumer drive — are the *payoff*, and every one of them depends
@@ -39,7 +39,8 @@ expensive to reverse once a storage layer exists. Detail in
    operator enterprise. Which open licence is still open.
 
 **Exit:** each decision recorded in liquid's `CLAUDE.md` *Decisions* with the option
-chosen and why. The TAAP change landed in the spec.
+chosen and why. The TAAP change landed in the spec. No epic: the open decisions are listed on the
+master epic (bridge #1, #2, #3, #8, #9).
 
 **Status: the gate is lifted for hello-world scaffolding.** Decisions 1, 2, 3 and 5
 are recorded; 4 (TAAP object subjects) is the one still needing the protocol owner and
@@ -85,7 +86,7 @@ clone. **Met on AKS 2026-09-02** (k0s deployment is Phase 7).
 
 ## Phase 1 — The store
 
-**Repos:** `liquid`.
+**Repos:** `liquid`. **Epic:** https://github.com/oramasearch/liquid/issues/33.
 
 - Content-defined chunk store — FastCDC, BLAKE3, packs with range fetch, the
   billion-entry index.
@@ -107,7 +108,7 @@ handled by the same code path; GC reclaims space without corrupting a live check
 
 ## Phase 2 — The build core
 
-**Repos:** `liquid`.
+**Repos:** `liquid`. **Epic:** https://github.com/oramasearch/liquid/issues/34.
 
 The first shippable product, and the adoption path.
 
@@ -127,7 +128,7 @@ verifiable attestation. Sampled re-execution detects an injected non-determinism
 
 ## Phase 3 — Distribution
 
-**Repos:** `liquid`.
+**Repos:** `liquid`. **Epic:** https://github.com/oramasearch/liquid/issues/35.
 
 - REAPI v2 compatibility so BuildBarn, BuildBuddy, NativeLink and EngFlow work unchanged.
 - Build without the bytes as the only mode — outputs materialise on read.
@@ -142,7 +143,7 @@ remote failure.
 
 ## Phase 4 — The incremental engine
 
-**Repos:** `liquid`, `liquify`.
+**Repos:** `liquid`, `liquify`. **Epic:** https://github.com/oramasearch/liquid/issues/36 (liquify's part: https://github.com/oramasearch/liquify/issues/13).
 
 - The demand-driven query graph — fingerprints, red-green validation, early cutoff,
   durability tiers.
@@ -160,7 +161,7 @@ finishes; a comment-only edit rebuilds nothing.
 
 ## Phase 5 — Resolution and projection
 
-**Repos:** `liquid`.
+**Repos:** `liquid`. **Epic:** https://github.com/oramasearch/liquid/issues/37.
 
 - Spack-grade constraint solver (ASP) with variants, virtual providers, compilers as
   dependencies, target architecture, and unsat-core explanations.
@@ -179,7 +180,7 @@ attestations.
 
 ## Phase 6 — lake
 
-**Repos:** `lake`, `orama-operator`, `k0s`.
+**Repos:** `lake`, `orama-operator`, `k0s`. **Epic:** https://github.com/oramasearch/lake/issues/11 (the operator's part: https://github.com/oramasearch/orama-operator/issues/130; going live: https://github.com/oramasearch/liquid-bridge/issues/17).
 
 In this order, because each surface depends on the one before:
 
@@ -208,7 +209,7 @@ artifact verifies against a witnessed log — with no connection to `lake.live` 
 
 ## Phase 7 — The runtime
 
-**Repos:** `k0s` (`liquid` branch), `orama-operator`, `lake`.
+**Repos:** `k0s` (`liquid` branch), `orama-operator`, `lake`. **Epic:** https://github.com/oramasearch/k0s/issues/18.
 
 - Chunk-aware node integration: nodes fetch only chunks they lack, across images.
 - Deploy on drip, driven by the fan-out rather than a CI trigger.
@@ -224,7 +225,7 @@ an unattested image is refused at admission.
 
 ## Phase 8 — The rest
 
-**Repos:** all.
+**Repos:** all. **Epic:** https://github.com/oramasearch/liquid/issues/38.
 
 - **Multiplayer and agents:** private speculative replicas, semantic leasing, epoch
   compaction, agent attribution and scoped authority.
