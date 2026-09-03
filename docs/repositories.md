@@ -9,6 +9,7 @@ What lives where, and the rules for each. All repositories are **private** under
 | [`k0s`](https://github.com/oramasearch/k0s) | `modules/k0s` | Private, upstream-synced copy of `k0sproject/k0s`, modified for drips on the `liquid` branch. `main` is a pristine upstream mirror. | Go | Synced; `liquid` branch has docs only |
 | [`lake`](https://github.com/oramasearch/lake) | `modules/lake` | The lake binary — the hosted service. **Enterprise. Builds on Zetta** (control plane, state, web serving) and consumes liquid's store as a library. | C++26 | Live at https://lake.oramadev.net (`oramasearch/lake:20260902c`): the control surface — one capability registry as REST `/v1`, OpenAPI, MCP — over the Postgres control plane (users, organizations, customers, repositories), server-rendered pages behind the admin sign-in |
 | [`liquify`](https://github.com/oramasearch/liquify) | `modules/liquify` | The IDE — native, cross-platform, C++26 on SDL3 + Dear ImGui (the stack Zetta's headed mode uses). **Open source eventually; never depends on Zetta.** Not an editor extension. | C++26 | Hello world: a window, links **libliquid** (liquid pinned as a submodule), `liquify version`, `--smoke`, 1 test |
+| [`marketing-bridge`](https://github.com/oramasearch/marketing-bridge) | `modules/marketing-bridge` | Go-to-market workspace: positioning, campaign state, cold-email runbooks, analytics. **No product code.** Shared submodule with `orama-cloud-bridge`. | Docs + stdlib Python | Active. Lineup strategy at `docs/brand/get-the-right-data.md`; `orama-search-launch` campaign under `campaigns/` |
 | [`orama-operator`](https://github.com/oramasearch/orama-operator) | `modules/orama-operator` | **The Orama operator** — renamed from `orama-cloud-v1-operator`. The Zetta operator, extended with a **`Lake` CR** that deploys lake. Already has its own Zetta observed-state store. | Go | Production on AKS at `oramasearch/orama-operator:lake-crd-8058ab5` (PR #118 branch, helm rev 8). **`Lake/prod`** in namespace `lake`: 3 lake replicas, 50Gi CNPG control DB, schema applied via `PostgresSchema`, https://lake.oramadev.net; `Lake/hello` live at https://lake.oramadev.net. Docker Hub repo renamed with the GitHub repo. |
 
 ## Related, not modules of this bridge
@@ -45,6 +46,12 @@ the live `OramaZettaCluster`s a second time. The smoke test was done instead by 
 ... --force-conflicts` because the July digest pin left the image field owned by `kubectl-set`).
 The chart ClusterRole is hand-maintained: a new CR needs its `lakes`-style entries there or the
 manager CrashLoops on cache sync.
+
+**`marketing-bridge`** — shared with `orama-cloud-bridge`, so push it before bumping
+either pointer. It carries its own hard rules in its `CLAUDE.md`: approval gates G1–G6
+before any spend or go-live, US-only compliance defaults with a suppression screen at
+every import, no secrets or raw lead CSVs in git, stdlib-only Python in `scripts/`, and
+campaign issues on *that* repo rather than a bridge.
 
 **`liquid`** — must never take a dependency on Zetta; it is open source eventually.
 **`lake`** — builds on Zetta wherever possible. The two are on opposite sides of a

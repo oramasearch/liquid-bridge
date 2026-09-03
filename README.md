@@ -27,6 +27,7 @@ All modules are **private** — you need SSH access to the `oramasearch` org.
 | [`modules/lake`](modules/lake/) | The lake binary — the hosted service. Hello world serves on Zetta's web stack (Beast2 on Capy/Corosio). |
 | [`modules/liquify`](modules/liquify/) | The IDE — native, cross-platform (SDL3 + Dear ImGui). Private for now, open source eventually. |
 | [`modules/orama-operator`](modules/orama-operator/) | **The Orama operator** (renamed from `orama-cloud-v1-operator`; the Zetta operator). lake is deployed as a `Lake` CR on it — no separate lake operator. Runs in production on AKS. |
+| [`modules/marketing-bridge`](modules/marketing-bridge/) | Go-to-market: positioning, campaigns, cold-email runbooks. The lineup strategy is [`docs/brand/get-the-right-data.md`](modules/marketing-bridge/docs/brand/get-the-right-data.md). No product code. Shared with `orama-cloud-bridge`. |
 
 ## Docs
 

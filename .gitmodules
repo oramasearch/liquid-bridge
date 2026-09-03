@@ -14,3 +14,6 @@
 [submodule "modules/liquify"]
 	path = modules/liquify
 	url = git@github.com:oramasearch/liquify.git
+[submodule "modules/marketing-bridge"]
+	path = modules/marketing-bridge
+	url = git@github.com:oramasearch/marketing-bridge.git
