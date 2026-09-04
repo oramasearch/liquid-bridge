@@ -141,3 +141,15 @@ authorisation decisions and every secret and certificate event; access reviews; 
 evidence from the forge itself; encryption at rest and in transit. GDPR data residency and
 regulated scientific or clinical data are out of scope for the design; nothing precludes them
 later, and their consequences are opened as issues only when chosen.
+
+## 14. liquify extension model — **decided (Steve, 2026-09-05): clean native plugin API first.**
+
+A small stable plugin ABI over liquid's query graph, the same non-C++ boundary the specification
+names for format codecs and language frontends; no VS Code extension API compatibility in Phase 4.
+Compatibility can be added later as an adapter if demand proves it (liquify #7).
+
+## 15. liquify editor buffer rendering — **decided (Steve, 2026-09-05): a retained GPU text layer inside Dear ImGui.**
+
+SDL3 and Dear ImGui stay for the shell and panels; the editor buffer is a retained, GPU-rendered
+text layer (glyph atlas, per-blob cached line layout) embedded in an ImGui window, for keystroke
+latency and large files (liquify #2).
