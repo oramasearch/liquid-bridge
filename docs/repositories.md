@@ -16,7 +16,7 @@ What lives where, and the rules for each. All repositories are **private** under
 
 | Repository | Relationship |
 |---|---|
-| [`homer6/automerge-cpp`](https://github.com/homer6/automerge-cpp) | The CRDT liquid specifies. Still under `homer6`. Subject to the one-CRDT decision. |
+| [`oramasearch/automerge-cpp`](https://github.com/oramasearch/automerge-cpp) | The CRDT liquid's metadata layer sits on: the org's **private copy** of `homer6/automerge-cpp` (full history, MIT; `homer6` stays the public upstream; decided 2026-09-03). What liquid needs from it is its epic #13. |
 | [`oramasearch/oramacore-cpp`](https://github.com/oramasearch/oramacore-cpp) | BM25F search engine liquid specifies. Scaffold. |
 | [`oramasearch/zetta`](https://github.com/oramasearch/zetta) | Orama Zetta — the running C++26 CRDT store. lake builds on it. **Read it only via `orama-work/modules/zetta-bridge/modules/zetta`** — standalone clones go stale. |
 | [`oramasearch/corosio`](https://github.com/oramasearch/corosio) | **Private patch carrier** for `cppalliance/corosio`. Branch `orama-main`, 2 commits ahead of upstream: `fix(epoll): translate EPOLLHUP/EPOLLRDHUP so a hung-up fd stops spinning` (2026-07-10, PR #2), **not upstreamed** as of 2026-09-02. Zetta consumes it; **liquid and lake must too, never `cppalliance` directly.** |

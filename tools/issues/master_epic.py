@@ -812,7 +812,8 @@ repo_rows = "\n".join([
  f"- **orama-operator** — {op_epic['url']} (the `Lake` CR), which depends on the operator's own epics "
  f"{find(OP,11)['url']}, {find(OP,33)['url']}, {find(OP,93)['url']}.",
  f"- **k0s** — {find(S,18)['url']} (Phase 7).",
- f"- **liquid-bridge** — {oss_epic['url']}, {ll_epic['url']}."])
+ f"- **liquid-bridge** — {oss_epic['url']}, {ll_epic['url']}.",
+ "- **automerge-cpp** (the org's private copy, the CRDT liquid's metadata layer sits on) — https://github.com/oramasearch/automerge-cpp/issues/13."])
 decisions = [i for r in REPOS for i in sorted(ISSUES[r], key=lambda i: i["number"])
              if "decision" in i["labels"] and i["state"] == "OPEN"]
 ops = [i for r in REPOS for i in sorted(ISSUES[r], key=lambda i: i["number"])

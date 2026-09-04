@@ -22,6 +22,7 @@ master epic — liquid-bridge #7
 │     liquify — the IDE                         liquify #13
 │     Open-source release of liquid + liquify   liquid-bridge #16
 │     lake.live — the hosted service            liquid-bridge #17
+│     What liquid needs from automerge-cpp       automerge-cpp #13
 └── leaf issues, under one or more of the above
 ```
 
