@@ -181,8 +181,11 @@ remote failure.
 (the REAPI mapping of the Phase 2 records, build without the bytes as the only mode, hermeticity
 at the read, toolchain as input and racing by a recorded cost model, replay, own workers, deltas).
 The REAPI transport is decision 9 in [`decisions.md`](decisions.md), open and Steve's; #16 and #63
-wait for it. In flight against a `remote_blob_source` interface with an on-disk double: build
-without the bytes (#17), toolchain and racing (#18), replay (#19), deltas (#64).
+wait for it. Landed against a `remote_blob_source` interface with an on-disk double: build
+without the bytes with hermeticity enforced at the read (#17), the toolchain as an input and
+local/remote racing by a recorded cost model (#18), `liquid replay` (#19), attested delta delivery
+(#64). The phase exit (a stock REAPI backend at the same hit rate) needs #16, which needs the
+decision.
 
 ---
 
