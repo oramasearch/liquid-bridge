@@ -3,7 +3,8 @@
 You are working in the git worktree `{{WT}}` on branch `{{BRANCH}}`, branched from `origin/{{BASE}}`
 of https://github.com/{{ORG_REPO}}. Read `AGENTS.md`, `CLAUDE.md`, `README.md` and
 `docs/README.md` in this directory before doing anything; they apply in full and override this
-preamble where they are more specific.
+preamble where they are more specific. If one of them does not exist, say so in your report and
+continue; a missing file to read is never a gate.
 
 Rules for this work order:
 
