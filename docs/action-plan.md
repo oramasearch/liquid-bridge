@@ -212,6 +212,14 @@ Still on the epic: liquid's own scheduler and workers (#63), which the exit does
 relinks in the time a save takes; the editor shows the diagnostic before the build
 finishes; a comment-only edit rebuilds nothing.
 
+**Status: started 2026-09-05 after the Phase 3 exit.** Design first:
+[liquid `docs/library/incremental-engine.md`](https://github.com/oramasearch/liquid/blob/main/docs/library/incremental-engine.md)
+(queries and actions as one mechanism, red-green validation with early cutoff and durability tiers,
+the daemon and its fan-out, clean-rebuild validation, per-definition granularity behind a frontend
+module, symbols and the planner, liquify in-process on the graph). Decisions 14 and 15 (a clean
+native plugin API; a retained GPU text layer) are in `decisions.md`. Wave one: liquid #20 and #21,
+liquify #4 and the shell half of liquify #1.
+
 ---
 
 ## Phase 5 — Resolution and projection
