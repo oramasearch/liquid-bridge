@@ -104,6 +104,20 @@ clone. **Met on AKS 2026-09-02** (k0s deployment is Phase 7).
 again, and cloned lazily; every drip is signed; a 40 GB file and a 40-byte file are
 handled by the same code path; GC reclaims space without corrupting a live checkout.
 
+**Status: met on 2026-09-04.** Evidence, all merged on `oramasearch/liquid` with tests:
+the chunk store with liquid's own index (#1), the repository over per-directory CRDT
+documents with nest, split, combine and conflict values (#2, #3), signed drips and changes
+under TAAP/1 identities with rotation (#4, #111), change capture with a reconcile backstop
+(#5), the FUSE virtual filesystem and full checkout (#6), encrypted objects with
+trust-domain keys, leaf-value encryption and rotation (#7, #52, #53), garbage collection
+with leased roots and crash-safe compaction (#8, #46, #126), the 40 GB streaming test (#116),
+secret scanning with verified redaction (#50), the simulation harness that found and fixed
+the store's crash-safety bug (#55, #100), hash agility (#44), and the `liquid` command line
+running the whole scenario as a test (#119). liquify opens a repository through the
+library (liquify #15). Still landing: Git interoperability (#43). Waiting on the org
+CI secret: the offline test job (#54). Decisions taken along the way are in liquid's
+`CLAUDE.md` and `docs/library/`.
+
 ---
 
 ## Phase 2 — The build core
