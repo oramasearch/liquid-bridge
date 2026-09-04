@@ -114,7 +114,10 @@ with leased roots and crash-safe compaction (#8, #46, #126), the 40 GB streaming
 secret scanning with verified redaction (#50), the simulation harness that found and fixed
 the store's crash-safety bug (#55, #100), hash agility (#44), and the `liquid` command line
 running the whole scenario as a test (#119). liquify opens a repository through the
-library (liquify #15). Still landing: Git interoperability (#43). Waiting on the org
+library (liquify #15). The whole suite passes on Linux in the `liquid-linux-ci` container
+with the mount test running for real (#130, #132); a lost-wake bug in `runtime::offload` and
+the libfuse 3.14 argument handling were found there. Still landing: Git interoperability
+(#43; the store-size follow-up is #133). Waiting on the org
 CI secret: the offline test job (#54). Decisions taken along the way are in liquid's
 `CLAUDE.md` and `docs/library/`.
 
@@ -137,6 +140,14 @@ The first shippable product, and the adoption path.
 **Exit:** an existing CMake or Autotools project, unmodified, builds under
 `liquid wrap` with correct caching across two machines, and every artifact carries a
 verifiable attestation. Sampled re-execution detects an injected non-determinism.
+
+**Status: in progress since 2026-09-04.** Merged: the sandboxed executor with observed
+dependencies (#10; `include/liquid/build.hpp`, action and result records, observation by the
+mount per pid, Linux namespaces, macOS `sandbox-exec`), proven by seven mount-backed tests in
+the Linux container, and the attestation profile registry (#62). In flight: the disk cache
+(#11). Then `liquid wrap` (#12), reproducibility, provenance and `why` (#13, #14, #15). The
+proof environment for anything mount-backed is the container; macOS execution waits for
+macFUSE on a host.
 
 ---
 
