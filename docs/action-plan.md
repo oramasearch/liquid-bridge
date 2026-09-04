@@ -176,6 +176,14 @@ the container; macOS execution waits for macFUSE on a host.
 rate as local, and a deliberately non-hermetic action is caught at the read, not at the
 remote failure.
 
+**Status: started 2026-09-05.** Design written first, as for Phase 2:
+[liquid `docs/library/distribution.md`](https://github.com/oramasearch/liquid/blob/main/docs/library/distribution.md)
+(the REAPI mapping of the Phase 2 records, build without the bytes as the only mode, hermeticity
+at the read, toolchain as input and racing by a recorded cost model, replay, own workers, deltas).
+The REAPI transport is decision 9 in [`decisions.md`](decisions.md), open and Steve's; #16 and #63
+wait for it. In flight against a `remote_blob_source` interface with an on-disk double: build
+without the bytes (#17), toolchain and racing (#18), replay (#19), deltas (#64).
+
 ---
 
 ## Phase 4 — The incremental engine
