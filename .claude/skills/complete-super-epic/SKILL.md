@@ -69,6 +69,9 @@ and idioms to imitate where they exist.
 <skill>/scripts/dispatch.sh <org/repo> <issue> <slug> <brief-file> [model]
 ```
 
+A worker that stops at a gate has done the right thing: answer it with `scripts/resume.sh`
+rather than re-dispatching (a fresh session loses everything it read).
+
 `dispatch.sh` creates `$CODEX_WORK/wt/<repo>/issue-<N>` on branch `issue-<N>-<slug>` from
 `origin/main` (submodules initialised), prepends `templates/preamble.md` (the repo rules, the
 branch, the PR contract) to the brief, and runs
@@ -97,9 +100,11 @@ When a worker exits, in its worktree:
 5. `gh pr view <branch> --json url,state` — the PR must exist, reference the issue (`Refs #N`),
    and say what, why, how verified, docs touched. On repos with CI, wait for it: `gh pr checks`.
 
-Not acceptable → one `codex exec resume --last` in that worktree with a numbered fix list.
-After two failed rounds, take over directly. Hung (process alive, log unchanged > 300 s) →
-`codex exec resume <session id>` from `grep -m1 "session id:" log`.
+Not acceptable, or stopped at a gate with a question → `scripts/resume.sh <org/repo> <issue>
+<followup-file>` continues the worker's own session (by the session id in its log; never
+`--last`, which is ambiguous with parallel workers) with the answers or a numbered fix list.
+After two failed rounds, take over directly. Hung (process alive, log unchanged > 300 s) → the
+same `resume.sh` with a one-line "continue" follow-up.
 
 ## 5. Ship
 

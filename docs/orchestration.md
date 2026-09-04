@@ -12,6 +12,7 @@ up. Its parts:
 |---|---|
 | `SKILL.md` | the procedure: preconditions, resolve the tree, triage, brief, dispatch, verify, ship, loop |
 | `scripts/dispatch.sh <org/repo> <issue> <slug> <brief>` | worktree `wt/<repo>/issue-N` on branch `issue-N-<slug>` from `origin/main`; preamble + brief → `codex exec --yolo`; log and report under `runs/<repo>-N/` |
+| `scripts/resume.sh <org/repo> <issue> <followup>` | continue a worker's own session (by its recorded session id) with answers or a fix list |
 | `scripts/status.sh` | one line per run: alive, log age, PR, last log line |
 | `scripts/tree.py <epic>` | the epic's tree as TSV, recursing through sub-epics |
 | `templates/preamble.md` | the rules every worker gets: the branch, no attribution, docs in the same commit, the PR contract, STOP on a failed gate |

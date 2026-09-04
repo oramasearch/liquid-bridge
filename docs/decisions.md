@@ -25,8 +25,10 @@ its own Zetta observed-state store: k8s/etcd is the source of truth for *desired
 ## 2. One CRDT — **decided: `automerge-cpp`, and it stays open.**
 
 MIT-licensed, public, already vendored by Zetta as a submodule. It is the shared *open*
-component between liquid (open) and Zetta (closed). Only its canonical home
-(`homer6` vs `oramasearch`) remains open.
+component between liquid (open) and Zetta (closed). **Home decided 2026-09-03 (Steve): a private
+copy under the org**, https://github.com/oramasearch/automerge-cpp, created from the full
+`homer6/automerge-cpp` history (all tags, MIT preserved); `homer6` stays the public upstream.
+liquid and Zetta pin the org copy; changes land there first and are pushed upstream deliberately.
 
 ## 3. One coroutine substrate — **decided**
 
@@ -44,7 +46,11 @@ blocking**. Suggested shape is recorded there.
 
 This is a spec change, not a liquid design choice, and it needs the protocol owner.
 
-## 5. Licence — **posture decided; text not yet chosen.**
+## 5. Licence — **posture decided; text deferred (Steve, 2026-09-03).**
+
+The licence text is chosen before either repository goes public, not before Phase 1 code lands:
+no licence headers in Phase 1 files yet; the open-source release epic
+(https://github.com/oramasearch/liquid-bridge/issues/16) gates on it.
 
 | | Posture |
 |---|---|
@@ -63,3 +69,16 @@ CloudNativePG path — the same `<name>-controldb` pattern `OramaCloudV1` uses �
 content-addressed store, drips, search — is **Zetta**, provisioned per `Lake` as an owned
 `OramaZettaCluster` (tracked on orama-operator). "For now" is deliberate: Postgres is a known
 control plane today; moving control state into Zetta is a later, explicit decision.
+
+## 7. Landing — **decided (Steve, 2026-09-03).**
+
+Every issue ships as a pull request from its own branch (`docs/orchestration.md`). Claude merges
+`liquid`, `lake` and `liquify` PRs after reviewing the diff and the proof; `orama-operator` PRs
+(production) stay open for Steve to merge. The issue closes, with a comment, when its PR is up.
+
+## 8. Lake control-plane backups — **decided (Steve, 2026-09-03): Cloudflare R2.**
+
+CNPG's Barman object store to an R2 bucket, matching the operator's backup design
+(orama-operator #33) and staying portable when lake moves to our own k0s. Tracked on
+orama-operator #127; the bucket and its token are Steve's to create, delivered as a Secret in the
+`lake` namespace, never through a prompt.
