@@ -147,9 +147,12 @@ mount per pid, Linux namespaces, macOS `sandbox-exec`), proven by seven mount-ba
 the Linux container, the attestation profile registry (#62), the signed disk cache with
 read-only publication and `why` on a miss (#11), and `liquid wrap` over CMake, Autotools, Make and
 `compile_commands.json` fixtures with an exec-time hook serving cached compiles before the tool
-starts (#12; a second checkout builds with every action served from cache). In flight, in
-parallel: reproducibility sampling (#13), provenance attestations (#14), `liquid why` (#15). Then
-observability (#57) and the rest of the epic. The proof environment for anything mount-backed is
+starts (#12; a second checkout builds with every action served from cache), sampled
+re-execution with quarantine of divergent results and `liquid verify` (#13; an injected
+non-determinism is detected and never served), and a signed `slsa_provenance/1` attestation on
+every result with `liquid provenance` and DSSE export (#14). In flight: `liquid why` (#15), the
+configure fact base (#56), cost-aware eviction (#58), input-verification policy (#60), SBOMs
+(#61); then observability (#57) and self-host (#59). The proof environment for anything mount-backed is
 the container; macOS execution waits for macFUSE on a host.
 
 ---
