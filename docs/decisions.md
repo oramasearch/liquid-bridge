@@ -120,3 +120,24 @@ certificate and transparency-log leaves have no liquid dependency. Design first,
 and 3: lake `docs/design/phase-6.md`, then briefs, dispatched in waves that respect the small
 codebase (identity core, authorisation, audit, push and pull with lifecycle, search, then the
 rest). The Phase 4 and 5 rule stays: they wait for the Phase 3 exit.
+
+## 11. Auth as a service — **decided (Steve, 2026-09-05): in scope now.**
+
+lake authenticates its own users and organizations, and offers the same identity system to
+applications deployed on it: per-application user pools, hosted sign-in pages, sessions and tokens,
+user and organization management, all bound to TAAP identities. Built in Phase 6 alongside lake's
+own authentication (lake #20's follow-up epic holds the application-facing surface).
+
+## 12. Secrets-engine API — **decided (Steve, 2026-09-05): clean API only.**
+
+A lake-native secrets, encryption and certificate API in the capability registry (REST, OpenAPI,
+MCP), namespaced per customer with mounts per organization. No Vault-compatible surface; External
+Secrets Operator support, if ever wanted, is an adapter issue later, not a design constraint now.
+
+## 13. Compliance scope — **decided (Steve, 2026-09-05): SOC 2.**
+
+The architecture is designed for SOC 2 from the start: a complete audit log of authentication,
+authorisation decisions and every secret and certificate event; access reviews; change-management
+evidence from the forge itself; encryption at rest and in transit. GDPR data residency and
+regulated scientific or clinical data are out of scope for the design; nothing precludes them
+later, and their consequences are opened as issues only when chosen.
