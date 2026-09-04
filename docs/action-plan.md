@@ -116,8 +116,11 @@ the store's crash-safety bug (#55, #100), hash agility (#44), and the `liquid` c
 running the whole scenario as a test (#119). liquify opens a repository through the
 library (liquify #15). The whole suite passes on Linux in the `liquid-linux-ci` container
 with the mount test running for real (#130, #132); a lost-wake bug in `runtime::offload` and
-the libfuse 3.14 argument handling were found there. Still landing: Git interoperability
-(#43; the store-size follow-up is #133). Waiting on the org
+the libfuse 3.14 argument handling were found there. Git interoperability landed (#43): a
+5,497-commit repository imports directly into records in 11 minutes within 168 MB and exports
+back to Git with `git fsck --strict` clean and identical trees; the store is 3.17× Git's
+delta-compressed pack on that repository, tracked as #133. Remaining on the epic: the offline CI
+job (#54, waiting on the org secret), #133, and adopting the updated automerge-cpp (#136). Waiting on the org
 CI secret: the offline test job (#54). Decisions taken along the way are in liquid's
 `CLAUDE.md` and `docs/library/`.
 
