@@ -184,8 +184,15 @@ The REAPI transport is decision 9 in [`decisions.md`](decisions.md), open and St
 wait for it. Landed against a `remote_blob_source` interface with an on-disk double: build
 without the bytes with hermeticity enforced at the read (#17), the toolchain as an input and
 local/remote racing by a recorded cost model (#18), `liquid replay` (#19), attested delta delivery
-(#64). The phase exit (a stock REAPI backend at the same hit rate) needs #16, which needs the
-decision.
+(#64). Transport (decision 9): liquid's own HTTP/2 with gRPC framing over h2c and TLS with ALPN
+(#155, with Corosio #3), a protobuf codec and the REAPI message set with byte-exact fixtures
+(#156), and the REAPI client, remote cache tier and CAS server (#16).
+
+**Exit: met on 2026-09-05.** The Phase 2 wrap fixtures build against NativeLink and BuildBarn in
+Docker with local and remote hit rates of 100% on the second run, Bazel as a stock client gets a
+remote cache hit against `liquid serve reapi`, and the deliberately non-hermetic fixture is refused
+at the read, never reaching the backend (liquid #167, `tools/reapi-peers/run-reapi-interop.sh`).
+Still on the epic: liquid's own scheduler and workers (#63), which the exit does not require.
 
 ---
 
