@@ -81,6 +81,12 @@ with no issue is the drift to catch.
 3. Close a leaf with a comment naming the commit that delivered it. Epic checkboxes reflect the
    leaf's state on the next regeneration.
 
+## How the work gets done
+
+See [`orchestration.md`](orchestration.md): the `/complete-super-epic` skill takes an epic and
+works its leaves with Codex, one worktree, branch and PR per issue, closing each issue with a
+comment when its PR is up.
+
 ## How to verify
 
 `gh issue list --repo oramasearch/<repo> --label epic` shows the epics per repo; every one of

@@ -35,6 +35,7 @@ All modules are **private** — you need SSH access to the `oramasearch` org.
 - [`docs/repositories.md`](docs/repositories.md) — what lives where and the rules per repo.
 - [`docs/decisions.md`](docs/decisions.md) — the decisions that gate Phase 1.
 - Per-repo internal docs (`docs/<topic>/`): [lake](modules/lake/docs/), [liquid](modules/liquid/docs/), [liquify](modules/liquify/docs/), [operator `docs/lake`](modules/orama-operator/docs/lake/). Every change documents itself there (see `CLAUDE.md`).
+- [`docs/orchestration.md`](docs/orchestration.md) — how the work gets done: `/complete-super-epic` orchestrates Codex workers, one worktree, branch and PR per issue.
 - [`docs/tracking.md`](docs/tracking.md) — how work is tracked: the **master epic** https://github.com/oramasearch/liquid-bridge/issues/7 links every phase and repository epic across the repos.
 
 ## Conventions

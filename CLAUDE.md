@@ -98,6 +98,10 @@ source all three adapters read, and each capability gets a page under `docs/api/
   [`docs/tracking.md`](docs/tracking.md)). A deliverable the specification names gets a leaf issue
   in the owning repo under its phase epic; a feature doc that names work with no issue is the
   drift to catch. The generators live in `tools/issues/` and are idempotent.
+- **Work gets done through `/complete-super-epic`** ([`docs/orchestration.md`](docs/orchestration.md)):
+  Codex implements each leaf in its own worktree and branch and opens a PR; Claude triages, briefs
+  and reviews; the issue closes with a comment when its PR is up. `orama-operator` PRs stay open
+  for Steve.
 
 ## Confidentiality
 
