@@ -253,6 +253,11 @@ In this order, because each surface depends on the one before:
 `Lake` resource, and has a private forge + registry + identity provider whose every
 artifact verifies against a witnessed log — with no connection to `lake.live` required.
 
+**Status: started 2026-09-05 in parallel with Phase 3 (decision 10).** Design first: lake
+`docs/design/phase-6.md`; then the leaves in waves: identity core (#14, #17), authorisation (#16,
+#19), audit (#18), push and pull with repository lifecycle (#12, #13), search (#6), then the rest.
+Three decisions are Steve's: #20, #29, #46.
+
 ---
 
 ## Phase 7 — The runtime

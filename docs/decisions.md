@@ -105,3 +105,18 @@ on Corosio and a protobuf codec for the REAPI message set; no `grpc++`, no `prot
 generator. The transport is split into two liquid issues under #16 so both halves build in
 parallel, and #16 itself integrates them and proves conformance against NativeLink and BuildBarn
 in Docker. #63 follows #16.
+
+## 10. Phase 6 starts now, in parallel — **decided (Steve, 2026-09-05).**
+
+**Question.** The plan sequences lake to Phase 6, after the incremental engine and resolution
+phases, and the bridge rule is that later-phase work waits. lake has not changed since
+2026-09-03 (about 2,000 lines: the control surface, the Postgres control plane, telemetry, CI).
+
+**Decision.** Run Phase 6 now on parallel capacity, all of it ("run it all"). The liquid-facing
+leaves (push and pull, repository lifecycle, search over history, the drive, metering on stored
+bytes) build against what liquid has (the store, the journal and sync framing, `remote_blob_source`,
+the transport from Phase 3 as it lands); the identity, organization, policy, audit, secrets,
+certificate and transparency-log leaves have no liquid dependency. Design first, as for Phases 2
+and 3: lake `docs/design/phase-6.md`, then briefs, dispatched in waves that respect the small
+codebase (identity core, authorisation, audit, push and pull with lifecycle, search, then the
+rest). The Phase 4 and 5 rule stays: they wait for the Phase 3 exit.
