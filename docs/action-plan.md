@@ -119,8 +119,11 @@ with the mount test running for real (#130, #132); a lost-wake bug in `runtime::
 the libfuse 3.14 argument handling were found there. Git interoperability landed (#43): a
 5,497-commit repository imports directly into records in 11 minutes within 168 MB and exports
 back to Git with `git fsck --strict` clean and identical trees; the store is 3.17× Git's
-delta-compressed pack on that repository, tracked as #133. Remaining on the epic: the offline CI
-job (#54, waiting on the org secret), #133, and adopting the updated automerge-cpp (#136). Waiting on the org
+delta-compressed pack on that repository, tracked as #133. The updated automerge-cpp (its gap epic closed with fifteen PRs: upstream-compatible hashes
+and chunks, checked apply, rollback, incremental and shallow loading, sync wire format, errors at
+every boundary, a bidirectional fixture sweep against automerge-rs) is adopted (#136): checkpoints
+are compact and open shallowly, drips carry commit metadata, remote changes yield patches.
+Remaining on the epic: the offline CI job (#54, waiting on the org secret) and #133. Waiting on the org
 CI secret: the offline test job (#54). Decisions taken along the way are in liquid's
 `CLAUDE.md` and `docs/library/`.
 
