@@ -144,10 +144,13 @@ verifiable attestation. Sampled re-execution detects an injected non-determinism
 **Status: in progress since 2026-09-04.** Merged: the sandboxed executor with observed
 dependencies (#10; `include/liquid/build.hpp`, action and result records, observation by the
 mount per pid, Linux namespaces, macOS `sandbox-exec`), proven by seven mount-backed tests in
-the Linux container, and the attestation profile registry (#62). In flight: the disk cache
-(#11). Then `liquid wrap` (#12), reproducibility, provenance and `why` (#13, #14, #15). The
-proof environment for anything mount-backed is the container; macOS execution waits for
-macFUSE on a host.
+the Linux container, the attestation profile registry (#62), the signed disk cache with
+read-only publication and `why` on a miss (#11), and `liquid wrap` over CMake, Autotools, Make and
+`compile_commands.json` fixtures with an exec-time hook serving cached compiles before the tool
+starts (#12; a second checkout builds with every action served from cache). In flight, in
+parallel: reproducibility sampling (#13), provenance attestations (#14), `liquid why` (#15). Then
+observability (#57) and the rest of the epic. The proof environment for anything mount-backed is
+the container; macOS execution waits for macFUSE on a host.
 
 ---
 
