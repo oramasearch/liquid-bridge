@@ -83,7 +83,7 @@ CNPG's Barman object store to an R2 bucket, matching the operator's backup desig
 orama-operator #127; the bucket and its token are Steve's to create, delivered as a Secret in the
 `lake` namespace, never through a prompt.
 
-## 9. Phase 3 transport for REAPI — open, Steve's call
+## 9. Phase 3 transport for REAPI — **decided (Steve, 2026-09-05): own HTTP/2 and protobuf on Corosio.**
 
 **Question.** REAPI v2 is gRPC: HTTP/2 framing, protobuf messages, long-running operations.
 liquid's networking is Corosio and the org's HTTP library (`oramasearch/http`) is HTTP/1 only.
@@ -100,6 +100,8 @@ Options, from liquid `docs/library/distribution.md` (The transport decision):
 **Recommendation.** Option 2, consistent with decisions 5 (Capy and Corosio), 7 (libliquid is the
 product, Boost behind the boundary) and liquid's decision 8 (build the engine, do not adopt one).
 
-**Status.** Open. liquid #16 (REAPI compatibility) and #63 (own scheduler and workers) wait for
-it; #17, #18, #19 and #64 proceed against the local executor with the remote source behind one
-interface.
+**Status.** Decided: option 2. liquid owns an HTTP/2 client and server layer with gRPC framing
+on Corosio and a protobuf codec for the REAPI message set; no `grpc++`, no `protobuf`, no code
+generator. The transport is split into two liquid issues under #16 so both halves build in
+parallel, and #16 itself integrates them and proves conformance against NativeLink and BuildBarn
+in Docker. #63 follows #16.
