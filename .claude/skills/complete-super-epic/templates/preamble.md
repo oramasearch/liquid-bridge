@@ -18,7 +18,9 @@ Rules for this work order:
    Code is written for a reviewer: one statement per line, functions of ordinary length, formatted with
    the repository's formatter (`.clang-format`, `gofmt`, `rustfmt`, as the repo uses) before every
    commit. A function collapsed onto one line is sent back unread.
-5. When the work is complete and the proof below passes: `git push -u origin {{BRANCH}}`, then
+5. When the work is complete and the proof below passes: first `git fetch origin && git rebase
+   origin/{{BASE}}` (other workers land in parallel; resolve status lines and index rows by keeping
+   both sides, re-run the proof if anything but docs changed), then `git push -u origin {{BRANCH}}`, then
    open the pull request with `gh pr create --repo {{ORG_REPO}} --base {{BASE}} --head {{BRANCH}}`
    using a title that names the change and a body with these sections: **What**, **Why**
    (one paragraph, cite `Refs #{{ISSUE}}`), **How verified** (paste the proof output), **Docs**
