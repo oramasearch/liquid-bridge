@@ -15,6 +15,9 @@ Rules for this work order:
    `CLAUDE.md` status lines are updated when they stop being true. Code without its doc page is
    not done.
 4. No time estimates anywhere. The word "seam" is banned.
+   Code is written for a reviewer: one statement per line, functions of ordinary length, formatted with
+   the repository's formatter (`.clang-format`, `gofmt`, `rustfmt`, as the repo uses) before every
+   commit. A function collapsed onto one line is sent back unread.
 5. When the work is complete and the proof below passes: `git push -u origin {{BRANCH}}`, then
    open the pull request with `gh pr create --repo {{ORG_REPO}} --base {{BASE}} --head {{BRANCH}}`
    using a title that names the change and a body with these sections: **What**, **Why**
