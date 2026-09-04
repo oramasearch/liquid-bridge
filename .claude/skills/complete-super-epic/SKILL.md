@@ -131,3 +131,10 @@ awaiting the user, blocked leaves and why, decisions still pending. No time esti
 - The plan is the sequencing authority: a leaf from a later phase waits, however tempting.
 - Documentation is part of every change: a worker that ships code without its doc page is sent
   back, not fixed by hand.
+
+## Fresh sessions
+
+A Codex session degrades after many resumes (it starts returning "no change made"). Start a fresh
+session on the same worktree and branch by running `dispatch.sh` again with a new brief that states
+the branch's current commits and what is left; `dispatch.sh` skips worktree creation when the
+worktree exists. `resume.sh` addresses the newest session id in the run log.
