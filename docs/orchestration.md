@@ -35,8 +35,10 @@ section with the proof output, and a *Docs* section. `git log --format=%B origin
 grep -iE "co-authored|generated with|claude|codex"` prints nothing on any worker branch.
 
 **How to change.** Edit the skill; the templates carry the repo rules, the scripts carry the
-mechanics. A new repository needs its `AGENTS.md` before its first worker. The model and the
-work root are environment (`CODEX_MODEL`, `CODEX_WORK`).
+mechanics. A new repository needs its `AGENTS.md` before its first worker. The model, the
+work root and the base branch are environment (`CODEX_MODEL`, `CODEX_WORK`, `CODEX_BASE`; a stacked
+PR sets `CODEX_BASE` to the branch it builds on, as the operator's Lake work does on `feat/lake-crd`
+until PR #118 lands).
 
 **Landing.** `orama-operator` is in production and PR-reviewed by Steve: its PRs stay open.
 Other repositories: merged by Claude after the review in step 4 of the skill, only when Steve

@@ -1,13 +1,13 @@
 # Work order — {{ORG_REPO}} issue #{{ISSUE}}
 
-You are working in the git worktree `{{WT}}` on branch `{{BRANCH}}`, branched from `origin/main`
+You are working in the git worktree `{{WT}}` on branch `{{BRANCH}}`, branched from `origin/{{BASE}}`
 of https://github.com/{{ORG_REPO}}. Read `AGENTS.md`, `CLAUDE.md`, `README.md` and
 `docs/README.md` in this directory before doing anything; they apply in full and override this
 preamble where they are more specific.
 
 Rules for this work order:
 
-1. Stay on `{{BRANCH}}`. Never push to `main`. Never modify anything outside this worktree.
+1. Stay on `{{BRANCH}}`. Never push to `main` or to `{{BASE}}`. Never modify anything outside this worktree.
 2. Commit in small, logical commits with messages about the change. **No AI attribution of any
    kind**: no `Co-Authored-By`, no "Generated with", no model, tool or session trailers, in
    commits or the pull request.
@@ -16,7 +16,7 @@ Rules for this work order:
    not done.
 4. No time estimates anywhere. The word "seam" is banned.
 5. When the work is complete and the proof below passes: `git push -u origin {{BRANCH}}`, then
-   open the pull request with `gh pr create --repo {{ORG_REPO}} --base main --head {{BRANCH}}`
+   open the pull request with `gh pr create --repo {{ORG_REPO}} --base {{BASE}} --head {{BRANCH}}`
    using a title that names the change and a body with these sections: **What**, **Why**
    (one paragraph, cite `Refs #{{ISSUE}}`), **How verified** (paste the proof output), **Docs**
    (the pages added or changed), **Deferred** (anything from the issue you did not do, and why).
