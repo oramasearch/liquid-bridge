@@ -221,3 +221,24 @@ and bootc projections (k0s #16, liquid #78).
 
 Replicated block storage on the nodes' disks under k0s, with snapshots and backups; lake's control
 Postgres and customer stores take volumes from it (k0s #19).
+
+## 26. Preview environment branching — **decided (Steve, 2026-09-05): template copy with a reflink fast path.**
+
+An environment is a copy of a template repository and store; a metadata operation on reflink filesystems
+(APFS, XFS, btrfs), a real copy elsewhere (liquid #87).
+
+## 27. Hot update, tier 1 — **decided (Steve, 2026-09-05): an in-process `liquid-hot` library.**
+
+Processes link a small runtime that receives rebuilt functions from the incremental engine and rebinds call
+sites from inside the process; no debugger privileges, works in containers, opt-in (liquid #32).
+
+## 28. Attestation verification at admission — **decided (Steve, 2026-09-05): a `liquid serve admission` component.**
+
+The admission webhook is liquid, verifying with the same code as `liquid verify`; k0s configures the webhook
+(k0s #15). No second implementation in Go.
+
+## 29. Sealed secrets for Lake environments — **decided (Steve, 2026-09-05): liquid's own envelope.**
+
+`liquid secret seal` produces a CBOR record encrypted with X25519 and ChaCha20-Poly1305 to the cluster's
+public key; the operator unseals into Kubernetes Secrets through its own CRD; no kubeseal compatibility
+(operator #129).
