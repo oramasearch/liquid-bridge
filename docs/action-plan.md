@@ -222,6 +222,13 @@ liquify #4 and the shell half of liquify #1.
 
 ---
 
+**Exit: met on 2026-09-05.** Comment-only edits rebuild nothing (liquid#20); a one-function edit
+recompiles one translation unit and relinks in 496 ms on liquid's own tree (liquid#65, #187); the
+editor shows the diagnostic 10 ms after the edit, before the relink (liquify#22); the persisted
+graph validates on cold start in 780 ms with no executions and a clean rebuild of 3,753 targets
+finds 0 divergences (liquid#191). Still landing under Phase 4: symbols as graph actions (#66), cost
+explanations (#67), inline build/test/deploy in liquify (#6).
+
 ## Phase 5 — Resolution and projection
 
 **Repos:** `liquid`. **Epic:** https://github.com/oramasearch/liquid/issues/37.
