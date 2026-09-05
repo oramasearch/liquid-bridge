@@ -242,3 +242,15 @@ The admission webhook is liquid, verifying with the same code as `liquid verify`
 `liquid secret seal` produces a CBOR record encrypted with X25519 and ChaCha20-Poly1305 to the cluster's
 public key; the operator unseals into Kubernetes Secrets through its own CRD; no kubeseal compatibility
 (operator #129).
+
+## 30. Where the agent edit API lives — **decided (Steve, 2026-09-05): libliquid from the start.**
+
+Structural edits (rename symbol, extract, move, apply a tree edit) are public libliquid API over the
+symbols and syntax queries, shared by agents, the CLI and liquify; liquify #8 consumes it (a liquid
+companion leaf builds it first).
+
+## 31. Multi-tenancy on the runtime — **decided (Steve, 2026-09-05): microVMs per tenant from the start.**
+
+Customer workloads run in Kata or Firecracker microVMs on shared nodes, one tenant per VM boundary, with
+admission verification from liquid (decision 28). Nodes need hardware virtualisation; the k0s `liquid`
+branch declares the runtime class (k0s #21).
