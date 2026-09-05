@@ -254,3 +254,10 @@ companion leaf builds it first).
 Customer workloads run in Kata or Firecracker microVMs on shared nodes, one tenant per VM boundary, with
 admission verification from liquid (decision 28). Nodes need hardware virtualisation; the k0s `liquid`
 branch declares the runtime class (k0s #21).
+
+## 32. Timestamp and X.509 verification in liquid — **decided (Steve, 2026-09-05): own implementation, verification only.**
+
+liquid #210 verifies RFC 3161 tokens and RFC 4998 evidence with its own strict DER reader, X.509 path
+validation to pinned trust anchors, CMS SignedData, and verify-only RSA (PKCS#1 v1.5 and PSS) and ECDSA
+P-256/P-384 over SHA-256/384, with RFC test vectors and real-TSA fixtures. No signing, no key generation,
+no third-party library in the trust path.
