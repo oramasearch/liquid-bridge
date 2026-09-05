@@ -188,7 +188,7 @@ local/remote racing by a recorded cost model (#18), `liquid replay` (#19), attes
 (#155, with Corosio #3), a protobuf codec and the REAPI message set with byte-exact fixtures
 (#156), and the REAPI client, remote cache tier and CAS server (#16).
 
-**Exit: met on 2026-09-05.** The Phase 2 wrap fixtures build against NativeLink and BuildBarn in
+**Exit: met on 2026-09-05; all Phase 3 leaves landed (#63 own workers in liquid#181, 2026-09-05).** The Phase 2 wrap fixtures build against NativeLink and BuildBarn in
 Docker with local and remote hit rates of 100% on the second run, Bazel as a stock client gets a
 remote cache hit against `liquid serve reapi`, and the deliberately non-hermetic fixture is refused
 at the read, never reaching the backend (liquid #167, `tools/reapi-peers/run-reapi-interop.sh`).
