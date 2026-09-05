@@ -154,7 +154,9 @@ SDL3 and Dear ImGui stay for the shell and panels; the editor buffer is a retain
 text layer (glyph atlas, per-blob cached line layout) embedded in an ImGui window, for keystroke
 latency and large files (liquify #2).
 
-## 16. lake web UI visual direction — **decided (Steve, 2026-09-05): mock three directions, then choose.**
+## 16. lake web UI visual direction — **decided (Steve, 2026-09-05): the Orama design system, as the website v2 and Zetta's web UI render it.**
+
+Steve first asked for three mocked directions (lake #76, kept under `docs/design/ui/mocks/` as reference), then settled it: lake looks like `orama-website-v2` (PR 353's branch) and the web version of Zetta. Both compile their look from `oramasearch/orama-design` (DTCG tokens, IBM Plex, light surfaces, ink text, coral accent, semantic status). Lake vendors those tokens the way the website does (stamped snapshot, generated `/style.css`, a gate against hand edits) and follows Zetta's server-rendered `web_ui.cpp` as the structural template, since Zetta's web UI has the same architecture as lake's. The original wording follows for the record.
 
 Lake's UI has to look good, not only work. Three directions are mocked as static pages of the same
 three screens (repository home, change review, organisation) and put in front of Steve as
