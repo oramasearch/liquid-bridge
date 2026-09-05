@@ -184,3 +184,15 @@ zetta-api is ordinary private code for the purposes of lake work: a Codex worker
 the zetta-bridge checkout (`~/dev/homer6/orama-work/modules/zetta-bridge/modules/zetta`, the only place
 Zetta is read from) and its headers pass through the worker's service like the rest of lake. Metis
 material stays confidential and off every external service.
+
+## 20. The dependency solver — **decided (Steve, 2026-09-05): liquid's own CDCL solver, from scratch.**
+
+No vendored Clingo. liquid #25 builds its own CDCL solver with lexicographic optimisation and unsat-core
+extraction over a liquid-specific encoding of the resolution dimensions; the resolution rules live in one
+auditable C++ module on the runtime. Consistent with decisions 8 and 9 and with the store (no third-party
+engines inside liquid). Spack-grade behaviour is the acceptance, measured by #75's 500-package universe.
+
+## 21. Hardware signing stacks — **decided (Steve, 2026-09-05): own command layers over OS transports.**
+
+liquid #81 speaks CTAP2 (FIDO2), PIV (smart-card APDUs) and TPM2 commands directly over the OS HID, PC/SC
+and TPM device transports, with software doubles for tests. No libfido2, OpenSC or tpm2-tss in the signing path.
