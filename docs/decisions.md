@@ -169,3 +169,9 @@ Pages stay pure renderers unit-tested as strings, with one stylesheet built on a
 system and a small component set. JavaScript is added only as small vanilla islands where a page
 needs them (file tree, diff viewer, review comments, command palette); no framework, no build step,
 no second codebase. The API stays the only path to data; nothing on a page can do what the API cannot.
+
+## 18. How lake obtains Zetta — **decided (Steve, 2026-09-05): link zetta-api as a client library.**
+
+Lake links the zetta-api client and talks to the Zetta service the operator provisions per `Lake`
+(decision 6). One implementation of the chunk store; Zetta stays a service; liquid stays Zetta-free.
+Lake is private, so the dependency is contained there (lake #1, unblocks lake #53).
