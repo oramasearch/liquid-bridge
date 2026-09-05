@@ -153,3 +153,19 @@ Compatibility can be added later as an adapter if demand proves it (liquify #7).
 SDL3 and Dear ImGui stay for the shell and panels; the editor buffer is a retained, GPU-rendered
 text layer (glyph atlas, per-blob cached line layout) embedded in an ImGui window, for keystroke
 latency and large files (liquify #2).
+
+## 16. lake web UI visual direction — **decided (Steve, 2026-09-05): mock three directions, then choose.**
+
+Lake's UI has to look good, not only work. Three directions are mocked as static pages of the same
+three screens (repository home, change review, organisation) and put in front of Steve as
+screenshots before any page is restyled: a quiet developer-tool register (neutral greys, one accent,
+system type, light and dark), the Orama brand family (depends on decision 9 of liquid-bridge #9), and a
+distinctive editorial identity. Steve picks; the design system then implements that direction across
+every page (lake UI epic).
+
+## 17. lake web UI stack — **decided (Steve, 2026-09-05): server-rendered pages plus progressive enhancement.**
+
+Pages stay pure renderers unit-tested as strings, with one stylesheet built on a design-token
+system and a small component set. JavaScript is added only as small vanilla islands where a page
+needs them (file tree, diff viewer, review comments, command palette); no framework, no build step,
+no second codebase. The API stays the only path to data; nothing on a page can do what the API cannot.
