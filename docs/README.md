@@ -10,3 +10,4 @@ module's own `docs/`; liquid's `docs/` holds the full specification.
 | [`decisions.md`](decisions.md) | The Phase 0 decisions that gate everything else. |
 | [`tracking.md`](tracking.md) | How work is tracked: the master epic, the phase and repository epics, labels, issue shape, and the generator under `tools/issues/`. |
 | [`orchestration.md`](orchestration.md) | How the work gets done: the `/complete-super-epic` skill that drives an epic with Codex workers, one worktree, branch and PR per issue. |
+| [`publishing/`](publishing/README.md) | Publishing readiness for liquid and liquify: the confidentiality scrub report, the security review and threat model, and the `SECURITY.md` draft (issues #10 and #11 under the release epic #16). |
