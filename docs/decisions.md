@@ -175,3 +175,10 @@ no second codebase. The API stays the only path to data; nothing on a page can d
 Lake links the zetta-api client and talks to the Zetta service the operator provisions per `Lake`
 (decision 6). One implementation of the chunk store; Zetta stays a service; liquid stays Zetta-free.
 Lake is private, so the dependency is contained there (lake #1, unblocks lake #53).
+
+## 19. Zetta code and Codex workers — **decided (Steve, 2026-09-05): workers may read zetta-api.**
+
+zetta-api is ordinary private code for the purposes of lake work: a Codex worker links the client from
+the zetta-bridge checkout (`~/dev/homer6/orama-work/modules/zetta-bridge/modules/zetta`, the only place
+Zetta is read from) and its headers pass through the worker's service like the rest of lake. Metis
+material stays confidential and off every external service.
