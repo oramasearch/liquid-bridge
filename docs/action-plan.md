@@ -288,10 +288,14 @@ at the reference update waits on liquid #177), forge export and GitHub import (#
 Along the way the Postgres store stopped reading `LAKE_INSTANCE_KEK` from the process
 environment after startup (lake#68).
 
-Next, held only for machine load: the transparency log and TUF roles (#34–#39), the drive
-and models (#8, #7, #43–#45), search over history and inside artifacts with metering
-(#41, #42, #33), auth as a service for deployed applications (#51), the forge's enforcement
-at the reference update (#30, on liquid#184), then the `Lake` CR's data plane on the operator.
+Landed 2026-09-05 (second wave): TUF roles (#34), the log's three modes (#35), tiled monitoring (#37),
+search over history (#41), metering and quotas (#33), models and datasets with the Hub surface (#7), auth
+as a service (#51), the forge complete with per-reference push outcomes (#30, #71), the drive's sharing and
+models read surfaces (#74), and the web UI on the Orama design system (#75: #76 mocks, #80 the system on
+every page; decisions 16 and 17). Running: log proofs (#88), RFC 3161 (#36), replication (#38), the forge
+pages (#89), the drive web surface (#43, #44), process-unique fixtures landed (#86). Blocked: #53 on Zetta's
+service blob API (zetta #1005), #42 on Phase 5's format registry, #45 on liquid #195. Then the `Lake` CR's
+data plane on the operator.
 
 ---
 
