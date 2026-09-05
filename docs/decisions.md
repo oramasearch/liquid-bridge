@@ -196,3 +196,28 @@ engines inside liquid). Spack-grade behaviour is the acceptance, measured by #75
 
 liquid #81 speaks CTAP2 (FIDO2), PIV (smart-card APDUs) and TPM2 commands directly over the OS HID, PC/SC
 and TPM device transports, with software doubles for tests. No libfido2, OpenSC or tpm2-tss in the signing path.
+
+## 22. How a deploy reaches the cluster — **decided (Steve, 2026-09-05): through the operator's existing control plane, which is Zetta.**
+
+Steve: "the operator already has zetta as its control plane... we can talk to that." The operator keeps its
+control state in a Zetta node (`orama_control` database, `docs/zetta-datastore.md` in orama-operator). A
+deployment is a row the operator reconciles from: `liquid deploy` writes it over Zetta's capability surface
+with credentials the operator mints, the operator turns it into the per-environment resources it owns, and
+status flows back the same way. Lake is not a second deployment control plane; it may mirror deployments
+for its pages and audit (liquid #84, operator #124, k0s epic).
+
+## 23. How liquid's store reaches each node — **decided (Steve, 2026-09-05): embed liquid on the node.**
+
+A `liquid node-store` component runs on every node of the k0s `liquid` branch, holding the chunk store
+and serving image roots to the container runtime; images carry an `io.liquid.tree` annotation naming
+their tree. Nodes fetch only the chunks they lack (k0s #14).
+
+## 24. The immutable node image base — **decided (Steve, 2026-09-05): bootc.**
+
+Node images are bootable containers with atomic updates and rollback, produced by liquid's Phase 5 ostree
+and bootc projections (k0s #16, liquid #78).
+
+## 25. Distributed storage for the runtime — **decided (Steve, 2026-09-05): Longhorn.**
+
+Replicated block storage on the nodes' disks under k0s, with snapshots and backups; lake's control
+Postgres and customer stores take volumes from it (k0s #19).
