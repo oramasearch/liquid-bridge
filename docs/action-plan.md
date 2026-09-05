@@ -295,8 +295,10 @@ as a service (#51), the forge complete with per-reference push outcomes (#30, #7
 models read surfaces (#74), process-unique test fixtures (#86), and the web UI on the Orama design system
 (#75: #76 mocks, #80 the system on every page, #89 the forge pages; decisions 16 and 17). Running: the
 drive web surface (#43, #44), the settings surface (#91). Blocked: #53 on Zetta's service blob API (zetta
-#1005), #42 on Phase 5's format registry, #45 on liquid #195. Deployment: lake `20260905a` is pushed and
-the production schema applied; the rollout waits on operator PR #135 (instance KEK) and #134 (store volume).
+#1005), #42 on Phase 5's format registry, #45 on liquid #195. Deployment (2026-09-05): lake `20260905a` runs on AKS at lake.oramadev.net with the control plane, the
+instance key (operator #135), a 100 GiB store volume (operator #137, `fsGroup` from #138) and the log in
+air-gapped mode; the operator runs `lake-crd-58bf1b8` from `feat/lake-crd`, the schema is applied, and
+repository pages render. Operator PRs #131, #133, #134, #136, #137, #138 are merged into `feat/lake-crd`.
 
 ---
 
