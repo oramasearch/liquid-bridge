@@ -269,9 +269,20 @@ In this order, because each surface depends on the one before:
 artifact verifies against a witnessed log — with no connection to `lake.live` required.
 
 **Status: started 2026-09-05 in parallel with Phase 3 (decision 10).** Design first: lake
-`docs/design/phase-6.md`; then the leaves in waves: identity core (#14, #17), authorisation (#16,
-#19), audit (#18), push and pull with repository lifecycle (#12, #13), search (#6), then the rest.
-Three decisions are Steve's: #20, #29, #46.
+`docs/design/phase-6.md`; then the leaves in waves. Steve's three decisions are made
+(decisions 11, 12, 13: auth-as-a-service in scope, a clean secrets API, SOC 2).
+
+Landed by 2026-09-05: identity core (#14, #17), authorisation (#16, #19), audit (#18),
+push and pull with repository lifecycle (#12, #13), search (#6, #9), the customer data
+plane (#22, #24), PKI with ACME, SSH certificates, caller attestation and break-glass
+(#26, #27, #28), the forge's issues, reviews, releases and webhooks (#30, half; enforcement
+at the reference update waits on liquid #177), forge export and GitHub import (#31, #32).
+Along the way the Postgres store stopped reading `LAKE_INSTANCE_KEK` from the process
+environment after startup (lake#68).
+
+Next, held only for machine load: the transparency log (#34–#39), the artifact registry
+(#8, #7, #43–#45), models and datasets (#41, #42, #33), the drive (#51), then the `Lake`
+CR's data plane on the operator.
 
 ---
 
