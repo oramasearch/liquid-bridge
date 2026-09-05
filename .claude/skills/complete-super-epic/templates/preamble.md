@@ -31,6 +31,10 @@ Rules for this work order:
    Do not merge the PR. Do not close the issue. Do not comment on the issue.
 6. If a hard gate in the brief fails, or you would need a decision that is not in the brief:
    STOP, do not improvise, and put the diagnosis in your final report.
+   A proof failure in a test your change does not touch, which passes when rerun alone, is host
+   contention, not a gate failure: record the test name, its output and `sysctl -n vm.loadavg` in the PR
+   body and deliver; the reviewer reruns the suite alone before merging. Stop only for failures in your
+   own area or ones that reproduce in isolation.
 7. Final report (this is what is read first): files changed, the proof command and its output,
    the PR URL, what was deferred, open questions. Then stop. Do exactly this issue; do not start
    any other.
