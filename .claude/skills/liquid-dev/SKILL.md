@@ -72,7 +72,7 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
      --output type=image,name=docker.io/oramasearch/lake:<YYYYMMDD><a|b|c>,push=true --progress plain
    ```
    The final image holds only the `lake` binary and OpenSSL; the Zetta checkout is a build-stage input.
-3. Schema: the operator applies `assets/lake-schema.sql` (a byte-identical copy of lake `db/schema.sql`,
+3. Schema: the operator applies `internal/controller/assets/lake-schema.sql` (a byte-identical copy of lake `db/schema.sql`,
    idempotent) through the `PostgresSchema` `lake-prod-controldb-schema` Job. When lake's schema changed,
    first vendor the new file into the operator (PR, merge), rebuild the operator image (step 5), then delete
    the owned `PostgresSchema` object so the reconciler recreates it and the Job re-runs:
