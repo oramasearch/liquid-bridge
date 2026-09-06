@@ -89,7 +89,12 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    ```
    The store volume (100 GiB, `managed-csi`) and the instance key Secret `lake-prod-instance-kek` are
    reused; never delete either (the key is not backed up anywhere else yet).
-5. Operator: build the same way from `codex-work/orama-operator` on `main`
+5. Operator: since orama-operator #148 (2026-09-06) the chart, module and release are named `orama-operator`,
+   while production still runs the Helm release `orama-cloud-v1-operator` from before the rename. The next
+   operator deploy must first run the one-time handoff in the operator's `docs/operations/rename-cutover.md`
+   (both releases briefly installed, the leader-election lease preserved, the former release retired; it
+   records values, CRD UIDs and the lease UID before touching anything). After that, replace the release
+   name below with `orama-operator`. Build the same way from `codex-work/orama-operator` on `main`
    (`--output type=image,name=docker.io/oramasearch/orama-operator:main-<sha>,push=true`, no Zetta context),
    apply CRDs first because helm does not update them, then upgrade the release with the stored values as a
    file rather than `--reuse-values` (a chart that gained a new value, such as `controlPlane.service.port`,
