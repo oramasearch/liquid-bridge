@@ -1,0 +1,155 @@
+<!--
+DRAFT for https://github.com/oramasearch/liquid-bridge/issues/11.
+Drop this file into the root of oramasearch/liquid and oramasearch/liquify as SECURITY.md.
+Before publishing, the owner fills every [[PLACEHOLDER]], enables "Private vulnerability reporting"
+under Settings → Code security on both repositories, and publishes the PGP key (or deletes that
+paragraph). The same text serves both repositories; only the Scope table differs, and it is written to
+cover both so it can be committed unchanged.
+-->
+
+# Security policy
+
+liquid is a version control system, build system, package manager, artifact service and runtime in one
+program; liquify is its IDE. Both handle other people's source code, build outputs, cryptographic keys
+and signed attestations, so we treat every report seriously and we want to hear from you.
+
+## Reporting a vulnerability
+
+**Please do not open a public issue for a security problem.**
+
+Report privately through one of these channels:
+
+1. **GitHub private vulnerability reporting** (preferred): use *Report a vulnerability* under the
+   repository's *Security* tab. This creates a private advisory that only the maintainers can see.
+2. **Email:** [[REPORTING_ADDRESS]] (for example `security@<owner-domain>`). If you want to encrypt,
+   our PGP key is [[PGP_FINGERPRINT]] and is published at [[PGP_KEY_URL]].
+
+Please write in English and include what you can of:
+
+- the component and version (`liquid version`, `liquify version`, or the commit hash);
+- the platform (Linux, macOS, Windows) and whether the daemon, the sandbox, a `serve` command or the
+  IDE was involved;
+- a description of the issue and its impact as you understand it;
+- steps to reproduce, a proof-of-concept repository or input file, and any crash output (sanitizer
+  reports are especially welcome);
+- whether the issue is already known publicly or was found by an automated scanner.
+
+You will receive an acknowledgement from a human, not an autoresponder.
+
+## What you can expect from us
+
+| Step | Target |
+|---|---|
+| Acknowledge receipt | within **3 business days** |
+| Initial assessment: confirm or decline, assign a severity (CVSS v4 as a guide, not a rule) | within **7 calendar days** of receipt |
+| Status updates while the report is open | at least every **14 days**, and whenever something changes |
+| Fix released — **critical** (remote code execution, sandbox escape, signature bypass, key disclosure) | within **14 days** of confirmation |
+| Fix released — **high** | within **30 days** |
+| Fix released — **medium** | within **90 days** |
+| Fix released — **low** | in the next regular release |
+
+These are targets, not guarantees; if we will miss one we will tell you why and give a new date. When a
+fix lands we publish a GitHub Security Advisory, request a CVE through GitHub's CNA, credit you in the
+advisory (unless you prefer not to be named) and note the fix in the release notes.
+
+## Coordinated disclosure
+
+We follow coordinated disclosure with a **90-day default**: you agree not to publish details until a
+fix is released or 90 days have passed since your report, whichever comes first. If a fix needs longer
+— for example because it changes a wire format that other software depends on — we will ask for an
+extension and explain why; we expect you to agree only if the reasoning is sound. If we do not respond
+within the targets above and do not answer a reminder, you may disclose after the 90 days.
+
+If the issue is in a third-party component we ship (see *Scope*), we will coordinate with that
+project's maintainers and may ask you to report to them as well; the 90 days count from the report to
+us.
+
+We do not run a bug bounty at this time.
+
+## Safe harbour
+
+We consider security research conducted in good faith and in line with this policy to be **authorised**.
+For such research we will not pursue or support any legal action against you under anti-hacking laws
+(such as the U.S. Computer Fraud and Abuse Act, the UK Computer Misuse Act or their equivalents),
+anti-circumvention laws (such as DMCA §1201) or the repositories' licence terms, and we will not report
+you to law enforcement. If a third party starts legal action against you for activity that complied
+with this policy, we will make it known that your actions were authorised.
+
+Good faith means that you:
+
+- test against your own installations, checkouts, stores and daemons, or against test instances you
+  are permitted to use — never against another person's data, keys or repositories without their
+  consent;
+- do not run denial-of-service, resource-exhaustion or volumetric tests against any production system,
+  including the hosted service `lake.live`, whose own policy governs it (see *Scope*);
+- do not use social engineering, phishing or physical attacks against maintainers, contributors or
+  users;
+- access, modify or retain only the data needed to demonstrate the issue, stop as soon as you have
+  that demonstration, and delete what you retained once the report is closed;
+- report promptly, do not exploit the issue beyond the demonstration, and do not disclose before the
+  coordinated date;
+- comply with the law that applies to you. This policy cannot authorise you to break laws we are not a
+  party to, and it does not bind third parties.
+
+If you are unsure whether something is covered, ask first at the reporting address; we will answer
+quickly and in writing.
+
+## Scope
+
+**In scope**
+
+| Component | Where |
+|---|---|
+| libliquid — the store, object model, sync protocol, REAPI and HTTP/2 transport, build executor and sandbox, virtual filesystem and change capture, identity, attestations and policy, encryption and secret scanning, delta delivery, Git import and export, the query graph and daemon | `oramasearch/liquid` — `include/liquid/`, `src/` |
+| The `liquid` command-line tool, including `liquid serve sync`, `liquid serve reapi`, the scheduler and worker commands | `oramasearch/liquid` — `src/cli/` |
+| The bundled frontend modules (tree-sitter and Clang based) | `oramasearch/liquid` — `modules/frontends/` |
+| liquify — the editor, its graph queries, stub trees, persisted analysis state and its use of libliquid | `oramasearch/liquify` |
+| Release artifacts and installers we publish | GitHub Releases of both repositories |
+| The build itself: a way to make `cmake`/`ctest` fetch or execute something other than the pinned dependencies | both repositories |
+
+Reports about **opening or building an untrusted repository** are explicitly in scope: liquid is meant
+to open a hostile repository, run a hostile build inside the sandbox, and verify hostile attestations
+without harm to the host. A sandbox escape, an out-of-sandbox write, a read the sandbox should have
+denied, a forged or bypassed signature, a cache entry served without verification, a daemon socket
+another local user can drive, a leaked key, or a crash on malformed input to any parser are all
+vulnerabilities to us, not "expected behaviour with untrusted input".
+
+**Out of scope**
+
+- The hosted service **lake.live** and its infrastructure: it has its own policy at
+  [[LAKE_SECURITY_POLICY_URL]]. Please report there, not here.
+- Vulnerabilities **only** in third-party dependencies with no liquid- or liquify-specific trigger
+  (OpenSSL, zlib, zstd, BLAKE3, Monocypher, Boost, tree-sitter, SDL3, Dear ImGui, automerge-cpp,
+  corosio, oramacore-cpp). Report those upstream — and tell us too, so we can pin a fixed version.
+- Issues that require an attacker to already have the user's operating-system account, root, or
+  physical access, unless the issue crosses a boundary this software claims to enforce (for example the
+  sandbox or the daemon's per-user socket).
+- Missing hardening that is not itself exploitable (absent security headers on a documentation site,
+  lack of a particular compiler flag, version disclosure in `liquid version`). Suggestions are welcome
+  as ordinary issues.
+- Reports produced by automated scanners with no analysis of exploitability.
+
+## Supported versions
+
+Before 1.0, security fixes are made on `main` and released in the next tagged release; earlier tags
+are not patched. After 1.0 this section will list the supported release lines.
+
+## Security-relevant design documents
+
+The design intent each component is held to — what it must never do — is written down in the
+repository and is the reference when judging a report:
+
+- `docs/library/store.md`, `encryption.md`, `leaf-encryption.md`, `secret-scanning.md` — the store,
+  encrypted objects and the secret scanner
+- `docs/library/build-engine.md`, `vfs.md`, `capture.md`, `docs/build/sandboxed-executor.md` — the
+  sandbox, the mount and capture
+- `docs/library/sync.md`, `reapi.md`, `http2.md`, `workers.md` — the network surfaces
+- `docs/library/identity.md`, `attestations.md`, `provenance.md`, `policy.md`,
+  `docs/features/25-identity-attestation-and-transparency.md` — signing and verification
+- `docs/library/incremental-engine.md` — the daemon and its client protocol
+- `docs/standards/taap-1-spec-draft.md` §18 — the protocol threat model
+
+A `.well-known/security.txt` on the project website should point at this file and the reporting address
+once the site exists.
+
+Thank you for helping keep liquid and liquify safe for the people who trust them with their code.
