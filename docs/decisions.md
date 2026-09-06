@@ -261,3 +261,14 @@ liquid #210 verifies RFC 3161 tokens and RFC 4998 evidence with its own strict D
 validation to pinned trust anchors, CMS SignedData, and verify-only RSA (PKCS#1 v1.5 and PSS) and ECDSA
 P-256/P-384 over SHA-256/384, with RFC test vectors and real-TSA fixtures. No signing, no key generation,
 no third-party library in the trust path.
+
+## 33. Proof lanes — **decided (Steve, 2026-09-05): no Docker on Steve's machine, for anything in this project.**
+
+Nothing in the workflow may run `docker` on the development Mac: no container-based Linux proofs, no
+throwaway Postgres containers, no local image builds. Merges are gated on the macOS static and shared
+suites run natively; lake's Postgres-backed suites run against the local Postgres 17 server with a fresh
+database per run. Linux proofs run off-host: a Linux lane on the AKS cluster (`ci` namespace, sources
+synced from the worktree, `codex-work/tools/linux-proof.sh`) now, and GitHub Actions per PR once the
+`ORAMA_SUBMODULES_TOKEN` org secret exists. Until a Linux run has happened for a change, its issue says
+"Linux proof deferred" and the change is listed in the action plan's verification debt. Images for the
+cluster are built on the cluster and pushed from there.

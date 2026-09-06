@@ -39,5 +39,16 @@ Rules for this work order:
    the PR URL, what was deferred, open questions. Then stop. Do exactly this issue; do not start
    any other.
 
+8. No Docker on this host: no `docker` commands, no containers, no container-based databases, no
+   `docker buildx`, no images built locally. Proofs are the macOS static and shared suites run natively.
+   Where a brief names the Linux container suite, run
+   `/Users/stevesperandeo/dev/oramasearch/codex-work/tools/linux-proof.sh <worktree> [ctest args]` if that
+   file exists (it runs the same suite on a Linux lane off this machine, sources synced from your worktree);
+   if it does not exist or the lane is unavailable, write "Linux proof deferred" under **How verified** and
+   deliver. Postgres-backed tests use the local server: `createdb -h 127.0.0.1 <fresh name>` (role
+   `stevesperandeo`, no password), connect with `postgresql://stevesperandeo@127.0.0.1:5432/<name>`, and
+   never drop a database you did not create in this run. A brief that asks for an image build or a
+   container-based integration suite gets "deferred: no Docker on this host" in the report instead.
+
 The issue itself: https://github.com/{{ORG_REPO}}/issues/{{ISSUE}} — read it with
 `gh issue view {{ISSUE}} --repo {{ORG_REPO}}`; its **Done when** list is the acceptance test.
