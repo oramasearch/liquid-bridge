@@ -46,6 +46,9 @@ blocking**. Suggested shape is recorded there.
 
 This is a spec change, not a liquid design choice, and it needs the protocol owner.
 
+Feedback drafted in [`taap/`](taap/README.md) (`01-content-addressed-subjects.md` for this item, bridge #1;
+`02-protocol-feedback.md` for bridge #8); delivery is Steve's.
+
 ## 5. Licence — **posture decided; text deferred (Steve, 2026-09-03).**
 
 The licence text is chosen before either repository goes public, not before Phase 1 code lands:

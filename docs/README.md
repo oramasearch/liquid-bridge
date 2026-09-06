@@ -13,6 +13,7 @@ module's own `docs/`; liquid's `docs/` holds the full specification.
 | [`publishing/`](publishing/README.md) | Publishing readiness for liquid and liquify: the confidentiality scrub report, the security review and threat model, and the `SECURITY.md` draft (issues #10 and #11 under the release epic #16). |
 | [`operations/`](operations/README.md) | Running lake.live: SLOs and error budgets, the status page, on-call runbooks, the AKS sandbox inventory and cleanup list, and the plan to move the host to `lake.live`. |
 | [`legal/`](legal/README.md) | Drafts for counsel — terms of service, privacy policy, data-processing addendum — grounded in what lake stores, retains and shares. Marked draft, not legal advice. |
+| [`taap/`](taap/README.md) | Drafts of the protocol feedback liquid owes the TAAP/1 owner: the content-addressed subject proposal (bridge #1) and the remaining protocol feedback (bridge #8). Sending them is Steve's. |
 
 ## Where each module documents itself
 
