@@ -355,6 +355,10 @@ issue and needs one Linux run before the next release tag: on GitHub Actions onc
 - k0s: #20 (#28): the container lifecycle suite did not run; unit tests and shellcheck did.
 - orama-operator: #129 (#139), #128 (#140): Go build, vet and tests ran; no cluster rehearsal.
 
+The merge verifier builds liquid without a build type (unoptimised); workers build Release. liquid #263 (the
+resolver's 500-package test crashing only under optimisation) showed that gap: until it is fixed and a Release
+run is part of the gate, a green chain does not prove the optimised binary.
+
 The Linux-only paths most worth a run first: the FUSE mount and Drip watcher tests, the node store (#202),
 admission (#203), and the self-host wrapper (#59).
 
