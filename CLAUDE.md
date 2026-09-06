@@ -108,3 +108,8 @@ source all three adapters read, and each capability gets a page under `docs/api/
 Metis material is confidential and lives in `oramasearch/corporate-intelligence`. This
 bridge links and does not restate. Nothing from it goes to any external research
 service. Every repository here is private and stays private.
+
+## Skills
+
+- `/liquid-dev` (`.claude/skills/liquid-dev/SKILL.md`): how to build, verify and merge in every repository without Docker, and the exact procedure for updating lake and the operator on AKS (cluster BuildKit, schema Job, CR roll, helm). Read it before any deploy or release step.
+- `/complete-super-epic`: the orchestration skill that drives Codex workers through the plan.
