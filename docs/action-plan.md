@@ -332,6 +332,24 @@ an unattested image is refused at admission.
 
 ---
 
+## Verification debt (decision 33)
+
+Since 2026-09-06 nothing in the workflow runs Docker on the development machine (`docs/decisions.md` §33).
+Merges are gated on the macOS static and shared suites run natively; lake's suites run against the local
+Postgres 17 with a fresh database per run. Every change below merged with "Linux proof deferred" on its
+issue and needs one Linux run before the next release tag: on GitHub Actions once the
+`ORAMA_SUBMODULES_TOKEN` org secret exists, or on a Linux lane off this host.
+
+- liquid: #210 (PR #218), #85 (#224), #202 (#228), #25 (#229), #26 (#215), #204 (#220), #195 (#209),
+  #51 (#234), #203 (#227), #205 (#223), #29 (#212), #59 (#233), and every later merge until the lane exists.
+- lake: #44 (#100), #91 (#101), #98 (#102), #83 (#103): the Postgres-backed suites ran on the local server;
+  the linux/amd64 image builds those briefs asked for did not run.
+- k0s: #20 (#28): the container lifecycle suite did not run; unit tests and shellcheck did.
+- orama-operator: #129 (#139), #128 (#140): Go build, vet and tests ran; no cluster rehearsal.
+
+The Linux-only paths most worth a run first: the FUSE mount and Drip watcher tests, the node store (#202),
+admission (#203), and the self-host wrapper (#59).
+
 ## What is deliberately not early
 
 The forge, the IDE and the consumer drive are the most visible and the most tempting.

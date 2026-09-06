@@ -22,7 +22,9 @@ Rules for this work order:
 5. When the work is complete and the proof below passes: first `git fetch origin && git rebase
    origin/{{BASE}}` (other workers land in parallel; resolve status lines and index rows by keeping
    both sides; then `git submodule update --init --recursive`, and if `.gitmodules` or any submodule
-   pointer changed, delete the build directories and configure again before re-running the proof;
+   pointer changed, or any file under `include/` or a CMake list changed in what you merged, delete the
+   build directories and configure again before re-running the proof (stale objects after a merge have
+   produced segfaults and bus errors that looked like test failures);
    re-run the proof if anything but docs changed), then `git push -u origin {{BRANCH}}`, then
    open the pull request with `gh pr create --repo {{ORG_REPO}} --base {{BASE}} --head {{BRANCH}}`
    using a title that names the change and a body with these sections: **What**, **Why**
@@ -38,6 +40,23 @@ Rules for this work order:
 7. Final report (this is what is read first): files changed, the proof command and its output,
    the PR URL, what was deferred, open questions. Then stop. Do exactly this issue; do not start
    any other.
+
+8. No Docker on this host: no `docker` commands, no containers, no container-based databases, no
+   `docker buildx`, no images built locally. Proofs are the macOS static and shared suites run natively.
+   Where a brief names the Linux container suite, run
+   `/Users/stevesperandeo/dev/oramasearch/codex-work/tools/linux-proof.sh <worktree> [ctest args]` if that
+   file exists (it runs the same suite on a Linux lane off this machine, sources synced from your worktree);
+   if it does not exist or the lane is unavailable, write "Linux proof deferred" under **How verified** and
+   deliver. Postgres-backed tests use the local server: `createdb -h 127.0.0.1 <fresh name>` (role
+   `stevesperandeo`, no password), connect with `postgresql://stevesperandeo@127.0.0.1:5432/<name>`, and
+   never drop a database you did not create in this run. A brief that asks for an image build or a
+   container-based integration suite gets "deferred: no Docker on this host" in the report instead.
+
+9. Build parallelism: this host runs several workers at once. Build with at most six jobs
+   (`cmake --build <dir> -j 6`, or export `CMAKE_BUILD_PARALLEL_LEVEL=6`; never `-j64` or an unbounded
+   `ninja`), run one test suite at a time, and before an isolated rerun of a failing test wait until
+   `sysctl -n vm.loadavg` reports a one-minute load below 40. Bus errors and segfaults that appear only
+   while the load is above 100 are host pressure, not your code: record them and rerun when quiet.
 
 The issue itself: https://github.com/{{ORG_REPO}}/issues/{{ISSUE}} — read it with
 `gh issue view {{ISSUE}} --repo {{ORG_REPO}}`; its **Done when** list is the acceptance test.

@@ -11,3 +11,24 @@ module's own `docs/`; liquid's `docs/` holds the full specification.
 | [`tracking.md`](tracking.md) | How work is tracked: the master epic, the phase and repository epics, labels, issue shape, and the generator under `tools/issues/`. |
 | [`orchestration.md`](orchestration.md) | How the work gets done: the `/complete-super-epic` skill that drives an epic with Codex workers, one worktree, branch and PR per issue. |
 | [`publishing/`](publishing/README.md) | Publishing readiness for liquid and liquify: the confidentiality scrub report, the security review and threat model, and the `SECURITY.md` draft (issues #10 and #11 under the release epic #16). |
+| [`operations/`](operations/README.md) | Running lake.live: SLOs and error budgets, the status page, on-call runbooks, the AKS sandbox inventory and cleanup list, and the plan to move the host to `lake.live`. |
+| [`legal/`](legal/README.md) | Drafts for counsel — terms of service, privacy policy, data-processing addendum — grounded in what lake stores, retains and shares. Marked draft, not legal advice. |
+
+## Where each module documents itself
+
+Every change documents itself in `docs/<topic>/*.md` of the repository that owns it, in the same
+commit (see [`../CLAUDE.md`](../CLAUDE.md)). `README.md` and `CLAUDE.md` files are summaries that
+point at the docs; they never carry the only copy of anything. The per-module roots, as checked
+out under `modules/` and on GitHub:
+
+- liquid: `modules/liquid/docs/` (https://github.com/oramasearch/liquid/tree/main/docs), the full
+  specification; research, features and standards are topics too.
+- lake: `modules/lake/docs/` (https://github.com/oramasearch/lake/tree/main/docs).
+- liquify: `modules/liquify/docs/` (https://github.com/oramasearch/liquify/tree/main/docs).
+- orama-operator: `modules/orama-operator/docs/`
+  (https://github.com/oramasearch/orama-operator/tree/main/docs), with the `Lake` CR under
+  `docs/lake/` and the field reference in `docs/crd-reference.md`.
+- k0s: `modules/k0s/docs/liquid/` on the `liquid` branch
+  (https://github.com/oramasearch/k0s/tree/liquid/docs/liquid), beside the upstream docs.
+- marketing-bridge: `modules/marketing-bridge/docs/`
+  (https://github.com/oramasearch/marketing-bridge/tree/main/docs).
