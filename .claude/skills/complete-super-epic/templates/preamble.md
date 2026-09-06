@@ -22,7 +22,9 @@ Rules for this work order:
 5. When the work is complete and the proof below passes: first `git fetch origin && git rebase
    origin/{{BASE}}` (other workers land in parallel; resolve status lines and index rows by keeping
    both sides; then `git submodule update --init --recursive`, and if `.gitmodules` or any submodule
-   pointer changed, delete the build directories and configure again before re-running the proof;
+   pointer changed, or any file under `include/` or a CMake list changed in what you merged, delete the
+   build directories and configure again before re-running the proof (stale objects after a merge have
+   produced segfaults and bus errors that looked like test failures);
    re-run the proof if anything but docs changed), then `git push -u origin {{BRANCH}}`, then
    open the pull request with `gh pr create --repo {{ORG_REPO}} --base {{BASE}} --head {{BRANCH}}`
    using a title that names the change and a body with these sections: **What**, **Why**
