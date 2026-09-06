@@ -71,7 +71,10 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
      --opt context:zetta_source=local:zetta --opt platform=linux/amd64 \
      --output type=image,name=docker.io/oramasearch/lake:<YYYYMMDD><a|b|c>,push=true --progress plain
    ```
-   The final image holds only the `lake` binary and OpenSSL; the Zetta checkout is a build-stage input.
+   The final image holds only the `lake` binary and OpenSSL; the Zetta checkout is a build-stage input. Do not
+   point `--local zetta=` at the full checkout (45 GB with build trees): assemble a minimal context first,
+   `rsync -a --exclude .git <zetta>/include/ <tmp>/include/` plus `src/core/connect/http_transport.cpp` and
+   `src/core/api/native_http_transport.cpp` under the same paths (about 2 MB), and pass that directory.
 3. Schema: the operator applies `internal/controller/assets/lake-schema.sql` (a byte-identical copy of lake `db/schema.sql`,
    idempotent) through the `PostgresSchema` `lake-prod-controldb-schema` Job. When lake's schema changed,
    first vendor the new file into the operator (PR, merge), rebuild the operator image (step 5), then delete
@@ -88,10 +91,13 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    reused; never delete either (the key is not backed up anywhere else yet).
 5. Operator: build the same way from `codex-work/orama-operator` on `main`
    (`--output type=image,name=docker.io/oramasearch/orama-operator:main-<sha>,push=true`, no Zetta context),
-   apply CRDs first because helm does not update them, then upgrade the release:
+   apply CRDs first because helm does not update them, then upgrade the release with the stored values as a
+   file rather than `--reuse-values` (a chart that gained a new value, such as `controlPlane.service.port`,
+   fails to template under `--reuse-values` because stored values do not pick up new chart defaults):
    ```sh
    kubectl --context orama-production-cluster-01 apply -f chart/crds/
-   helm --kube-context orama-production-cluster-01 upgrade orama-cloud-v1-operator chart/ -n orama-system --reuse-values --set operator.image.tag=main-<sha>
+   helm --kube-context orama-production-cluster-01 get values orama-cloud-v1-operator -n orama-system > /tmp/operator-values.yaml
+   helm --kube-context orama-production-cluster-01 upgrade orama-cloud-v1-operator chart/ -n orama-system -f /tmp/operator-values.yaml --set operator.image.tag=main-<sha>
    kubectl --context orama-production-cluster-01 -n orama-system rollout status deploy/orama-cloud-v1-operator
    ```
 6. Check: `curl -sI https://lake.oramadev.net/` returns 200 and the page references the new hashed

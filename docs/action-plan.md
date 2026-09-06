@@ -332,6 +332,14 @@ an unattested image is refused at admission.
 
 ---
 
+**Deployment 2026-09-06.** lake `oramasearch/lake:20260906a` (lake main b51c69e) is live on AKS behind
+https://lake.oramadev.net with the design system, sharing, settings, platform pages and hashed assets; the
+operator runs `oramasearch/orama-operator:main-57e0cf7` (main after PR #118 and the follow-ups #144, #146,
+#147), the `PostgresSchema` job re-applied the vendored schema (sha256:9ed41771), and the store volume and
+instance key were reused. Both images were built on the cluster's BuildKit from this machine with `buildctl`
+(no Docker here; the `/liquid-dev` skill records the procedure). `BackupReady` stays False until the R2
+backup Secret exists.
+
 ## Verification debt (decision 33)
 
 Since 2026-09-06 nothing in the workflow runs Docker on the development machine (`docs/decisions.md` §33).
