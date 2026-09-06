@@ -52,5 +52,11 @@ Rules for this work order:
    never drop a database you did not create in this run. A brief that asks for an image build or a
    container-based integration suite gets "deferred: no Docker on this host" in the report instead.
 
+9. Build parallelism: this host runs several workers at once. Build with at most six jobs
+   (`cmake --build <dir> -j 6`, or export `CMAKE_BUILD_PARALLEL_LEVEL=6`; never `-j64` or an unbounded
+   `ninja`), run one test suite at a time, and before an isolated rerun of a failing test wait until
+   `sysctl -n vm.loadavg` reports a one-minute load below 40. Bus errors and segfaults that appear only
+   while the load is above 100 are host pressure, not your code: record them and rerun when quiet.
+
 The issue itself: https://github.com/{{ORG_REPO}}/issues/{{ISSUE}} — read it with
 `gh issue view {{ISSUE}} --repo {{ORG_REPO}}`; its **Done when** list is the acceptance test.
