@@ -272,3 +272,22 @@ synced from the worktree, `codex-work/tools/linux-proof.sh`) now, and GitHub Act
 `ORAMA_SUBMODULES_TOKEN` org secret exists. Until a Linux run has happened for a change, its issue says
 "Linux proof deferred" and the change is listed in the action plan's verification debt. Images for the
 cluster are built on the cluster and pushed from there.
+
+## 34. How `liquid deploy` reaches the control plane — **settled 2026-09-06 under decision 22 (say so if you want a different answer).**
+
+liquid never depends on Zetta or lake code. `liquid deploy` (liquid #84) talks to the control plane the
+operator exposes (decision 22) through its documented REST `/v1` and MCP surface, with liquid's own HTTP
+client (`oramasearch/http` over corosio). The contract is an OpenAPI document owned by orama-operator
+(`docs/control-plane/openapi.json`); liquid vendors a copy with its digest under `contracts/` and tests
+against recorded fixtures, so a contract change is a visible diff on both sides. Environments, rollbacks and
+sealed secrets are operations on that contract; nothing in liquid links `orama_control` or zetta-api.
+
+## 35. Admission on k0s: policy sets, events, and the binary on the node — **settled 2026-09-06 under decisions 23 and 28.**
+
+liquid's admission service (#203) serves named policy sets loaded from a directory, each reachable at
+`/admit/<policy>`; k0s maps namespaces to policy names in the webhook configuration (one cluster-scoped
+webhook, `failurePolicy: Fail`; leniency is a property of a policy, for example an audit-only policy). liquid
+has no Kubernetes client: a small k0s-side adapter turns liquid's structured decisions into Kubernetes events.
+The service runs from the liquid binary already on the node (decision 23), as a static pod, not from a
+published image. Tests use `liquid node-store serve` as the store double; `liquid serve sync` cannot answer
+subject lookups.
