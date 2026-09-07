@@ -304,3 +304,33 @@ automation), but the single-node validation run (k0s #13) waits until Steve choo
 block a phase exit or the plan's completion. bridge #13 is answered the same way: AKS first, the on-premises
 path stays ready and unproven until then. Revisit when a customer needs the self-hosted install or when
 lake.live outgrows the single AKS node.
+
+## 37. Authenticated time on a transparency checkpoint — **decided (Steve, 2026-09-07): a signed `issued_at` in the checkpoint body.**
+
+liquid's admission policy documents `max_checkpoint_age_seconds` and lists `checkpoint stale` as a refusal
+reason, but the signed checkpoint body carried no issuance time, so no finite bound could ever be enforced: a
+product review admitted a Pod against a checkpoint with a one-second maximum age (liquid #290). Freshness is
+kept as a security property, and the log states its own time.
+
+The checkpoint body gains an `issued_at` field — seconds since the Unix epoch, UTC — inside the bytes the log
+already signs, so it needs no new signature scheme and no second credential. lake, as the log, emits it on
+every checkpoint it publishes; liquid's admission verifier compares it against the configured bound.
+
+The semantics, so that neither side has to guess:
+
+- **Absent bound** — freshness is not enforced, and a checkpoint without `issued_at` is accepted.
+- **A positive bound** — freshness is enforced, and a checkpoint without `issued_at` is **refused**
+  (`checkpoint stale`). Fail closed: an operator who sets a limit gets the limit, not a silent pass.
+- **A zero bound** is rejected when the policy loads, rather than meaning "refuse everything" or
+  "enforce nothing" — both readings are traps.
+- **Future-dated checkpoints** beyond a small skew allowance (60 seconds) are refused, or a clock set forward
+  would make a checkpoint permanently fresh.
+
+The known limit, written down deliberately: the log vouches for its own clock, so this defends against a stale
+or replayed checkpoint, not against a log that lies about when it signed. Binding an RFC 3161 timestamp token
+to the checkpoint is the stronger form and stays available — liquid already verifies RFC 3161 (decision 32) —
+and it is not adopted now because it requires a reachable timestamp authority at publish time, which an
+air-gapped log cannot assume. Revisit if a customer needs time attested by someone other than the log.
+
+Old checkpoints published before this change carry no `issued_at` and therefore cannot satisfy a finite bound;
+that is the intended migration, not a regression. Producer: lake. Consumer: liquid admission.
