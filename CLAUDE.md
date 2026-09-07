@@ -103,6 +103,22 @@ source all three adapters read, and each capability gets a page under `docs/api/
   and reviews; the issue closes with a comment when its PR is up. `orama-operator` PRs stay open
   for Steve.
 
+## Builds and deploys stay current
+
+Whenever a change lands that the running system should carry, rebuild and redeploy it in the same stretch of
+work; do not leave the cluster or a shipped artifact on an older commit than the branch it came from.
+
+- **lake on AKS.** After a merge to lake `main` (including a submodule pointer bump), build the image from the
+  true head of `main` and roll `Lake/prod` to it. Check the head with `git rev-parse --short origin/main`
+  immediately before the build: a build started before another PR merges ships the older tree. The procedure is
+  in `.claude/skills/liquid-dev/SKILL.md` (cluster BuildKit through `buildctl`, no Docker here).
+- **The operator.** Same rule; its next deploy must run `docs/operations/rename-cutover.md` first.
+- **liquify.** After a merge that changes what a person sees or runs, rebuild and produce a fresh dmg, and say
+  where it is. A screenshot from the headless path is not evidence that the real window works: open the built
+  application before claiming a UI change is done.
+- **Say what is deployed.** When reporting progress, state the image tag or artifact and the commit it was
+  built from, so "merged" and "running" are never confused.
+
 ## Confidentiality
 
 Metis material is confidential and lives in `oramasearch/corporate-intelligence`. This
