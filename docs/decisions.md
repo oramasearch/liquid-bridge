@@ -334,3 +334,31 @@ air-gapped log cannot assume. Revisit if a customer needs time attested by someo
 
 Old checkpoints published before this change carry no `issued_at` and therefore cannot satisfy a finite bound;
 that is the intended migration, not a regression. Producer: lake. Consumer: liquid admission.
+
+## 38. Who may write Secrets in a liquid environment — **decided (Steve, 2026-09-07): RBAC is the control, admission is defence in depth.**
+
+The k0s platform contract said a delivered Secret carries controller ownership and
+`lake.orama.cloud/sealed=true`, and the consuming Pod carries a derived
+`liquid.oramasearch.com/sealed-secret-names` annotation. The `liquid-environment-secrets`
+ValidatingAdmissionPolicy checked that those fields were **present**, never that they were **true**:
+an envtest reproduction with a non-admin identity admitted a Secret whose `ownerReference` named a
+`LakeSealedSecret` that does not exist, and admitted the Pod that mounted it on a hand-written
+annotation (k0s #40). The advertised guarantee — Secrets in a liquid environment are
+sealed-secret-derived and operator-delivered — was unenforced, and that is why orama-operator #155
+could not be fixed on the operator side: the fields that would make delivery work make forgery work
+too.
+
+**Only the operator's service account may create or modify Secrets in namespaces labelled
+`liquid.oramasearch.com/environment=true`.** Tenants lose direct Secret write in those namespaces;
+"operator-delivered" becomes true by construction rather than by assertion. The admission policy
+stays, as a second layer that catches a mistake by an authorised writer — not as the control.
+
+CEL admission cannot readily verify that a claimed owner object exists, so a policy-only answer
+would need a paramKind, an authorizer check or a webhook, and might not be expressible at all.
+RBAC is enforceable today and closes the hole immediately.
+
+Each control's boundary is written down where it is configured, so neither is assumed to be doing
+the other's job: k0s `docs/liquid/platform-surface.md` states what RBAC guarantees and what
+admission guarantees, and which is authoritative. The operator's delivery path lands against the
+corrected contract. Revisit if a tenant workflow genuinely needs to write its own Secrets in an
+environment namespace — that would be a change to this boundary, not an exception to it.
