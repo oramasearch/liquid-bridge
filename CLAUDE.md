@@ -129,3 +129,6 @@ service. Every repository here is private and stays private.
 
 - `/liquid-dev` (`.claude/skills/liquid-dev/SKILL.md`): how to build, verify and merge in every repository without Docker, and the exact procedure for updating lake and the operator on AKS (cluster BuildKit, schema Job, CR roll, helm). Read it before any deploy or release step.
 - `/complete-super-epic`: the orchestration skill that drives Codex workers through the plan.
+- `/product-review` (`.claude/skills/product-review/SKILL.md`): test the whole product as a customer would,
+  compare what is promised against what runs, and file original issues for the gaps. Use it before claiming an
+  area is finished.
