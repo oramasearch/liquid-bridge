@@ -294,3 +294,13 @@ has no Kubernetes client: a small k0s-side adapter turns liquid's structured dec
 The service runs from the liquid binary already on the node (decision 23), as a static pod, not from a
 published image. Tests use `liquid node-store serve` as the store double; `liquid serve sync` cannot answer
 subject lookups.
+
+## 36. Where it runs for now — **decided (Steve, 2026-09-06): AKS, with k0s later.**
+
+lake.live and the Lake CR run on the AKS cluster (`orama-production-cluster-01`) for now. The k0s
+distribution keeps everything that landed for it (the node store, admission with transparency-log
+verification, the platform surface, the immutable node model, the runbooks and the single-node install
+automation), but the single-node validation run (k0s #13) waits until Steve chooses to do it; it does not
+block a phase exit or the plan's completion. bridge #13 is answered the same way: AKS first, the on-premises
+path stays ready and unproven until then. Revisit when a customer needs the self-hosted install or when
+lake.live outgrows the single AKS node.
