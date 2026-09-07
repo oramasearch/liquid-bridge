@@ -340,6 +340,11 @@ instance key were reused. Both images were built on the cluster's BuildKit from 
 (no Docker here; the `/liquid-dev` skill records the procedure). `BackupReady` stays False until the R2
 backup Secret exists.
 
+**Deployment 2026-09-07.** lake `oramasearch/lake:20260907a` (lake main with liquid at the store backend
+interface, structural diff and merge, and committable conflict values) is live at https://lake.oramadev.net,
+reconciled by `oramasearch/orama-operator:main-57e0cf7`. The vendored schema is unchanged, so no schema job
+was needed. `BackupReady` stays False until the R2 backup Secret exists.
+
 **Runtime, from 2026-09-06 (decision 36).** lake runs on AKS; the k0s distribution is complete and its
 single-node validation waits (k0s #13). Phase 7's exit is met on AKS: the `Lake` CR reconciles, the service
 answers, and the distribution carries the node store, admission with transparency-log verification, the
