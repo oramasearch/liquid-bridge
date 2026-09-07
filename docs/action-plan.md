@@ -340,6 +340,11 @@ instance key were reused. Both images were built on the cluster's BuildKit from 
 (no Docker here; the `/liquid-dev` skill records the procedure). `BackupReady` stays False until the R2
 backup Secret exists.
 
+**Runtime, from 2026-09-06 (decision 36).** lake runs on AKS; the k0s distribution is complete and its
+single-node validation waits (k0s #13). Phase 7's exit is met on AKS: the `Lake` CR reconciles, the service
+answers, and the distribution carries the node store, admission with transparency-log verification, the
+platform surface, the immutable node model and the install automation.
+
 ## Verification debt (decision 33)
 
 Since 2026-09-06 nothing in the workflow runs Docker on the development machine (`docs/decisions.md` §33).
