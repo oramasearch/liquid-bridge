@@ -335,6 +335,9 @@ air-gapped log cannot assume. Revisit if a customer needs time attested by someo
 Old checkpoints published before this change carry no `issued_at` and therefore cannot satisfy a finite bound;
 that is the intended migration, not a regression. Producer: lake. Consumer: liquid admission.
 
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/23
+
 ## 38. Who may write Secrets in a liquid environment — **decided (Steve, 2026-09-07): RBAC is the control, admission is defence in depth.**
 
 The k0s platform contract said a delivered Secret carries controller ownership and
@@ -382,6 +385,9 @@ live exploit, because nothing grants a tenant the access to attempt it. The hole
 moment tenant access exists — which is exactly what the platform surface (k0s #17) will add — so
 the boundary lands with, or before, that grant.
 
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/24
+
 ## 39. liquid's own filesystem projection — **decided (Steve, 2026-09-08): write our own macOS, Linux and Windows backends; no FUSE library dependency.**
 
 `liquid wrap` observes a build through a mounted filesystem, and the only backend today is
@@ -415,3 +421,6 @@ data-shaped. Each backend lands with the same conformance suite run against it, 
 libfuse backend stays available behind a build option until its replacement passes that suite on
 its platform. Revisit if a platform's own facility (FSKit, ProjFS) turns out to be insufficient for
 observed builds, which would be a finding worth recording rather than working around.
+
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/25
