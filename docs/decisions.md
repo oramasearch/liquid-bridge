@@ -381,3 +381,37 @@ reproduced in k0s #40 shows the admission policy does not enforce its claim; it 
 live exploit, because nothing grants a tenant the access to attempt it. The hole becomes real the
 moment tenant access exists — which is exactly what the platform surface (k0s #17) will add — so
 the boundary lands with, or before, that grant.
+
+## 39. liquid's own filesystem projection — **decided (Steve, 2026-09-08): write our own macOS, Linux and Windows backends; no FUSE library dependency.**
+
+`liquid wrap` observes a build through a mounted filesystem, and the only backend today is
+`src/vfs/fuse_fs.cpp` against libfuse3 on Linux and macFUSE on macOS. That is a licence problem
+before it is a portability problem: **macFUSE is not licensed for what we need**, and libfuse is
+LGPL, which constrains static linking and the licence liquid may itself choose (bridge #2) before
+the open-source release (bridge #16). It is also why Phase 2's exit cannot be demonstrated on this
+Mac at all: no macFUSE, no `wrap`, no proof (liquid #291, #299).
+
+liquid implements its own projection per platform, behind the interface `fuse_backend` occupies
+today. The surrounding ~780 lines — hydration, materialisation, the serialized request queue,
+xattrs, observation — are already platform-independent and stay as they are; only the backend is
+replaced.
+
+- **Linux** — speak the FUSE **kernel protocol** directly on `/dev/fuse`. The protocol's uapi
+  header is dual BSD/GPL precisely so independent userspace implementations exist; this needs no
+  libfuse and inherits none of its terms.
+- **macOS** — no kernel extension. An **NFS loopback server**: macOS's NFS client is in the kernel
+  already, so a userspace server on localhost gives a real mount with nothing third-party
+  installed, on every macOS version. FSKit is the newer Apple-sanctioned route and is worth taking
+  where the minimum OS allows it, but it cannot be the only path.
+- **Windows** — **ProjFS**, the Projected File System built into Windows. Not WinFsp, which is
+  GPLv3.
+
+The prize is not only licence hygiene: it removes an install prerequisite that has blocked
+demonstrating Phase 2 and Phase 4, makes `wrap` work on a clean machine, and puts Windows on the
+same footing as the other two rather than being a permanent exception.
+
+The risk is that a filesystem is a hard thing to write and correctness failures are silent and
+data-shaped. Each backend lands with the same conformance suite run against it, and the existing
+libfuse backend stays available behind a build option until its replacement passes that suite on
+its platform. Revisit if a platform's own facility (FSKit, ProjFS) turns out to be insufficient for
+observed builds, which would be a finding worth recording rather than working around.
