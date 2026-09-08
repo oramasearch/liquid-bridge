@@ -362,3 +362,22 @@ the other's job: k0s `docs/liquid/platform-surface.md` states what RBAC guarante
 admission guarantees, and which is authoritative. The operator's delivery path lands against the
 corrected contract. Revisit if a tenant workflow genuinely needs to write its own Secrets in an
 environment namespace — that would be a change to this boundary, not an exception to it.
+
+
+**Implementation note (2026-09-07, after a first attempt).** Two facts constrain how this is
+expressed, and the first attempt at it stopped on them, correctly. Kubernetes RBAC is **additive**
+— an operator-only grant cannot revoke access conferred by some other binding — and RBAC rules
+**cannot select namespaces by label**, so "namespaces labelled
+`liquid.oramasearch.com/environment=true`" is not a thing a Role can say. The boundary is therefore
+expressed the other way round: the distribution's tenant profile
+(`static/manifests/liquid/tenant-namespace/profile.yaml`), which the operator instantiates per
+environment namespace, carries the **only** grant a tenant identity gets there, and that grant
+omits Secrets. "Only the operator writes Secrets" then holds by construction rather than by
+subtraction.
+
+Today that profile ships a Namespace, a NetworkPolicy and a ResourceQuota and **no RBAC at all**,
+so no tenant identity can currently write Secrets in an environment namespace. The forgery
+reproduced in k0s #40 shows the admission policy does not enforce its claim; it does not show a
+live exploit, because nothing grants a tenant the access to attempt it. The hole becomes real the
+moment tenant access exists — which is exactly what the platform surface (k0s #17) will add — so
+the boundary lands with, or before, that grant.
