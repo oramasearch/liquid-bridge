@@ -103,6 +103,39 @@ source all three adapters read, and each capability gets a page under `docs/api/
   and reviews; the issue closes with a comment when its PR is up. `orama-operator` PRs stay open
   for Steve.
 
+## We write our own — IMPORTANT
+
+**Default to implementing the primitive ourselves rather than taking a heavy third-party
+dependency.** This is not novelty for its own sake; it is a standing decision Steve has made
+repeatedly, and a proposal that ignores it will be sent back:
+
+| Instead of | liquid has its own | Decision |
+|---|---|---|
+| RocksDB / LMDB for the chunk index | fixed-width LSM, rebuildable from packs | liquid CLAUDE.md 8 |
+| A third-party SAT/CDCL solver | liquid's own dependency solver | 20 |
+| Vendor hardware-token SDKs | command layers over the OS transports | 21 |
+| A timestamping/X.509 library | own verification, verify-only | 32 |
+| An off-the-shelf secrets envelope | liquid's own sealed envelope | 29 |
+| libfuse / macFUSE | own Linux, macOS and Windows projection | 39 |
+| A general async runtime | Boost.Capy and Corosio, which are ours | — |
+
+The reasons compound, and any one of them is enough:
+
+- **Licence.** liquid and liquify are going open source under a licence not yet chosen
+  ([#2](https://github.com/oramasearch/liquid-bridge/issues/2)). An LGPL or GPL dependency
+  constrains that choice and static linking; a non-free one (macFUSE) rules the path out entirely.
+- **Prerequisites.** Every dependency a customer must install first is a customer who does not get
+  a first useful result. macFUSE being absent is precisely why Phase 2's exit could not be
+  demonstrated on any machine we have.
+- **Control.** When the primitive is ours, a defect is a fix rather than an upstream negotiation,
+  and the behaviour is one we can specify and test rather than infer.
+
+**In practice:** before adding any dependency beyond a codec or a header-only utility, ask. Prefer
+the platform's own facility (the FUSE kernel protocol, NFS, ProjFS, FSKit) over a library that
+wraps it. Say what the licence is, in the same breath as what the library does. And when we do
+write our own, it lands with a conformance suite the previous implementation also passes, so
+"ours" never means "less proven".
+
 ## Builds and deploys stay current — IMPORTANT
 
 **The deploy is part of the work, not a follow-up.** Whenever a change lands that the running system should
