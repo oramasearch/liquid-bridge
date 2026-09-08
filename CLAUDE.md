@@ -103,6 +103,25 @@ source all three adapters read, and each capability gets a page under `docs/api/
   and reviews; the issue closes with a comment when its PR is up. `orama-operator` PRs stay open
   for Steve.
 
+## Every decision is recorded twice — IMPORTANT
+
+**A decision is not made until it exists in both places.** Write it in
+[`docs/decisions.md`](docs/decisions.md) of this bridge *and* open a GitHub issue for it, labelled
+`decision`, in the repository the decision governs (the bridge when it spans repositories). One
+without the other is how a decision gets relitigated three weeks later by someone who searched the
+wrong surface.
+
+- **`docs/decisions.md`** carries the reasoning: what was decided, why, what it costs, the known
+  limits, and what would make us revisit. It is the document a reader consults to understand the
+  system.
+- **The issue** carries the state: open while the question is genuinely open, closed with the
+  outcome when it is settled, and linked from the master epic so the open ones are visible without
+  reading a file.
+- **Both link to each other**, and to the issues the decision unblocks.
+
+An entry that says only what was decided, with no cost and no revisit condition, is not finished.
+The point is that the next person can tell a settled question from an unexamined assumption.
+
 ## We write our own — IMPORTANT
 
 **Default to implementing the primitive ourselves rather than taking a heavy third-party
