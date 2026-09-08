@@ -424,3 +424,35 @@ observed builds, which would be a finding worth recording rather than working ar
 
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/25
+
+## 40. What happens when someone signs up for lake — **decided (Steve, 2026-09-08): sign-up provisions a personal customer they own.**
+
+lake's `/sign-up` creates a user, an identity document, a credential and a session, then redirects
+to `/sessions`. It creates **no customer and no ownership grant**, and `create_customer` requires
+global administrator access, which ordinary users are explicitly denied. So there was no path from
+sign-up to a first repository at all, however clearly the page was written — a product review
+stopped on exactly this (lake #119), and the onboarding fix could not proceed without an answer.
+
+**Signing up creates a customer owned by that user**, so a newcomer lands somewhere they can
+actually work. That is what lake.live is for (bridge #17); a hosted service whose sign-up form
+leads nowhere is not a hosted service.
+
+What this decision commits us to, stated rather than discovered later:
+
+- **Anyone who signs up creates a billable tenant.** Metering is on unique stored bytes (lake #33),
+  so an empty personal customer costs nothing, but the tenant exists and is counted.
+- Naming, default quotas and the interaction with metering need settling as part of the
+  implementation, not after it.
+- Ownership is the grant the review found missing: the user owns the customer, which is what makes
+  the first repository reachable.
+
+**The cost:** open self-service provisioning is an abuse surface — unbounded tenant creation by
+anyone who can reach the page. It is accepted for now because lake.live is not yet public and the
+sign-up form already requires a client-held TAAP identity, which is a meaningful barrier to casual
+abuse.
+
+**Revisit if** lake.live opens to the public without another control in front of it, or if tenant
+creation turns out to cost anything before a byte is stored. An allowlist gate was considered and
+deliberately not adopted now, on the grounds that it becomes a thing to operate.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/26 · implements in lake #119
