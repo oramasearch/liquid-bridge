@@ -103,16 +103,32 @@ source all three adapters read, and each capability gets a page under `docs/api/
   and reviews; the issue closes with a comment when its PR is up. `orama-operator` PRs stay open
   for Steve.
 
-## Builds and deploys stay current
+## Builds and deploys stay current — IMPORTANT
 
-Whenever a change lands that the running system should carry, rebuild and redeploy it in the same stretch of
-work; do not leave the cluster or a shipped artifact on an older commit than the branch it came from.
+**The deploy is part of the work, not a follow-up.** Whenever a change lands that the running system should
+carry, rebuild and redeploy it in the same stretch of work; do not leave the cluster or a shipped artifact on an
+older commit than the branch it came from. A merged fix that has not been rolled is **not fixed** — the defect
+is still live for whoever is using the service, and reporting the merge as if it were the fix is the same class
+of error as trusting a green test that skipped.
+
+Do not stop at "merged, images built, ready to roll" and hand the last step back. Carry it through to the
+running system, then say what is running. The only reasons to stop short are a hard gate — a production
+handoff whose own runbook demands a scheduled window, a destructive database action, or a credential you do
+not have — and when one of those stops you, **say so in the first line of the report**, not after the good
+news.
 
 - **lake on AKS.** After a merge to lake `main` (including a submodule pointer bump), build the image from the
   true head of `main` and roll `Lake/prod` to it. Check the head with `git rev-parse --short origin/main`
   immediately before the build: a build started before another PR merges ships the older tree. The procedure is
   in `.claude/skills/liquid-dev/SKILL.md` (cluster BuildKit through `buildctl`, no Docker here).
-- **The operator.** Same rule; its next deploy must run `docs/operations/rename-cutover.md` first.
+- **The operator.** Same rule; its next deploy must run `docs/operations/rename-cutover.md` first — the chart
+  renders its resource names from `orama-operator` while production runs the release `orama-cloud-v1-operator`,
+  and Helm cannot rename in place, so the handoff briefly runs both releases under one leader-election ID.
+- **Order within a roll.** The operator applies lake's schema from a vendored byte-identical copy, guarded on
+  the newest migration's table. When lake's schema changes, the operator is re-vendored, merged and rebuilt
+  **first**, then the `PostgresSchema` is deleted so the Job re-runs, and only then does the new lake binary
+  roll. Out of order, the Job reports `Applied` while applying nothing — the guard table already exists — and
+  the new binary starts against a database missing its migration.
 - **liquify.** After a merge that changes what a person sees or runs, rebuild and produce a fresh dmg, and say
   where it is. A screenshot from the headless path is not evidence that the real window works: open the built
   application before claiming a UI change is done.
