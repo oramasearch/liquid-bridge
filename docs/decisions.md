@@ -423,6 +423,34 @@ its platform. Revisit if a platform's own facility (FSKit, ProjFS) turns out to 
 observed builds, which would be a finding worth recording rather than working around.
 
 
+
+**Alternatives examined (added 2026-09-08, after the decision — they should have been weighed
+before it).** The decision above replaced the FUSE *library* while preserving the choice of a
+*filesystem* as the interception point, and did not examine whether interception has to be a
+filesystem at all. Recorded now so it is a considered position rather than an inherited one.
+
+- **OS watchers alone (inotify/fanotify, FSEvents, USN journal).** Rejected, and already the
+  documented fallback rather than the mechanism (`docs/features/22-change-capture.md`). Watchers
+  report that a path *changed*, after the fact; they cannot observe **reads**. A build cache is
+  keyed on what an action read, so a watcher-only design guesses its input set and every cache hit
+  is unsound. inotify queues overflow and FSEvents coalesces under exactly the load a build
+  creates — liquid #282 is this failing in practice, all through the 2026-09-07 session.
+- **Syscall interposition (`LD_PRELOAD`, `DYLD_INSERT_LIBRARIES`).** Sees reads, needs no mount and
+  no kernel interface, and would be far less work than three filesystem backends. Not adopted
+  because the coverage has holes we cannot close: statically linked binaries and anything not
+  calling through libc escape it, and macOS SIP blocks injection into protected binaries — so a
+  build that shells out to a system tool is unobserved, silently. An unsound cache entry is worse
+  than a slow one.
+- **`ptrace` or eBPF.** Accurate and complete on Linux, but Linux-only, slow enough to matter on a
+  build's syscall volume (`ptrace`), or privileged (eBPF). Neither gives macOS or Windows.
+- **Declared inputs, Bazel-style.** The correct answer for a build system that owns its own build
+  files, and unavailable here: liquid's premise is wrapping an **unmodified** CMake or Autotools
+  project, so there is nothing to declare with.
+
+The filesystem is kept because it is the only mechanism that observes reads, covers every process
+regardless of how it was linked, and has an equivalent on all three platforms. The cost is that we
+write three backends; the alternative costs correctness we cannot verify.
+
 Issue: https://github.com/oramasearch/liquid-bridge/issues/25
 
 ## 40. What happens when someone signs up for lake — **decided (Steve, 2026-09-08): sign-up provisions a personal customer they own.**
