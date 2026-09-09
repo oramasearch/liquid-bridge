@@ -5,6 +5,7 @@ module's own `docs/`; liquid's `docs/` holds the full specification.
 
 | Document | What it is |
 |---|---|
+| [`handover.md`](handover.md) | **Read this first when resuming.** Repository heads and suite state, what is deployed and verified how, the host conditions that repeatedly cost sessions, what is blocked on the owner, and what is ready to work now. |
 | [`action-plan.md`](action-plan.md) | The phases, in dependency order, with exit criteria. No durations. |
 | [`repositories.md`](repositories.md) | What lives where, per-repository rules, and the related repositories that are not modules here. |
 | [`decisions.md`](decisions.md) | The Phase 0 decisions that gate everything else. |
