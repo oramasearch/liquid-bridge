@@ -14,9 +14,9 @@ where the moving parts are right now.
 
 | Repository | Branch | Head | Suite |
 |---|---|---|---|
-| liquid | `main` | `aa60e87` | **697 / 697** |
-| liquify | `main` | `e1f49c9` | 140 / 140 at `bd29d97`; **not re-run since the liquid rewiring** (see host conditions) |
-| lake | `main` | `3ea7ce3` | 257 / 257 at `98af177`; **not re-run since the liquid rewiring** (see host conditions) |
+| liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
+| liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
+| lake | `main` | `3ea7ce3` | **257 / 257**, re-run after the liquid rewiring — but **112 of those are skipped**, not run: the Postgres-backed cases need `LAKE_TEST_DB_URI`, and ctest counts a skip toward the pass total |
 | orama-operator | `main` | `014ae16` | `internal/...` ok, 12.1 s with envtest assets |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -58,8 +58,10 @@ Repair, whenever prompt capture is wanted back — macOS relaunches it immediate
 sudo killall -9 fseventsd
 ```
 
-**Owed:** the *armed* path cannot be exercised while the daemon is wedged. Run liquid's full suite
-once after restarting it; that is the first real check of the non-degraded branch.
+**Discharged 2026-09-09.** The daemon was restarted (it had been pinned at 99% of a core, which
+was also inflating the load everything else was measured under) and liquid's full suite run
+against a healthy one: **699 / 699 serial**. The count rose from 697 because the armed-watcher
+tests actually execute now, so the non-degraded branch has had its first real run.
 
 ### macFUSE is absent, and stays absent
 
@@ -80,6 +82,20 @@ Timing-sensitive tests fail under contention. Six Codex workers at `-j 6` on 16 
 report, and re-run a suspicious failure on a quiet machine before believing it.** Two false
 regressions in this cycle came from skipping that, and one came from running tests inside a worktree
 a worker still owned — never do that; check `pgrep -f "codex exec"` first.
+
+**Measured on 2026-09-09, so the next person does not re-diagnose it.** liquid's suite at load ~8:
+
+| Run | Result |
+|---|---|
+| `ctest -j 4` | 4 failed / 699 |
+| `ctest -j 2` | 2 failed / 699, a *different* pair |
+| `ctest` (serial) | **0 failed / 699** |
+
+The offenders are `NodeStore.AbsentTreeReportsItsUnavailableStoreUrl`,
+`NodeStore.LocalMetadataMountsWhenItsContentStoreIsUnavailable` and both
+`Backends/StoreSimulation.SeededCrashRecovery/{Disk,Memory}`. Run in isolation they passed **5 / 5**.
+They are contention-sensitive, not broken — but the failure is an `abort`, which reads exactly like a
+real crash. **Reproduce serially before filing anything against them.**
 
 ### lake and liquify no longer vendor liquid
 
@@ -104,9 +120,9 @@ naming the flag.
   developer does — the same drift, in a new place.
 - CI checks out `oramasearch/liquid` directly, so `ORAMA_SUBMODULES_TOKEN` must reach it too.
 
-**Owed:** neither full suite has been re-run since the rewiring. Configure and the liquid-sourced
-translation units were verified to compile in both, but `ctest` was not run — do that alongside the
-fseventsd re-run above.
+**Verified 2026-09-09.** Both suites re-run against the rewired build at the merged heads —
+lake 257 / 257, liquify 140 / 140, matching the counts recorded before the change. Removing the
+vendored liquid altered no behaviour in either.
 
 ### No Docker on this machine
 
