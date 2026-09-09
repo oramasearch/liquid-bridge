@@ -354,9 +354,19 @@ not exist). The control database carries 21 applied migrations, `0001_identity_a
 `0021_token_attenuation`, matching `db/schema.sql`; `0003` was never used and is absent from both. liquify's
 dmg was rebuilt from `0424822`.
 
-Nothing in the running system records which source commit an image was built from — no OCI
-`org.opencontainers.image.revision`, no build annotation, and `/v1/server_info` reports only `version 0.0.1`
-— so the commit above is recorded by hand rather than verifiable from the artifact. lake #121 closes that.
+**Deployment 2026-09-08 (second roll).** lake `oramasearch/lake:20260908c`
+(`sha256:bcbef30ac66ec89cd28dd9bc68d87553cb4e605e068633fd0efd3db053b3a06f`), built on the cluster's
+BuildKit from lake `main` at `9403194`, is live at https://lake.oramadev.net. It is **the first lake
+image that reports its own source revision**: `GET /v1/server_info` returns
+`"revision":"9403194f4d7db225e9f909c94fcbd5d2aad64380"`, and the image carries
+`org.opencontainers.image.revision`. `Lake/prod` reports `Ready`, `StoreReady` and `ZettaReady` true,
+`BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
+lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
+
+Until `20260908c`, nothing in the running system recorded which source commit an image was built from — no
+OCI `org.opencontainers.image.revision`, no build annotation, and `/v1/server_info` reported only
+`version 0.0.1` — so `20260908b`'s commit is recorded by hand rather than verifiable from the artifact.
+lake #121 closed that; every image from `20260908c` onward answers for itself.
 
 **Runtime, from 2026-09-06 (decision 36).** lake runs on AKS; the k0s distribution is complete and its
 single-node validation waits (k0s #13). Phase 7's exit is met on AKS: the `Lake` CR reconciles, the service
