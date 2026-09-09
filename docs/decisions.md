@@ -519,3 +519,25 @@ baseline that exists and a stronger one that does not, the suite that runs is wo
 provided the weakness is written down, which is what this entry is for.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/28
+
+
+## 42. Where liquid is pinned for lake and liquify — **decided (Steve, 2026-09-09): this bridge holds the one pin; neither repository vendors liquid.**
+
+lake and liquify each carried liquid as their own `modules/liquid` submodule while this bridge
+also pinned it. That is three pointers at one repository, and they drifted: lake pinned
+`8203911` while the bridge pinned `aa60e87`. Nothing reported the disagreement — each repository
+built green against a different liquid.
+
+Both submodules are removed. Each build resolves liquid from a cache path with a checked default
+of `../liquid`, the sibling checkout in this bridge: `LAKE_LIQUID_SOURCE_DIR` in lake
+([lake#145](https://github.com/oramasearch/lake/pull/145)) and `LIQUIFY_LIQUID_SOURCE_DIR` in
+liquify ([liquify#69](https://github.com/oramasearch/liquify/pull/69)). A bad path is a
+`FATAL_ERROR` that names the flag, so the failure explains itself.
+
+Neither repository builds from a bare clone any more — that is the cost, and it is deliberate.
+CI pays it by checking out `oramasearch/liquid` at this bridge's pin into `_external/liquid`,
+the way lake already handled Zetta. lake's image takes liquid as a named build context.
+
+**Bumping liquid is now one move here plus the CI `ref:` in each consumer.** Bumping the pointer
+in this bridge without moving those refs means CI builds a different liquid than a developer
+does — the same drift in a new place. Move them together.

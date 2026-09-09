@@ -27,7 +27,8 @@ This file adds only what is specific to working *across* the modules.
 | `modules/liquid` | `oramasearch/liquid` | `CLAUDE.md`, then `docs/research/99-synthesis/README.md` |
 | `modules/k0s` | `oramasearch/k0s` | `ORAMA-FORK.md` — branch model and sync. **Never commit to `main`.** |
 | `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — the control surface (one capability registry → REST `/v1`, OpenAPI, MCP) over the Postgres control plane, users/organizations/customers/repositories, server-rendered pages behind the admin sign-in; `Lake/prod` runs it on AKS. Its adapter-TU, one-registry and trailing-404 rules live there. |
-| `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native cross-platform IDE (SDL3 + Dear ImGui); hello window; links **libliquid** through its own pinned `modules/liquid` submodule. Never depends on Zetta. |
+| `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native cross-platform IDE (SDL3 + Dear ImGui); hello window; links **libliquid** from the sibling `modules/liquid` via `LIQUIFY_LIQUID_SOURCE_DIR`, not a
+vendored submodule. Never depends on Zetta. |
 
 
 **One level up, not modules here.** `orama-operator` and `marketing-bridge` are pinned by the org
