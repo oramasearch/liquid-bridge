@@ -15,8 +15,8 @@ where the moving parts are right now.
 | Repository | Branch | Head | Suite |
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **697 / 697** |
-| liquify | `main` | `bd29d97` | **140 / 140** |
-| lake | `main` | `98af177` | 257 / 257 at last full run |
+| liquify | `main` | `e1f49c9` | 140 / 140 at `bd29d97`; **not re-run since the liquid rewiring** (see host conditions) |
+| lake | `main` | `3ea7ce3` | 257 / 257 at `98af177`; **not re-run since the liquid rewiring** (see host conditions) |
 | orama-operator | `main` | `014ae16` | `internal/...` ok, 12.1 s with envtest assets |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -81,6 +81,33 @@ report, and re-run a suspicious failure on a quiet machine before believing it.*
 regressions in this cycle came from skipping that, and one came from running tests inside a worktree
 a worker still owned — never do that; check `pgrep -f "codex exec"` first.
 
+### lake and liquify no longer vendor liquid
+
+Both used to carry liquid as their own `modules/liquid` submodule while this bridge also pinned it —
+three pointers at one repository, and they had drifted (lake pinned `8203911`, this bridge `aa60e87`,
+nothing reporting it). Both submodules are gone
+([lake#145](https://github.com/oramasearch/lake/pull/145),
+[liquify#69](https://github.com/oramasearch/liquify/pull/69),
+[decision 42](decisions.md)).
+
+Each build now resolves liquid from a cache path defaulting to `../liquid`, the sibling checkout in
+this bridge: `LAKE_LIQUID_SOURCE_DIR` and `LIQUIFY_LIQUID_SOURCE_DIR`. A bad path is a `FATAL_ERROR`
+naming the flag.
+
+**Consequences to know before building:**
+
+- Building from the bridge checkout works unchanged — the default finds `../liquid`.
+- **A bare clone of lake or liquify no longer configures.** Pass
+  `-DLAKE_LIQUID_SOURCE_DIR=` / `-DLIQUIFY_LIQUID_SOURCE_DIR=` at a liquid checkout.
+- **Bumping liquid is now two moves, not one:** the pointer here, *and* the `ref:` in each
+  consumer's `.github/workflows/ci.yml`. Move them together or CI builds a different liquid than a
+  developer does — the same drift, in a new place.
+- CI checks out `oramasearch/liquid` directly, so `ORAMA_SUBMODULES_TOKEN` must reach it too.
+
+**Owed:** neither full suite has been re-run since the rewiring. Configure and the liquid-sourced
+translation units were verified to compile in both, but `ctest` was not run — do that alongside the
+fseventsd re-run above.
+
 ### No Docker on this machine
 
 [Decision 33](decisions.md). Images are built on the cluster's BuildKit through `buildctl` over
@@ -91,7 +118,7 @@ a worker still owned — never do that; check `pgrep -f "codex exec"` first.
 | | What is needed | What it unblocks |
 |---|---|---|
 | A Linux host with `/dev/fuse` | a reachable machine, or CI that gets past checkout | liquid #299, #300, #302; the libfuse baseline owed by #301; k0s #13 |
-| `ORAMA_SUBMODULES_TOKEN` | an org secret with access to `automerge-cpp`, `corosio`, `oramacore-cpp` | **all** CI — it fails at `actions/checkout` on every run, including `main`, so every test enforced locally is enforced nowhere else (lake #48) |
+| `ORAMA_SUBMODULES_TOKEN` | an org secret with access to `automerge-cpp`, `corosio`, `oramacore-cpp` — **and now `liquid`**, which lake and liquify check out directly (see the rewiring above) | **all** CI — it fails at `actions/checkout` on every run, including `main`, so every test enforced locally is enforced nowhere else (lake #48) |
 | Dependabot version updates | Settings → Code security → Dependabot version updates, off for `oramasearch/k0s` | k0s mirror integrity. The sync script now *catches* a violation; the toggle prevents it |
 | Decisions | TAAP subjects (#1, #8), the open-source licence (#2 — decision 39 depends on it), portfolio (#9), where `lake.live` runs (#13) | phase exits and the open-source release |
 
