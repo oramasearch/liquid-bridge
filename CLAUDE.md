@@ -28,8 +28,14 @@ This file adds only what is specific to working *across* the modules.
 | `modules/k0s` | `oramasearch/k0s` | `ORAMA-FORK.md` — branch model and sync. **Never commit to `main`.** |
 | `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — the control surface (one capability registry → REST `/v1`, OpenAPI, MCP) over the Postgres control plane, users/organizations/customers/repositories, server-rendered pages behind the admin sign-in; `Lake/prod` runs it on AKS. Its adapter-TU, one-registry and trailing-404 rules live there. |
 | `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native cross-platform IDE (SDL3 + Dear ImGui); hello window; links **libliquid** through its own pinned `modules/liquid` submodule. Never depends on Zetta. |
-| `modules/orama-operator` | `oramasearch/orama-operator` | Its `CLAUDE.md` and `DESIGN.md`. **The Zetta operator, extended with a `Lake` CR.** Production on AKS: PR-based workflow, never fast-forward `main`. |
-| `modules/marketing-bridge` | `oramasearch/marketing-bridge` | `CLAUDE.md` — its own hard rules (approval gates G1–G6, compliance, no raw lead CSVs in git, stdlib-only Python). **Go-to-market, not product**: positioning, campaign state, cold-email runbooks. **Campaign issues live on that repo**, a deliberate carve-out. **Also a submodule of `orama-cloud-bridge`** — push there first, then bump whichever pointer needs it. |
+
+
+**One level up, not modules here.** `orama-operator` and `marketing-bridge` are pinned by the org
+umbrella [`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge), not by this
+bridge — they are shared across products and must not be vendored twice. Read them at
+`orama-work/modules/orama-operator` and `orama-work/modules/marketing-bridge`. Their rules still
+apply: the operator is PR-based and never fast-forwards `main`; marketing-bridge keeps its own
+approval gates G1–G6 and its campaign issues on that repo.
 
 ## Reading Zetta and the Orama operator
 
@@ -43,7 +49,8 @@ This file adds only what is specific to working *across* the modules.
 `~/dev/oramasearch/zetta` clone was found **1,053 commits behind** and missing the entire
 `include/zetta/api/` HTTP layer — reading from it produced a wrong conclusion. The same
 applies to the operator at
-`orama-work/modules/orama-cloud-v1-bridge/modules/orama-cloud-v1-operator`; note that
+`orama-work/modules/orama-operator` (renamed from `orama-cloud-v1-operator` and promoted to a
+top-level module of the umbrella on 2026-09-09); note that
 checkout may sit on an in-flight feature branch, so cut PR branches from a clean clone of
 `origin/main` rather than from the bridge worktree.
 
@@ -60,9 +67,9 @@ summaries that point at the docs; they never carry the only copy of anything.
 | liquid | `modules/liquid/docs/<topic>/` (research, features, standards are topics too) | `library/` (libliquid) |
 | lake | `modules/lake/docs/<topic>/` | `serving/`, `control-plane/`, `deployment/`, `build/`, `api/`, `ui/` |
 | liquify | `modules/liquify/docs/<topic>/` | `app-shell/` |
-| orama-operator | `modules/orama-operator/docs/` (its flat convention) + `docs/lake/` for the Lake CR; `docs/crd-reference.md` is the field reference | `lake/` |
+| orama-operator | `orama-work/modules/orama-operator/docs/` (its flat convention) + `docs/lake/` for the Lake CR; `docs/crd-reference.md` is the field reference | `lake/` |
 | k0s | `modules/k0s/docs/liquid/` on the `liquid` branch (upstream docs are CC-BY-SA; ours sit beside them) | — |
-| marketing-bridge | `modules/marketing-bridge/docs/<topic>/` | `brand/` (positioning; the lineup strategy is `brand/get-the-right-data.md`), `cold-email/`, `campaigns/`, `analytics/`, `runbooks/` |
+| marketing-bridge | `orama-work/modules/marketing-bridge/docs/<topic>/` | `brand/` (positioning; the lineup strategy is `brand/get-the-right-data.md`), `cold-email/`, `campaigns/`, `analytics/`, `runbooks/` |
 | this bridge | `docs/` for anything cross-module: the plan, decisions, the repository map, topology, how work is tracked | `action-plan.md`, `decisions.md`, `repositories.md`, `tracking.md` |
 
 A doc page says **what** exists, **why**, **how to verify** it, and **how to change** it. One

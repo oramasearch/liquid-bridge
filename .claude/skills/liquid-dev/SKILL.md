@@ -10,9 +10,10 @@ Decision 33 (`docs/decisions.md`) applies everywhere: nothing here runs `docker`
 
 ## Repositories and where things live
 
-- `modules/liquid`, `modules/lake`, `modules/liquify`, `modules/k0s` (branch `liquid`), `modules/orama-operator`
-  are submodules of this bridge; the bridge pins them and records decisions (`docs/decisions.md`), the plan
-  (`docs/action-plan.md`) and progress (issue #7).
+- `modules/liquid`, `modules/lake`, `modules/liquify`, `modules/k0s` (branch `liquid`) are submodules
+  of this bridge; the bridge pins them and records decisions (`docs/decisions.md`), the plan
+  (`docs/action-plan.md`) and progress (issue #7). The **Orama operator** is not a module here —
+  it is pinned one level up by the org umbrella; read it at `orama-work/modules/orama-operator`.
 - Work happens in `codex-work/` next to the bridge: `codex-work/<repo>` is the main checkout,
   `codex-work/wt/<repo>/issue-N` the worktree per leaf, `codex-work/briefs/` the briefs, `codex-work/runs/`
   the worker logs. The `/complete-super-epic` skill drives Codex workers; this skill is the human-sized

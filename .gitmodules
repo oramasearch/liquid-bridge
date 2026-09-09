@@ -8,12 +8,6 @@
 [submodule "modules/lake"]
 	path = modules/lake
 	url = git@github.com:oramasearch/lake.git
-[submodule "modules/orama-operator"]
-	path = modules/orama-operator
-	url = git@github.com:oramasearch/orama-operator.git
 [submodule "modules/liquify"]
 	path = modules/liquify
 	url = git@github.com:oramasearch/liquify.git
-[submodule "modules/marketing-bridge"]
-	path = modules/marketing-bridge
-	url = git@github.com:oramasearch/marketing-bridge.git

@@ -50,8 +50,13 @@ Every module is private; you need SSH access to the `oramasearch` org.
 | [`modules/k0s`](modules/k0s/) | Private, upstream-synced copy of k0s; Orama's changes are on the `liquid` branch. |
 | [`modules/lake`](modules/lake/) | The lake binary, the hosted service; live on AKS as `Lake/prod`. |
 | [`modules/liquify`](modules/liquify/) | The IDE: native, cross-platform, links libliquid. |
-| [`modules/orama-operator`](modules/orama-operator/) | The Orama operator; lake runs on it as a `Lake` CR. |
-| [`modules/marketing-bridge`](modules/marketing-bridge/) | Go-to-market: positioning, campaigns, cold-email runbooks. No product code. |
+
+**Not modules here — one level up.** The **Orama operator** (lake runs on it as a `Lake` CR) and
+**marketing-bridge** are shared across products, so they are pinned once by the org umbrella
+[`oramasearch/orama-bridge`](https://github.com/oramasearch/orama-bridge) rather than vendored
+again here. Read them at `orama-work/modules/orama-operator` and
+`orama-work/modules/marketing-bridge`; standalone clones go stale. See
+[`docs/repositories.md`](docs/repositories.md).
 
 Language, status, and the rules for each are in [`docs/repositories.md`](docs/repositories.md).
 

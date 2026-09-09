@@ -26,10 +26,10 @@ out under `modules/` and on GitHub:
   specification; research, features and standards are topics too.
 - lake: `modules/lake/docs/` (https://github.com/oramasearch/lake/tree/main/docs).
 - liquify: `modules/liquify/docs/` (https://github.com/oramasearch/liquify/tree/main/docs).
-- orama-operator: `modules/orama-operator/docs/`
+- orama-operator: `orama-work/modules/orama-operator/docs/`
   (https://github.com/oramasearch/orama-operator/tree/main/docs), with the `Lake` CR under
   `docs/lake/` and the field reference in `docs/crd-reference.md`.
 - k0s: `modules/k0s/docs/liquid/` on the `liquid` branch
   (https://github.com/oramasearch/k0s/tree/liquid/docs/liquid), beside the upstream docs.
-- marketing-bridge: `modules/marketing-bridge/docs/`
+- marketing-bridge: `orama-work/modules/marketing-bridge/docs/`
   (https://github.com/oramasearch/marketing-bridge/tree/main/docs).
