@@ -345,6 +345,19 @@ interface, structural diff and merge, and committable conflict values) is live a
 reconciled by `oramasearch/orama-operator:main-57e0cf7`. The vendored schema is unchanged, so no schema job
 was needed. `BackupReady` stays False until the R2 backup Secret exists.
 
+**Deployment 2026-09-08.** lake `oramasearch/lake:20260908b` (lake `main` at `4e8216b`, "Present Lake's
+customer repository journey") is live at https://lake.oramadev.net, reconciled by
+`oramasearch/orama-operator:main-996567a` — the renamed operator, now the only one reconciling `Lake`;
+the former `orama-cloud-v1-operator` release is scaled to 0 pending its helm removal. The `Lake/prod` CR
+reports `Ready`, `StoreReady` and `ZettaReady` true and `BackupReady` false (the R2 backup Secret still does
+not exist). The control database carries 21 applied migrations, `0001_identity_and_customers` through
+`0021_token_attenuation`, matching `db/schema.sql`; `0003` was never used and is absent from both. liquify's
+dmg was rebuilt from `0424822`.
+
+Nothing in the running system records which source commit an image was built from — no OCI
+`org.opencontainers.image.revision`, no build annotation, and `/v1/server_info` reports only `version 0.0.1`
+— so the commit above is recorded by hand rather than verifiable from the artifact. lake #121 closes that.
+
 **Runtime, from 2026-09-06 (decision 36).** lake runs on AKS; the k0s distribution is complete and its
 single-node validation waits (k0s #13). Phase 7's exit is met on AKS: the `Lake` CR reconciles, the service
 answers, and the distribution carries the node store, admission with transparency-log verification, the
