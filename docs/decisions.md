@@ -484,3 +484,38 @@ creation turns out to cost anything before a byte is stored. An allowlist gate w
 deliberately not adopted now, on the grounds that it becomes a thing to operate.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/26 · implements in lake #119
+
+## 41. What the filesystem conformance suite is calibrated against — **decided (Claude, 2026-09-08, unblocking; say so if you want it the other way): a direct in-process backend is the reference, and the libfuse-on-Linux baseline stays owed.**
+
+Decision 39 says each of the three new backends lands only once it passes one conformance suite.
+liquid #301 builds that suite, and it was written to be **calibrated against the existing libfuse
+backend on Linux** — a known-good reference, so the suite is trustworthy before it judges a
+replacement. That is the right instinct and it does not survive contact with the machines we have.
+
+The #301 worker built the suite — nine cases covering named-backend selection, recorded-tree reads,
+attributed writes, mutation, xattrs, synthetic times, read-only refusal and partial hydration — and
+**all nine skipped**, because macFUSE is absent here. There is no Linux host with `/dev/fuse`
+available: the AKS BuildKit worker has no `/dev/fuse`, the Linux machine at `192.168.123.175` times
+out, and CI dies at submodule checkout (liquid #291, #299). So the suite has no baseline, cannot be
+shown to fail, and #301 stopped without a PR — correctly. Three more issues (#302, #303, #304) sit
+behind it.
+
+The reference becomes a **direct in-process backend**: the suite's backend registry gains an entry
+that dispatches operations straight to the platform-independent layers — `hydration`,
+`materialise`, `request_queue`, `xattrs`, `observation` — with no kernel mount anywhere. Those
+~780 lines are what every kernel backend serves, so they are the thing the backends must agree
+with. It runs on any host, including this Mac and CI, which means the suite gets a real baseline
+and the deliberate-failure demonstration that proves it has teeth.
+
+What this gives up, stated plainly: a suite calibrated against our own core can bless a bug that
+lives in the core, where libfuse — third-party, widely exercised — would not. That is a real loss
+and it is why **the libfuse-on-Linux baseline remains owed, not cancelled**. It is recorded as
+outstanding in `docs/library/vfs.md` and runs the day a Linux lane exists (liquid #299). Until
+then, a kernel backend passing the suite means "agrees with liquid's own core", which is weaker
+than "agrees with a known-good filesystem" and must not be written up as the stronger claim.
+
+The alternative was to leave #301–#304 blocked on a host nobody has scheduled. Between a weaker
+baseline that exists and a stronger one that does not, the suite that runs is worth more —
+provided the weakness is written down, which is what this entry is for.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/28
