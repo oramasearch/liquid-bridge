@@ -1,6 +1,8 @@
 # Where the work stands, and how to pick it up
 
-Written 2026-09-09. This is the document to read first when resuming. It records **what is running,
+Written 2026-09-09. This is the document to read first when resuming. Its live counterpart is
+https://github.com/oramasearch/liquid-bridge/issues/29 — the issue carries the state, this file
+carries the detail and the reproductions. It records **what is running,
 what is green, what is blocked, and the host conditions that have repeatedly cost whole sessions**.
 
 The plan is [`action-plan.md`](action-plan.md); decisions are [`decisions.md`](decisions.md); how work
