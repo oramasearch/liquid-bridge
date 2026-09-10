@@ -10,6 +10,18 @@ is tracked is [`tracking.md`](tracking.md); the master epic is
 https://github.com/oramasearch/liquid-bridge/issues/7. This file does not restate them — it says
 where the moving parts are right now.
 
+**Resuming? Start here.**
+
+1. **[operator#168](https://github.com/oramasearch/orama-operator/issues/168)** — production
+   follow-ups from the 2026-09-09 outage, all needing Steve. The one that matters most:
+   **production still runs the operator image `main-014ae16`**, so the e2e gating merged in #167 is
+   not in effect yet.
+2. Read [the outage section](#the-operator-was-down-for-12-hours-on-2026-09-09-and-what-changed)
+   before touching the operator, and [the host conditions](#the-host-conditions-that-waste-sessions)
+   before believing any test failure.
+3. Open PRs awaiting review: [liquify#70](https://github.com/oramasearch/liquify/pull/70) (idle CPU).
+4. Then [the ordinary queue](#ready-to-work-now).
+
 ## Repository heads
 
 | Repository | Branch | Head | Suite |
@@ -17,7 +29,7 @@ where the moving parts are right now.
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
 | lake | `main` | `3ea7ce3` | **257 / 257**, re-run after the liquid rewiring — but **112 of those are skipped**, not run: the Postgres-backed cases need `LAKE_TEST_DB_URI`, and ctest counts a skip toward the pass total |
-| orama-operator | `main` | `014ae16` | `internal/...` ok, 12.1 s with envtest assets |
+| orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
 Both liquid and liquify are **fully green for the first time in this cycle**. That is new, and it is
@@ -29,7 +41,7 @@ is what cost four separate sessions before #282 was diagnosed.
 | | Running | Built from | Verified |
 |---|---|---|---|
 | lake | `oramasearch/lake:20260909a` | `98af177` | `GET /v1/server_info` returns `"revision":"98af17708fcaea0e71469ed9be1d9eb058799c92"` |
-| operator | `oramasearch/orama-operator:main-014ae16` | `014ae16` | `kubectl -n orama-system get deploy orama-operator` |
+| operator | `oramasearch/orama-operator:main-014ae16` | `014ae16` | `kubectl -n orama-system get deploy orama-operator` — **behind `main`; see below** |
 | schema | `0022_session_lookup` | vendored from lake `98af177` | read from `schema_migrations` in the live database |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
@@ -124,6 +136,43 @@ naming the flag.
 lake 257 / 257, liquify 140 / 140, matching the counts recorded before the change. Removing the
 vendored liquid altered no behaviour in either.
 
+### The operator was down for ~12 hours on 2026-09-09, and what changed
+
+Found by accident while checking whether the rename tracking issue was shippable — nothing paged,
+because `Lake/prod` kept serving throughout. Only the control plane was down: no drift correction,
+no CR changes applied, from 09:29 to 21:20.
+
+**Cause.** The manager registers a watch for every kind unconditionally, so a kind whose CRD is
+absent is not a degraded controller — the cache never syncs, the manager exits, and the pod
+crash-loops with every other controller down with it. Two CRDs had silently accumulated un-applied
+because **Helm applies `chart/crds` on install only, never on upgrade**, and both rollout paths pass
+`--skip-crds`. `lakee2etests` first; then, once that was applied, `clerkapplications`.
+
+**Fixed** in [operator#167](https://github.com/oramasearch/orama-operator/pull/167) (merged,
+`058a7d8`), which did two things:
+
+1. **Production reconciles no e2e kinds.** `LakeE2ETest` — the kind that crash-looped everything —
+   is a test fixture production has no use for. Production runs no e2e suites; that is what a
+   testing environment is for. The three e2e controllers are now gated behind
+   `--enable-e2e-controllers` (**off by default**), their CRDs live in `chart/e2e-crds/` outside the
+   install chart, and their RBAC renders only under `e2e.enabled`. A testing environment opts in
+   with both halves: `kubectl apply -f chart/e2e-crds/` **and** `--set e2e.enabled=true`.
+2. **The remaining invariant is checked, not remembered.** Three hand-maintained artifacts per kind
+   cause the identical crash — the CRD in the chart, the RBAC grant, the CRD on the cluster.
+   `go test ./cmd/...` covers the first two plus e2e leakage with no cluster;
+   `hack/check-cluster-crds.sh` (also `make check-crds CONTEXT=…`) covers the third and is wired
+   into the cutover runbook before **and** after the upgrade.
+
+Fail-fast was kept deliberately, reasoned in
+[`docs/operations/crd-rollout.md`](https://github.com/oramasearch/orama-operator/blob/main/docs/operations/crd-rollout.md):
+a crash-looping pod is visible in one `kubectl get pods`, whereas a manager that started 15
+controllers and quietly skipped the 16th looks healthy while its resource drifts.
+
+**Two lessons worth keeping.** A snapshot proves nothing against a crash *loop* — the first
+"recovered" call was wrong because it read a moment between crashes, and the second missing CRD was
+still there. And test that a check *fails* when it should: doing that found a false pass in the new
+script itself, where a quoted glob meant `--e2e` checked nothing and reported success.
+
 ### No Docker on this machine
 
 [Decision 33](decisions.md). Images are built on the cluster's BuildKit through `buildctl` over
@@ -136,6 +185,9 @@ vendored liquid altered no behaviour in either.
 | A Linux host with `/dev/fuse` | a reachable machine, or CI that gets past checkout | liquid #299, #300, #302; the libfuse baseline owed by #301; k0s #13 |
 | `ORAMA_SUBMODULES_TOKEN` | an org secret with access to `automerge-cpp`, `corosio`, `oramacore-cpp` — **and now `liquid`**, which lake and liquify check out directly (see the rewiring above) | **all** CI — it fails at `actions/checkout` on every run, including `main`, so every test enforced locally is enforced nowhere else (lake #48) |
 | Dependabot version updates | Settings → Code security → Dependabot version updates, off for `oramasearch/k0s` | k0s mirror integrity. The sync script now *catches* a violation; the toggle prevents it |
+| Roll the operator onto `main` | `oramasearch/orama-operator:main-058a7d8` (or later) built and rolled on AKS | **production still runs `main-014ae16`, which registers the e2e controllers.** The #167 gating only takes effect once it is rolled. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
+| Retire 3 e2e CRDs + the former operator release | deliberate production changes on `orama-production-cluster-01` | finishing the rename cutover ([operator#120](https://github.com/oramasearch/orama-operator/issues/120)); deleting a CRD deletes its CRs, so check for e2e resources first. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
+| Enable R2 on the Cloudflare account | account setting | `CloudflareR2Bucket/v1-legacy-indexes` fails `403 — Please enable R2 through the Cloudflare Dashboard` and retries forever; plausibly the same cause as `Lake/prod` `BackupReady=False`. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Decisions | TAAP subjects (#1, #8), the open-source licence (#2 — decision 39 depends on it), portfolio (#9), where `lake.live` runs (#13) | phase exits and the open-source release |
 
 ## Ready to work now
@@ -147,16 +199,24 @@ No dependencies, briefs already written for several of these under
 test defects · #81 hardware keys · #82 user guides
 **lake** (10) — #123 drive history · #125 clipped controls · #126 review comments · plus the Phase 6
 features #3, #6, #18, #25, #33, #53
-**liquify** (7) — **#66 idle CPU** (see below) · #33 navigation · #34 command palette · #35 panels ·
-#36 first run · #39 input and accessibility
+**liquify** (6) — #33 navigation · #34 command palette · #35 panels · #36 first run · #39 input and
+accessibility. **#66 idle CPU is closed** — shipped in [liquify#70](https://github.com/oramasearch/liquify/pull/70), open for review.
 **k0s** (3) — #13 Lake CR on k0s · #16 immutable node · #17 platform surface
 
 ### The two most valuable next pieces of work
 
-**liquify #66 — the IDE burns 80–90% of a core while idle.** `App::run()` calls `SDL_PollEvent`,
-which never blocks, and redraws the entire interface every iteration whether anything changed or not.
-At ~12.5 ms of CPU per frame against a 16.7 ms budget that is three quarters of a core, forever. It
-needs to wait when idle and redraw on cause. This is the most customer-visible defect open.
+The remaining one is **liquify #33 / #34 / #39**, below. **#66 (idle CPU) is done**: the run loop waited on `SDL_PollEvent`, which never blocks, so it rebuilt and re-rendered the
+whole interface forever. It now waits on `SDL_WaitEventTimeout` for a cause, and every wake still
+produces a frame, so sleeping cannot swallow a state change. Measured idle, foreground, repository
+open, as CPU-seconds over 30 s wall: **2.85 s (9.5 % of a core) → 0.63 s (2.1 %)**.
+
+The trap, if this is ever revisited: `WantCaptureMouse` / `WantCaptureKeyboard` / `WantTextInput` say
+where input *would be routed*, not that anything is happening, and in an editor they are true nearly
+always. The first attempt treated them as activity and the number barely moved (9.5 % → 8.1 %).
+`docs/ui/redraw.md` in liquify records the model and what a new async producer must do.
+
+Not done there: per-producer dirty tracking, which would cut the residual 2.1 % further. It needs
+each `poll_*` to report whether it mutated UI state, and getting that wrong means a stale window.
 
 **liquify #33 / #34 / #39 — three real UI defects, already pinned by tests.** liquify #56's
 acceptance suite reproduces each and marks them `WILL_FAIL` naming the issue, so fixing one flips its
@@ -179,6 +239,31 @@ Three rules that were paid for in this cycle:
    Four stopped on failures their own briefs listed as not theirs. That is the cost of a red `main`,
    and it is why #296 and #282 were worth fixing before anything else.
 3. **Say what is deployed, not what is merged.** A merged fix that has not been rolled is not fixed.
+
+## The 2026-09-09 late session
+
+Started as a rename sweep and turned into an incident. Everything below is merged and pushed unless
+it says otherwise.
+
+**The operator is now a top-level module of the umbrella.** `orama-cloud-v1-operator` →
+`orama-operator`, moved out of `orama-cloud-v1-bridge` because it is no longer v1-specific. This
+bridge no longer vendors it, nor `marketing-bridge`; both are pinned once by
+[`orama-bridge`](https://github.com/oramasearch/orama-bridge) and read from
+`orama-work/modules/…`. Some `orama-cloud-v1-operator` strings survive **on purpose** — the
+leader-election ID, the `app.kubernetes.io/managed-by` labels, the Karpenter field owner, and every
+`helm`/`kubectl` name in the operations runbooks, because production still runs that release. Do not
+"clean them up"; the operator's `docs/operations/rename-cutover.md` explains each.
+
+**lake and liquify stopped vendoring liquid** (decision 42) — merged as
+[lake#145](https://github.com/oramasearch/lake/pull/145) and
+[liquify#69](https://github.com/oramasearch/liquify/pull/69). They had drifted: lake pinned
+`8203911` while this bridge pinned `aa60e87`, with nothing reporting it.
+
+**liquify #66 (idle CPU) is closed**, shipped in
+[liquify#70](https://github.com/oramasearch/liquify/pull/70) — open for review.
+
+**The operator outage and its fix** are in their own section above; that is the part most worth
+reading before touching the operator.
 
 ## What this cycle closed
 
