@@ -541,3 +541,47 @@ the way lake already handled Zetta. lake's image takes liquid as a named build c
 **Bumping liquid is now one move here plus the CI `ref:` in each consumer.** Bumping the pointer
 in this bridge without moving those refs means CI builds a different liquid than a developer
 does — the same drift in a new place. Move them together.
+
+
+## 43. What lake is to a customer — **decided (Steve, 2026-09-25): Orama's cloud offering, called lake, at lake.live, with repositories at the centre.**
+
+Orama now describes what it does as helping companies **design, train, and ship AI**
+(https://github.com/oramasearch/orama-website-v2/pull/386). A customer needs somewhere to do that,
+and lake already holds most of it: repositories, drive, datasets and models with training
+provenance, environments and deployments, package registries, identity and audit. What it lacked
+was a statement of what it is for. Four answers settle that:
+
+- **lake is Orama's cloud offering, and the name customers see is lake.** Its host is **lake.live**,
+  linked from orama.com. Today the only deployment is `lake.oramadev.net` on AKS; moving to lake.live
+  is https://github.com/oramasearch/liquid-bridge/issues/17.
+- **lake also runs on-prem for enterprise customers.** **Orama Studio is a separate on-prem
+  enterprise product**, so lake does not link out to Studio. Everything a cloud customer designs,
+  trains and ships is a lake page.
+- **Repositories are the central object.** A liquid repository is a shared, multiplayer space for any
+  data (files, objects, datasets, models, code), closer to a shared drive folder than a code
+  repository. Design, Train and Ship are views over repositories, never a second store. This
+  matches lake's own contracts, where models, datasets and drive folders are ordinary repositories.
+- **Sign-in is lake's own identity** (passwords, passkeys, TOTP, OAuth, SSO, SCIM). It does not use
+  Clerk, which stays with the Orama Cloud v2 stack.
+
+**What it costs.** lake's home page, navigation and per-repository tabs are rewritten around
+Repositories, Design, Train and Ship; the design is `lake/docs/design/cloud.md`
+(https://github.com/oramasearch/lake/pull/146). Design has no implementation yet. The code-forge
+framing (Code as the first repository tab, "push with liquid" as the headline journey) gives way to
+Files and the three verbs, which moves liquid's command line from the front door to one way of
+working among several. Two cloud products with different identity systems now exist side by side
+(lake and the v2 stack on Clerk) until the migration question below is answered.
+
+**Known limits.** This does not decide what lake.live means for Orama Cloud v1 (`app.orama.com`) or
+v2 (Railway and Clerk), or how their customers move. It does not decide whether a Design project is
+a repository (proposed in the design) or a control-plane record. And it does not decide whether
+liquid's public repositories stay on lake.live before liquid is open source
+(https://github.com/oramasearch/liquid-bridge/issues/16).
+
+**Revisit if** lake.live and the v2 stack need one sign-in for the same customers, if a customer
+needs Studio's surfaces in the cloud rather than on-prem, or if a class of data turns up that
+cannot live in a repository.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/31. Design:
+https://github.com/oramasearch/liquid-bridge/issues/30. Bears on
+https://github.com/oramasearch/liquid-bridge/issues/9.
