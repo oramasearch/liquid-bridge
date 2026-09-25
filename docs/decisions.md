@@ -698,7 +698,7 @@ liquid's open-source licence question (#2) is untouched.
 
 **What it costs.** Every service is a pod and a volume on today's single node. There is a quota per
 Lake (`spec.services.maxServices`) and one per customer (`LAKE_SERVICES_PER_CUSTOMER`, default 5).
-The operator connects with lake's own application credential, `<lake>-controldb-app`, rather than a
+The operator connects with lake's own application credential, `lake-<lake>-controldb-app`, rather than a
 narrower role. The operator can already read every Secret in the cluster, so a separate role would
 not reduce what it can reach, and creating one needs a superuser step the schema Job does not have.
 
