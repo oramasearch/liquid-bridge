@@ -45,6 +45,11 @@ To create a lake account for someone, in any environment, follow lake's
 (`modules/lake/docs/deployment/users.md`). On lake.oramadev.net people are added in the Clerk
 application `lake` (`app_3JpNNpVUwgRgnkItIPbzzRWa2BP`), because sign-up there is restricted.
 
+To sign in to lake.oramadev.net from a browser (no email code) and walk every page after a roll,
+follow lake's [`docs/deployment/browser-testing.md`](https://github.com/oramasearch/lake/blob/main/docs/deployment/browser-testing.md):
+`tools/e2e/clerk-ticket.sh` mints a one-time Clerk sign-in ticket, `tools/e2e/walkthrough.mjs`
+walks Design, Train and Ship with screenshots. Do it before calling a UI change done.
+
 ## Reading Zetta and the Orama operator
 
 **Read Zetta only from the umbrella bridge**, never from a standalone clone:
