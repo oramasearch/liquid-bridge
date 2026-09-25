@@ -629,3 +629,39 @@ custody.
 Issue: https://github.com/oramasearch/liquid-bridge/issues/32. Implementation:
 https://github.com/oramasearch/lake/pull/148; schema:
 https://github.com/oramasearch/orama-operator/pull/170.
+
+
+## 45. How lake keeps customers apart on Zetta — **decided (Steve, 2026-09-25): a Zetta cluster per customer, a "workspace".**
+
+lake's Design, Train and Ship pages delegate to the Zetta engine: projects and intent, connections,
+datasets, pipelines and runs, models and their endpoints, search indexes. Zetta has **no tenancy**:
+no customer or workspace namespace, capability calls not scoped by project, and every list returning
+every entity on the cluster. Its own governance page says there are no per-project roles yet.
+
+Three ways were weighed: lake scoping one shared cluster (prefixed names, filtered lists, one
+privileged token — buildable now, but one missed filter leaks another customer's data); tenancy in
+Zetta first (cleanest, but engine work before lake shows anything); and **a cluster per customer**,
+chosen: isolation is physical, so no lake bug can show one customer another's projects.
+
+**How it works.** A customer's first visit to Design, Train or Ship offers "Start your workspace".
+lake appends a `desired` event to `orama_control.workspaces` on its own data-plane Zetta (the Lake's
+owned `OramaZettaCluster`, now with `provisionOperatorSchema`), naming the Lake, the customer and a
+slug derived from the customer id (`ws-` + its first 12 hex digits). The operator creates a
+Lake-owned `OramaZettaCluster` for it, copies that cluster's admin token into the Secret
+`lake-<lake>-workspaces` mounted into lake, and appends `status` events. lake authorizes every page
+against its own policy on the customer first, then calls that customer's cluster only.
+
+**What it costs.** A pod and a storage volume per active customer, on what is today a single node:
+fine for a handful of customers, not for thousands. Customers who never open Design, Train or Ship
+cost nothing. lake holds one admin token per workspace (in a mounted Secret, never in its database).
+Zetta clusters idle at a few megabytes of memory; they are scheduled without CPU requests on dev.
+
+**Known limits.** No deletion or suspension of a workspace in this version. No quota on workspace
+count. Organization customers share one workspace among their members, and lake's roles on the
+customer decide who may act; Zetta's own roles are not used.
+
+**Revisit if** the node count or cost of per-customer clusters becomes the constraint (then tenancy
+in Zetta, or pooling small customers), or if Zetta gains workspace scoping.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/33. Design:
+https://github.com/oramasearch/liquid-bridge/issues/30.
