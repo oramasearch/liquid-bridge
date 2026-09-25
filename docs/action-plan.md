@@ -363,6 +363,21 @@ image that reports its own source revision**: `GET /v1/server_info` returns
 `BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
 lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
 
+**Deployment 2026-09-25 (third roll): Design, Train and Ship on per-customer Zetta workspaces
+(decision 45).** Operator `oramasearch/orama-operator:main-04dafde` (orama-operator#171, release
+`orama-operator` revision 4, Lake CRD applied first) provisions a Lake-owned `OramaZettaCluster` per
+customer from `orama_control.workspaces` on the Lake's data plane; `Lake/prod` has
+`spec.workspaces.enabled: true`, which turned on `provisionOperatorSchema` for `lake-prod-zetta`.
+lake `oramasearch/lake:20260925h` (`sha256:b483687100112bd2de56e506f64df4a758bdb301b96d77f53c6916e27afb04ef`,
+lake `3a3bab1`; lake#152–#157) serves the pages. Exercised end to end in a browser with
+`tools/e2e/walkthrough.mjs` (lake `docs/deployment/browser-testing.md`): Clerk sign-in with a
+one-time ticket, workspace `prod-ws-6bb777ba498a` provisioned for the gmail tester's customer, a
+project created, a pipeline built (capture then compile), approved, checked and run to `succeeded`,
+and `churn_model` listed under Ship. Found and fixed on the way: Zetta SQL takes one predicate per
+`WHERE` (lake#153), the workspace image requires `compile_intent`'s `input_id` (lake#154), plans
+need approval before `gate` (lake#155). Open: `get_run_report` never answers
+(https://github.com/oramasearch/zetta/issues/1007); lake times reads out at 15 s.
+
 **Deployment 2026-09-25 (second roll): Clerk sign-in, schema `0023`, operator cutover.** In order:
 the operator CRDs were applied server-side (additive only; all 70 CRD UIDs unchanged); the live
 Helm release `orama-operator` was upgraded to `oramasearch/orama-operator:main-83c6d90`

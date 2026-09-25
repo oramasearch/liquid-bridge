@@ -40,8 +40,8 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260925b` | `c045b96` | `GET /v1/server_info` returns `"revision":"c045b96f75b429be3f06005e91dc347ffd2a9311"` (rolled 2026-09-25; Clerk sign-in on) |
-| operator | `oramasearch/orama-operator:main-83c6d90` | `83c6d90` | `kubectl -n orama-system get deploy orama-operator` — Helm release `orama-operator` revision 3, rolled 2026-09-25; the former release is retired |
+| lake | `oramasearch/lake:20260925h` | `3a3bab1` | `GET /v1/server_info` returns `"revision":"3a3bab1…"` (rolled 2026-09-25; Clerk sign-in and per-customer workspaces on; walk it with lake `docs/deployment/browser-testing.md`) |
+| operator | `oramasearch/orama-operator:main-04dafde` | `04dafde` | `kubectl -n orama-system get deploy orama-operator` — release `orama-operator` revision 4 (workspaces, orama-operator#171) |
 | schema | `0022_session_lookup` | vendored from lake `98af177` | read from `schema_migrations` in the live database |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
