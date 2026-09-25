@@ -561,8 +561,11 @@ was a statement of what it is for. Four answers settle that:
   data (files, objects, datasets, models, code), closer to a shared drive folder than a code
   repository. Design, Train and Ship are views over repositories, never a second store. This
   matches lake's own contracts, where models, datasets and drive folders are ordinary repositories.
-- **Sign-in is lake's own identity** (passwords, passkeys, TOTP, OAuth, SSO, SCIM). It does not use
-  Clerk, which stays with the Orama Cloud v2 stack.
+- **Sign-in is Clerk** — *amended the same day (Steve, 2026-09-25): "the existing logins are
+  confusing."* The first answer was lake's own identity (passwords, passkeys, TOTP, OAuth, SSO,
+  SCIM). Browser sign-in for the cloud is now Clerk; lake's own identity pages stay in the binary
+  for an install without Clerk (on-prem) and leave the navigation when Clerk is on. How a Clerk
+  user gets a TAAP identity is decision 44.
 
 **What it costs.** lake's home page, navigation and per-repository tabs are rewritten around
 Repositories, Design, Train and Ship; the design is `lake/docs/design/cloud.md`
@@ -585,3 +588,44 @@ cannot live in a repository.
 Issue: https://github.com/oramasearch/liquid-bridge/issues/31. Design:
 https://github.com/oramasearch/liquid-bridge/issues/30. Bears on
 https://github.com/oramasearch/liquid-bridge/issues/9.
+
+
+## 44. Where a Clerk user's TAAP identity comes from — **decided (Steve, 2026-09-25): lake mints one and holds its key.**
+
+lake's policy engine keys every grant on a TAAP identity, and a person with no TAAP identity is
+anonymous to it. Until now every lake user brought one: sign-up asked for a public Liquid identity
+document, which is the step that made sign-in confusing. A person who signs in through Clerk
+(decision 43, amended) arrives with a verified email and nothing else.
+
+So on first sign-in, when no lake-pool account shares that verified email, lake **mints an Ed25519
+TAAP identity** for the person (`audit::mint_custodial_identity`, the same derivation as lake's own
+identity) and holds the seed wrapped under `LAKE_INSTANCE_KEK` in `custodial_identities`
+(migration `0023_custodial_identities`). It then provisions their personal customer with an
+`admin` grant, as password sign-up does (decision 40). When an account with the email exists,
+the Clerk subject is linked to it instead, and nothing is minted.
+
+The alternatives were asking for the identity document once after Clerk (keeps users' keys in
+their hands, keeps the confusing step) and linking existing accounts only (no new users through
+Clerk).
+
+**What it costs.** Server custody of a user's signing key is a change to the security model: lake
+could sign as a custodial user. Today nothing does; browser work (drive, repositories) is committed
+by lake itself, and the seed is held only so the identity can later sign as the person or be
+rotated to a key they hold. The seed's protection is the instance key, the same as lake's own
+identity, so a compromise of `LAKE_INSTANCE_KEK` and the control database exposes custodial seeds.
+Adds one table and one migration, which put the operator's rename cutover on the critical path of
+this change (completed 2026-09-25).
+
+**Known limits.** No rotation from a custodial key to a person's own Liquid key exists yet; that is
+the path for someone who starts in the browser and later pushes from the command line with their
+own identity. Linking by email trusts Clerk's email verification (email-code sign-in with
+verification at sign-up).
+
+**Revisit if** anything starts signing as a custodial user (it would need consent and audit of its
+own), if the instance key is rotated (custodial seeds must be rewrapped), or if enterprise
+customers require that lake never hold a user's key — the on-prem path without Clerk already avoids
+custody.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/32. Implementation:
+https://github.com/oramasearch/lake/pull/148; schema:
+https://github.com/oramasearch/orama-operator/pull/170.

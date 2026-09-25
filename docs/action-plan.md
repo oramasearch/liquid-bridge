@@ -363,6 +363,22 @@ image that reports its own source revision**: `GET /v1/server_info` returns
 `BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
 lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
 
+**Deployment 2026-09-25 (second roll): Clerk sign-in, schema `0023`, operator cutover.** In order:
+the operator CRDs were applied server-side (additive only; all 70 CRD UIDs unchanged); the live
+Helm release `orama-operator` was upgraded to `oramasearch/orama-operator:main-83c6d90`
+(`sha256:95f512673a17246cd59b247533a49a3c003e6bb5b4ca7722bac6665c64dd4037`, orama-operator#170,
+revision 3), which applied lake schema `0023_custodial_identities` itself (PostgresSchema
+`sha256:929f2f3cf54c` Applied); the half-finished rename cutover was completed by retiring the
+former release `orama-cloud-v1-operator` with `helm uninstall --keep-history` after confirming no
+workload, ConfigMap, Secret or CR named its control-plane Service (Lease and CRD UIDs unchanged, one
+Lease holder); then lake `oramasearch/lake:20260925b`
+(`sha256:95fef8a25ec6ac4703485063bac44596fe7dd0ce78c8c14ea18424538a173d71`, lake `c045b96`, lake#148)
+was rolled with `LAKE_CLERK_PUBLISHABLE_KEY` for Clerk application `lake`. `GET /v1/server_info`
+reports `"revision":"c045b96f75b429be3f06005e91dc347ffd2a9311"`. A real Clerk `lake` template token
+minted through the Backend API was exchanged at `/identity/clerk-session` and signed in to
+`/repositories`; it linked to the existing `steve@orama.com` account. The test sessions were then
+signed out and revoked. Decisions 43 (amended) and 44.
+
 **Deployment 2026-09-25.** lake `oramasearch/lake:20260925a`
 (`sha256:3f9a97c98c13f3a95d781a99233e140a67fb296e9618fdadca857f99397ff033`), built on the cluster's
 BuildKit from lake `main` at `8d5e19b` with liquid at the bridge pin `aa60e87`, is live at

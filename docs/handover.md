@@ -13,9 +13,9 @@ where the moving parts are right now.
 **Resuming? Start here.**
 
 1. **[operator#168](https://github.com/oramasearch/orama-operator/issues/168)** — production
-   follow-ups from the 2026-09-09 outage, all needing Steve. The one that matters most:
-   **production still runs the operator image `main-014ae16`**, so the e2e gating merged in #167 is
-   not in effect yet.
+   follow-ups from the 2026-09-09 outage. **Updated 2026-09-25:** the operator now runs
+   `main-83c6d90` (so #167's e2e gating is in effect) and the rename cutover is finished; what
+   remains is retiring the 3 e2e CRDs and enabling R2 on the Cloudflare account.
 2. Read [the outage section](#the-operator-was-down-for-12-hours-on-2026-09-09-and-what-changed)
    before touching the operator, and [the host conditions](#the-host-conditions-that-waste-sessions)
    before believing any test failure.
@@ -40,8 +40,8 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260925a` | `8d5e19b` | `GET /v1/server_info` returns `"revision":"8d5e19bcddd578b59dd14d70fbb0ef3c3b27df9c"` (rolled 2026-09-25) |
-| operator | `oramasearch/orama-operator:main-014ae16` | `014ae16` | `kubectl -n orama-system get deploy orama-operator` — **behind `main`; see below** |
+| lake | `oramasearch/lake:20260925b` | `c045b96` | `GET /v1/server_info` returns `"revision":"c045b96f75b429be3f06005e91dc347ffd2a9311"` (rolled 2026-09-25; Clerk sign-in on) |
+| operator | `oramasearch/orama-operator:main-83c6d90` | `83c6d90` | `kubectl -n orama-system get deploy orama-operator` — Helm release `orama-operator` revision 3, rolled 2026-09-25; the former release is retired |
 | schema | `0022_session_lookup` | vendored from lake `98af177` | read from `schema_migrations` in the live database |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
@@ -185,8 +185,8 @@ script itself, where a quoted glob meant `--e2e` checked nothing and reported su
 | A Linux host with `/dev/fuse` | a reachable machine, or CI that gets past checkout | liquid #299, #300, #302; the libfuse baseline owed by #301; k0s #13 |
 | `ORAMA_SUBMODULES_TOKEN` | an org secret with access to `automerge-cpp`, `corosio`, `oramacore-cpp` — **and now `liquid`**, which lake and liquify check out directly (see the rewiring above) | **all** CI — it fails at `actions/checkout` on every run, including `main`, so every test enforced locally is enforced nowhere else (lake #48) |
 | Dependabot version updates | Settings → Code security → Dependabot version updates, off for `oramasearch/k0s` | k0s mirror integrity. The sync script now *catches* a violation; the toggle prevents it |
-| Roll the operator onto `main` | `oramasearch/orama-operator:main-058a7d8` (or later) built and rolled on AKS | **production still runs `main-014ae16`, which registers the e2e controllers.** The #167 gating only takes effect once it is rolled. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
-| Retire 3 e2e CRDs + the former operator release | deliberate production changes on `orama-production-cluster-01` | finishing the rename cutover ([operator#120](https://github.com/oramasearch/orama-operator/issues/120)); deleting a CRD deletes its CRs, so check for e2e resources first. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
+| ~~Roll the operator onto `main`~~ | **Done 2026-09-25**: `main-83c6d90` (includes #167) rolled as release `orama-operator` revision 3 | CRDs applied first (additive only; all 70 CRD UIDs unchanged). [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
+| Retire 3 e2e CRDs (~~and the former operator release~~ — **retired 2026-09-25** with `helm uninstall --keep-history`, after finding no caller of its control-plane Service; Lease and CRD UIDs unchanged) | deliberate production changes on `orama-production-cluster-01` | finishing the rename cutover ([operator#120](https://github.com/oramasearch/orama-operator/issues/120)); deleting a CRD deletes its CRs, so check for e2e resources first. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Enable R2 on the Cloudflare account | account setting | `CloudflareR2Bucket/v1-legacy-indexes` fails `403 — Please enable R2 through the Cloudflare Dashboard` and retries forever; plausibly the same cause as `Lake/prod` `BackupReady=False`. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Decisions | TAAP subjects (#1, #8), the open-source licence (#2 — decision 39 depends on it), portfolio (#9), where `lake.live` runs (#13) | phase exits and the open-source release |
 
