@@ -15,7 +15,7 @@ where the moving parts are right now.
 1. **[operator#168](https://github.com/oramasearch/orama-operator/issues/168)** — production
    follow-ups from the 2026-09-09 outage. **Updated 2026-09-25:** the operator now runs
    `main-83c6d90` (so #167's e2e gating is in effect) and the rename cutover is finished; what
-   remains is retiring the 3 e2e CRDs and enabling R2 on the Cloudflare account.
+   remains is retiring the 3 e2e CRDs. R2 and the v1 bucket are ignored while v1 awaits deprecation.
 2. Read [the outage section](#the-operator-was-down-for-12-hours-on-2026-09-09-and-what-changed)
    before touching the operator, and [the host conditions](#the-host-conditions-that-waste-sessions)
    before believing any test failure.
@@ -187,7 +187,7 @@ script itself, where a quoted glob meant `--e2e` checked nothing and reported su
 | Dependabot version updates | Settings → Code security → Dependabot version updates, off for `oramasearch/k0s` | k0s mirror integrity. The sync script now *catches* a violation; the toggle prevents it |
 | ~~Roll the operator onto `main`~~ | **Done 2026-09-25**: `main-83c6d90` (includes #167) rolled as release `orama-operator` revision 3 | CRDs applied first (additive only; all 70 CRD UIDs unchanged). [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Retire 3 e2e CRDs (~~and the former operator release~~ — **retired 2026-09-25** with `helm uninstall --keep-history`, after finding no caller of its control-plane Service; Lease and CRD UIDs unchanged) | deliberate production changes on `orama-production-cluster-01` | finishing the rename cutover ([operator#120](https://github.com/oramasearch/orama-operator/issues/120)); deleting a CRD deletes its CRs, so check for e2e resources first. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
-| Enable R2 on the Cloudflare account | account setting | `CloudflareR2Bucket/v1-legacy-indexes` fails `403 — Please enable R2 through the Cloudflare Dashboard` and retries forever; plausibly the same cause as `Lake/prod` `BackupReady=False`. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
+| ~~Enable R2 on the Cloudflare account~~ — **ignored (Steve, 2026-09-25)** | — | `CloudflareR2Bucket/v1-legacy-indexes` belongs to the Orama Cloud v1 sandbox, which will be deprecated with its customers migrated to lake, eventually; its 403 retries are expected noise until then. It is **not** the cause of `Lake/prod` `BackupReady=False`: lake's control-plane backup is simply off (`spec.postgres.backup.enabled: false`, no destination). Choosing a backup target (R2 or Azure Blob) is a separate, open step. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Decisions | TAAP subjects (#1, #8), the open-source licence (#2 — decision 39 depends on it), portfolio (#9), where `lake.live` runs (#13) | phase exits and the open-source release |
 
 ## Ready to work now
