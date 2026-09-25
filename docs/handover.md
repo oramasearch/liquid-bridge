@@ -40,7 +40,7 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260909a` | `98af177` | `GET /v1/server_info` returns `"revision":"98af17708fcaea0e71469ed9be1d9eb058799c92"` |
+| lake | `oramasearch/lake:20260925a` | `8d5e19b` | `GET /v1/server_info` returns `"revision":"8d5e19bcddd578b59dd14d70fbb0ef3c3b27df9c"` (rolled 2026-09-25) |
 | operator | `oramasearch/orama-operator:main-014ae16` | `014ae16` | `kubectl -n orama-system get deploy orama-operator` — **behind `main`; see below** |
 | schema | `0022_session_lookup` | vendored from lake `98af177` | read from `schema_migrations` in the live database |
 

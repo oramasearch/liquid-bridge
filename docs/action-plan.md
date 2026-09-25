@@ -363,6 +363,19 @@ image that reports its own source revision**: `GET /v1/server_info` returns
 `BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
 lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
 
+**Deployment 2026-09-25.** lake `oramasearch/lake:20260925a`
+(`sha256:3f9a97c98c13f3a95d781a99233e140a67fb296e9618fdadca857f99397ff033`), built on the cluster's
+BuildKit from lake `main` at `8d5e19b` with liquid at the bridge pin `aa60e87`, is live at
+https://lake.oramadev.net. `GET /v1/server_info` returns
+`"revision":"8d5e19bcddd578b59dd14d70fbb0ef3c3b27df9c"`. It carries the first part of the cloud
+design (https://github.com/oramasearch/liquid-bridge/issues/30, lake#147): the home page "Design,
+train, and ship AI on your own data", the sidebar regrouped with Ship > Deployments, the account menu,
+route-keyed navigation, `GET /deployments`, and Files as the first repository tab. `Lake/prod`
+reports `Ready`, `StoreReady` and `ZettaReady` true, `BackupReady` false (unchanged). No schema
+change, so no schema Job ran. It is the first image since lake#145 made liquid a named build context;
+liquid's own `.dockerignore` emptied that context on the first attempt, and the `liquid-dev` skill now
+says to pass a clean copy.
+
 Until `20260908c`, nothing in the running system recorded which source commit an image was built from — no
 OCI `org.opencontainers.image.revision`, no build annotation, and `/v1/server_info` reported only
 `version 0.0.1` — so `20260908b`'s commit is recorded by hand rather than verifiable from the artifact.
