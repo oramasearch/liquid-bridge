@@ -633,6 +633,10 @@ https://github.com/oramasearch/orama-operator/pull/170.
 
 ## 45. How lake keeps customers apart on Zetta — **decided (Steve, 2026-09-25): a Zetta cluster per customer, a "workspace".**
 
+> **Amended by decision 46 (2026-09-25):** the workspace is now the customer's default Zetta service,
+> requested through lake's control Postgres rather than `orama_control.workspaces`. The cluster per
+> customer stands.
+
 lake's Design, Train and Ship pages delegate to the Zetta engine: projects and intent, connections,
 datasets, pipelines and runs, models and their endpoints, search indexes. Zetta has **no tenancy**:
 no customer or workspace namespace, capability calls not scoped by project, and every list returning
@@ -665,3 +669,46 @@ in Zetta, or pooling small customers), or if Zetta gains workspace scoping.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/33. Design:
 https://github.com/oramasearch/liquid-bridge/issues/30.
+
+## 46. How a customer runs more than one service — **decided (Steve, 2026-09-25): many managed services per customer, desired state in lake's control Postgres, reconciled by the Orama operator.**
+
+A customer should be able to run several Zetta clusters and several Postgres clusters, not just the
+one workspace decision 45 gives them, and see them all on one page. Steve's direction: the Orama
+operator manages them through CRDs as it already does; other operators (CloudNativePG for Postgres)
+can do the heavy lifting underneath, but **all of it is orchestrated from the Orama operator, which
+reads the desired state from lake's control Postgres**.
+
+**How it works.** lake writes one row per service to `services` (migration `0024_services`):
+the customer, a kind (`zetta` or `postgres`), a name, a never-reused slug, a small spec
+(instances, storage) and whether it should be present. The operator reads that table with pgx,
+creates `<lake>-<slug>` as an `OramaZettaCluster` or a CloudNativePG `Cluster`, copies the
+service's connection into the Secret `lake-<lake>-services` mounted into lake, and upserts
+`service_status`. Deleting sets `desired = 'absent'`; the operator removes the resource and its
+volumes and reports `Deleted`. The workspace behind Design, Train and Ship is the customer's
+**default Zetta service**. Its slug stays `ws-<12 hex>`, so the operator adopts the cluster
+decision 45 created, and its data, instead of making a new one. The full contract is lake
+`docs/control-plane/services.md`.
+
+**Why Postgres, not the Zetta stream of decision 45.** The control Postgres already holds every
+customer, grant and audit record lake authorizes against. Desired state next to them is one
+transaction with the policy check, one backup, and one place to look. The Zetta request stream
+existed only because the operator already spoke Zetta over HTTP. The cost is a Postgres client in
+the operator: **pgx** (MIT, pure Go), approved by Steve. It is an operator-only dependency, so
+liquid's open-source licence question (#2) is untouched.
+
+**What it costs.** Every service is a pod and a volume on today's single node. There is a quota per
+Lake (`spec.services.maxServices`) and one per customer (`LAKE_SERVICES_PER_CUSTOMER`, default 5).
+The operator connects with lake's own application credential, `<lake>-controldb-app`, rather than a
+narrower role. The operator can already read every Secret in the cluster, so a separate role would
+not reduce what it can reach, and creating one needs a superuser step the schema Job does not have.
+
+**Known limits.** Endpoints are in-cluster only; a customer cannot reach its Postgres from outside
+yet. A service cannot be resized after creation. Design, Train and Ship use only the default Zetta
+service.
+
+**Revisit if** services need to be reachable from outside the cluster (then per-service ingress and
+TLS), if another kind is added (the kind check and the operator's switch grow together), or if a
+narrower operator role becomes cheap (CloudNativePG managed roles plus grants in the schema).
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/34. Supersedes the request stream of decision 45
+(https://github.com/oramasearch/liquid-bridge/issues/33).
