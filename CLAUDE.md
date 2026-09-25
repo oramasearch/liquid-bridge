@@ -38,6 +38,13 @@ bridge — they are shared across products and must not be vendored twice. Read 
 apply: the operator is PR-based and never fast-forwards `main`; marketing-bridge keeps its own
 approval gates G1–G6 and its campaign issues on that repo.
 
+## Creating users
+
+To create a lake account for someone, in any environment, follow lake's
+[`docs/deployment/users.md`](https://github.com/oramasearch/lake/blob/main/docs/deployment/users.md)
+(`modules/lake/docs/deployment/users.md`). On lake.oramadev.net people are added in the Clerk
+application `lake` (`app_3JpNNpVUwgRgnkItIPbzzRWa2BP`), because sign-up there is restricted.
+
 ## Reading Zetta and the Orama operator
 
 **Read Zetta only from the umbrella bridge**, never from a standalone clone:
