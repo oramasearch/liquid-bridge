@@ -28,7 +28,7 @@ where the moving parts are right now.
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
-| lake | `oramasearch/lake:20260926m` | `618ff3a` | `GET /v1/server_info` returns `"revision":"618ff3a"` (rolled 2026-09-26: service kinds through DuckDB and Polars, Zetta parity phases 1–2, Title Case nav and headings); the walkthrough passed all 32 steps after the roll |
+| lake | `oramasearch/lake:20260926s` | `a82ec67` | `GET /v1/server_info` returns `"revision":"a82ec67"` (rolled 2026-09-26: breadcrumb #208, Developer → MCP and public llms.txt + skill #209/#213, accurate start times and Zetta-first #211/#214, no service limit #212); `tools/e2e/mcp.mjs` and `start-times.py` proven live |
 | orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -40,8 +40,8 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260926l` | `44f068e` | `GET /v1/server_info` returns `"revision":"44f068e"` (rolled 2026-09-26: service kinds through DuckDB and Polars, Zetta parity phases 1–2). `20260926m` (`618ff3a`, Title Case UI) is built and pushed, not rolled |
-| operator | `oramasearch/orama-operator:main-b21b7e2` | `b21b7e2` | release `orama-operator` revision 10: services reconciler with every catalog kind plus the SQLite, DuckDB and Polars wrappers (#181), schema vendored from lake `9d968fd` (#182) |
+| lake | `oramasearch/lake:20260926s` | `a82ec67` | `GET /v1/server_info` returns `"revision":"a82ec67"` (rolled 2026-09-26: breadcrumb #208, Developer → MCP and public llms.txt + skill #209/#213, accurate start times and Zetta-first #211/#214, no service limit #212); `tools/e2e/mcp.mjs` and `start-times.py` proven live |
+| operator | `oramasearch/orama-operator:main-375debd` | `375debd` | release `orama-operator` revision 11: services reconciler with every catalog kind, the SQLite/DuckDB/Polars wrappers, and fast starts (LISTEN, 2 s while changing, lake-pod mount refresh; #183) |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 with real queries and refused escapes (lake#207) |
 | workspace Zetta | `oramasearch/zetta:dev-f84ab6f` | zetta `dev` `f84ab6f` | `Lake/prod` `spec.services.zettaImage`; the adopted workspace `prod-ws-6bb777ba498a` kept its data |
