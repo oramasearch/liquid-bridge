@@ -371,8 +371,8 @@ Applied (`sha256:0e10ab133613`). The first attempt stuck the `PostgresSchema` Jo
 whole file re-added migration 0025's `service_kind_check` while `sqlite` rows existed, so older
 re-adds are now `NOT VALID` (lake#203). lake `20260926l` (`44f068e`: kinds lake#203, data parity
 lake#204). Verified: `services.mjs sqlite duckdb polars` exit 0 with real queries and refused
-escapes (lake#207). Built, not rolled: lake `20260926m` (`618ff3a`, Title Case nav and headings,
-lake#206) — the production roll was held for Steve's go-ahead.
+escapes (lake#207). Then lake `20260926m` (`618ff3a`, Title Case nav and headings, lake#206),
+rolled on Steve's go-ahead; `tools/e2e/walkthrough.mjs` passed all 32 steps after it.
 
 **Deployment 2026-09-26: managed services and the service catalog (decisions 46, 47).** In order:
 operator `main-4c73fbc` (services reconciler, orama-operator#173/#174; Lake CRD first, release

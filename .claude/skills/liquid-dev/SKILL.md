@@ -53,7 +53,7 @@ or session trailers to commits or PRs.
 ## Updating lake on AKS
 
 Cluster: kube context `orama-production-cluster-01`, one node. lake runs from the `Lake` CR `lake/prod`
-(`lakes.orama.cloud`), reconciled by the operator release `orama-cloud-v1-operator` in `orama-system`. The
+(`lakes.orama.cloud`), reconciled by the operator release `orama-operator` in `orama-system`. The
 image build runs on the cluster's BuildKit (namespace `buildkit`, deployment `aks-amd640`, rootless, unix
 socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube-pod://`.
 
@@ -100,21 +100,17 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    ```
    The store volume (100 GiB, `managed-csi`) and the instance key Secret `lake-prod-instance-kek` are
    reused; never delete either (the key is not backed up anywhere else yet).
-5. Operator: since orama-operator #148 (2026-09-06) the chart, module and release are named `orama-operator`,
-   while production still runs the Helm release `orama-cloud-v1-operator` from before the rename. The next
-   operator deploy must first run the one-time handoff in the operator's `docs/operations/rename-cutover.md`
-   (both releases briefly installed, the leader-election lease preserved, the former release retired; it
-   records values, CRD UIDs and the lease UID before touching anything). After that, replace the release
-   name below with `orama-operator`. Build the same way from `codex-work/orama-operator` on `main`
+5. Operator: the Helm release is `orama-operator`; the one-time handoff from `orama-cloud-v1-operator`
+   (the operator's `docs/operations/rename-cutover.md`) is done. Build the same way from `codex-work/orama-operator` on `main`
    (`--output type=image,name=docker.io/oramasearch/orama-operator:main-<sha>,push=true`, no Zetta context),
    apply CRDs first because helm does not update them, then upgrade the release with the stored values as a
    file rather than `--reuse-values` (a chart that gained a new value, such as `controlPlane.service.port`,
    fails to template under `--reuse-values` because stored values do not pick up new chart defaults):
    ```sh
    kubectl --context orama-production-cluster-01 apply -f chart/crds/
-   helm --kube-context orama-production-cluster-01 get values orama-cloud-v1-operator -n orama-system > /tmp/operator-values.yaml
-   helm --kube-context orama-production-cluster-01 upgrade orama-cloud-v1-operator chart/ -n orama-system -f /tmp/operator-values.yaml --set operator.image.tag=main-<sha>
-   kubectl --context orama-production-cluster-01 -n orama-system rollout status deploy/orama-cloud-v1-operator
+   helm --kube-context orama-production-cluster-01 get values orama-operator -n orama-system > /tmp/operator-values.yaml
+   helm --kube-context orama-production-cluster-01 upgrade orama-operator chart/ -n orama-system -f /tmp/operator-values.yaml --set operator.image.tag=main-<sha>
+   kubectl --context orama-production-cluster-01 -n orama-system rollout status deploy/orama-operator
    ```
 6. Check: `curl -s -o /dev/null -w '%{http_code}' https://lake.oramadev.net/` returns 200 (use GET: lake routes pages for GET only, so `curl -I` answers 404), `GET /v1/server_info` reports the revision you built, and the page references the new hashed
    stylesheet; purge Cloudflare if an unhashed asset is stale (zone `a26a1f7171915e478a51f37f92838065`,

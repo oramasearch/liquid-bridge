@@ -28,7 +28,7 @@ where the moving parts are right now.
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
-| lake | `oramasearch/lake:20260926l` | `44f068e` | `GET /v1/server_info` returns `"revision":"44f068e"` (rolled 2026-09-26: service kinds through DuckDB and Polars, Zetta parity phases 1–2). `20260926m` (`618ff3a`, Title Case UI) is built and pushed, not rolled |
+| lake | `oramasearch/lake:20260926m` | `618ff3a` | `GET /v1/server_info` returns `"revision":"618ff3a"` (rolled 2026-09-26: service kinds through DuckDB and Polars, Zetta parity phases 1–2, Title Case nav and headings); the walkthrough passed all 32 steps after the roll |
 | orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
