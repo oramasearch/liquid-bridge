@@ -363,6 +363,17 @@ image that reports its own source revision**: `GET /v1/server_info` returns
 `BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
 lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
 
+**Deployment 2026-09-26 (later): SQLite, DuckDB and Polars, and Zetta parity phase 2.** Wrapper
+services `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (each its own private
+repo and private image, anonymous Hub 404); operator `main-b21b7e2` (release revision 10: DuckDB and
+Polars reconciler orama-operator#181, schema re-vendor #182); schema `0027_analytics_services`
+Applied (`sha256:0e10ab133613`). The first attempt stuck the `PostgresSchema` Job: re-applying the
+whole file re-added migration 0025's `service_kind_check` while `sqlite` rows existed, so older
+re-adds are now `NOT VALID` (lake#203). lake `20260926l` (`44f068e`: kinds lake#203, data parity
+lake#204). Verified: `services.mjs sqlite duckdb polars` exit 0 with real queries and refused
+escapes (lake#207). Built, not rolled: lake `20260926m` (`618ff3a`, Title Case nav and headings,
+lake#206) — the production roll was held for Steve's go-ahead.
+
 **Deployment 2026-09-26: managed services and the service catalog (decisions 46, 47).** In order:
 operator `main-4c73fbc` (services reconciler, orama-operator#173/#174; Lake CRD first, release
 revision 5), `Lake/prod` `spec.services` enabled with `zettaImage: oramasearch/zetta:dev-f84ab6f`,

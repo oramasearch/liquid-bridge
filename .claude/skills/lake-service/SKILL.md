@@ -70,8 +70,12 @@ In lake, on a feature branch:
    Ready, the credential fields in `<slug>.json`, the in-cluster `endpoint`, and what deletion must
    remove (PVCs the upstream operator keeps).
 2. **Migration** `db/schema.sql`: widen `service_kind_check` (drop and re-add, idempotent) with a new
-   guard table, `NNNN_<name>` in `schema_migrations`. Apply it twice to a scratch database to prove
-   idempotency. Update `CLAUDE.md`'s guard name and `docs/control-plane/schema.md`.
+   guard table, `NNNN_<name>` in `schema_migrations`. The operator re-applies the **whole file**,
+   so every *earlier* migration's re-add runs again while rows of the newer kinds exist: mark each
+   earlier re-add `NOT VALID` (only the newest one validates rows), or the `PostgresSchema` Job
+   fails with `check constraint "service_kind_check" … is violated by some row` (lake#203). Apply it
+   to a scratch database, insert a row of **every** kind, apply it again, and check an unknown kind
+   is still refused. Update `CLAUDE.md`'s guard name and `docs/control-plane/schema.md`.
 3. **Kind table** `include/lake/control/store.hpp` `service_kinds`: key, label, `ready_minutes`
    (placeholder until measured), `preview`. It drives validation, the menu and start-time hints.
    Add any per-kind validation (SQLite: `instances` must be 1) in `create_service`.
