@@ -712,3 +712,50 @@ narrower operator role becomes cheap (CloudNativePG managed roles plus grants in
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/34. Supersedes the request stream of decision 45
 (https://github.com/oramasearch/liquid-bridge/issues/33).
+
+## 47. Which services lake offers and what runs them — **decided (Steve, 2026-09-25): a catalog of seven kinds, each on one permissively licensed upstream operator.**
+
+Steve asked for the operators from a licensing-first survey (September 25, 2026) to be added and
+offered as lake services, Kafka included. The survey's selections stand:
+
+| Kind | Operator | Pinned | Status |
+|---|---|---|---|
+| Postgres | CloudNativePG | already installed | production path |
+| Kafka | Strimzi | 1.2.0 | production path |
+| ClickHouse | Altinity Kubernetes Operator | 0.27.4 | production path; the newer official ClickHouse operator is worth a pilot, not a switch |
+| TiDB | PingCAP TiDB Operator | v1.6.6 | the stable 1.x line; upstream `main` is v2 with removed features, evaluated later |
+| Cassandra | K8ssandra Operator (with cass-operator) | 1.33.0 | needs cert-manager (v1.21.2); Apache Cassandra images only, never DSE |
+| Valkey | valkey-io/valkey-operator | 0.6.0 | **preview**: upstream says not ready for production, `v1alpha1`; lake labels it so |
+| Zetta | the Orama operator | — | as decision 46 |
+
+**Why these.** Every operator is Apache 2.0 and actively maintained, with documented failover,
+upgrade and recovery tooling. That is the bar for a platform we resell. Alternatives rejected by
+the survey: Crunchy PGO, whose portal terms forbid offering it as a service without a subscription,
+and the archived Banzai Koperator.
+
+**How it works.** The operators are installed from orama-operator's `helmfile.yaml` (label
+`tier=service-operators`), cluster-scoped. The Orama operator reads each service from lake's control
+Postgres (decision 46) and writes that kind's resource: `Kafka` + `KafkaNodePool` + `KafkaUser`,
+`ClickHouseInstallation`, `TidbCluster`, `K8ssandraCluster` or `ValkeyCluster`. It then copies the
+connection into lake. We never run the databases ourselves. Migration `0025_service_catalog` widens
+the kind check.
+
+**What it costs.** Six more controllers and cert-manager on a single node. Every service is at least
+one more pod and volume, and Cassandra and TiDB are memory-heavy. Each operator is an upgrade stream
+to follow, especially Valkey, whose 0.6.0 already broke its TLS field. There are **no backups** for
+any kind yet.
+
+**Known limits.**
+- Endpoints are in-cluster only.
+- There is no resize.
+- Backups are future work, and need a licence check: the CloudNativePG Barman plugin is Apache 2.0,
+  but Barman itself is GPLv3.
+- Valkey carries no customer commitment.
+- **SQLite is not a kind:** it has no operator and no replication (Litestream is disaster recovery,
+  not HA), so it needs its own product design.
+
+**Revisit if** Valkey's operator reaches a stable API (then drop the preview label after failure,
+upgrade and restore tests); if TiDB v2 regains BackupSchedule and monitoring; if the official
+ClickHouse operator overtakes Altinity in a pilot; or when customer endpoints must leave the cluster.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/35. Builds on decision 46 (https://github.com/oramasearch/liquid-bridge/issues/34).
