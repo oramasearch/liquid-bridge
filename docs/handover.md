@@ -28,7 +28,7 @@ where the moving parts are right now.
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
-| lake | `oramasearch/lake:20260926s` | `a82ec67` | `GET /v1/server_info` returns `"revision":"a82ec67"` (rolled 2026-09-26: breadcrumb #208, Developer → MCP and public llms.txt + skill #209/#213, accurate start times and Zetta-first #211/#214, no service limit #212); `tools/e2e/mcp.mjs` and `start-times.py` proven live |
+| lake | `oramasearch/lake:20260926u` | `01671cf` | `GET /v1/server_info` returns `"revision":"01671cf"` (rolled 2026-09-26: storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
 | orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -40,12 +40,12 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260926s` | `a82ec67` | `GET /v1/server_info` returns `"revision":"a82ec67"` (rolled 2026-09-26: breadcrumb #208, Developer → MCP and public llms.txt + skill #209/#213, accurate start times and Zetta-first #211/#214, no service limit #212); `tools/e2e/mcp.mjs` and `start-times.py` proven live |
-| operator | `oramasearch/orama-operator:main-375debd` | `375debd` | release `orama-operator` revision 11: services reconciler with every catalog kind, the SQLite/DuckDB/Polars wrappers, and fast starts (LISTEN, 2 s while changing, lake-pod mount refresh; #183) |
+| lake | `oramasearch/lake:20260926u` | `01671cf` | `GET /v1/server_info` returns `"revision":"01671cf"` (rolled 2026-09-26: storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
+| operator | `oramasearch/orama-operator:main-42ba8ad` | `42ba8ad` | release `orama-operator` revision 12: services (every catalog kind, SQLite/DuckDB/Polars wrappers, fast starts #183) and stores (cluster volumes, #184) |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 with real queries and refused escapes (lake#207) |
 | workspace Zetta | `oramasearch/zetta:dev-f84ab6f` | zetta `dev` `f84ab6f` | `Lake/prod` `spec.services.zettaImage`; the adopted workspace `prod-ws-6bb777ba498a` kept its data |
-| schema | `0027_analytics_services` | vendored from lake `9d968fd` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:0e10ab133613`, guard `analytics_services_guard` |
+| schema | `0028_stores` | vendored from lake `9aa6141` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:28cc3b7c40b6`, guard `stores_guard` |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
 R2 backup Secret does not exist — unchanged and tracked separately.
