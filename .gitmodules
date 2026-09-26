@@ -14,3 +14,9 @@
 [submodule "modules/lake-sqlite"]
 	path = modules/lake-sqlite
 	url = git@github.com:oramasearch/lake-sqlite.git
+[submodule "modules/lake-duckdb"]
+	path = modules/lake-duckdb
+	url = git@github.com:oramasearch/lake-duckdb.git
+[submodule "modules/lake-polars"]
+	path = modules/lake-polars
+	url = git@github.com:oramasearch/lake-polars.git
