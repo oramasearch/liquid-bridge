@@ -43,7 +43,7 @@ Decision 33 (`docs/decisions.md`) applies everywhere: nothing here runs `docker`
 
 ## Merging
 
-Squash-merge with `gh pr merge <n> --repo oramasearch/<repo> --squash --delete-branch` after the suites
+Merge with a merge commit, `gh pr merge <n> --repo oramasearch/<repo> --merge --delete-branch`, after the suites
 pass on the merged tree; k0s PRs target `liquid`, operator PRs target `main` (production: PR-based only,
 never fast-forwarded). Close the issue with what was done, the proof, and what was deferred; then bump the
 bridge pointer: `git -C modules/<repo> fetch origin && git -C modules/<repo> checkout origin/main`, commit
