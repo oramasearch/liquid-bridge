@@ -11,3 +11,6 @@
 [submodule "modules/liquify"]
 	path = modules/liquify
 	url = git@github.com:oramasearch/liquify.git
+[submodule "modules/lake-sqlite"]
+	path = modules/lake-sqlite
+	url = git@github.com:oramasearch/lake-sqlite.git

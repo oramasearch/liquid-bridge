@@ -50,6 +50,7 @@ Every module is private; you need SSH access to the `oramasearch` org.
 | [`modules/k0s`](modules/k0s/) | Private, upstream-synced copy of k0s; Orama's changes are on the `liquid` branch. |
 | [`modules/lake`](modules/lake/) | The lake binary, the hosted service; live on AKS as `Lake/prod`. |
 | [`modules/liquify`](modules/liquify/) | The IDE: native, cross-platform, links libliquid. |
+| [`modules/lake-sqlite`](modules/lake-sqlite/) | The web service behind lake's SQLite service kind: one SQLite database over HTTP, run by the Orama operator. Private, own private image. |
 
 **Not modules here — one level up.** The **Orama operator** (lake runs on it as a `Lake` CR) and
 **marketing-bridge** are shared across products, so they are pinned once by the org umbrella

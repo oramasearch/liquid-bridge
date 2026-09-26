@@ -29,6 +29,7 @@ This file adds only what is specific to working *across* the modules.
 | `modules/lake` | `oramasearch/lake` | `CLAUDE.md` — the control surface (one capability registry → REST `/v1`, OpenAPI, MCP) over the Postgres control plane, users/organizations/customers/repositories, server-rendered pages behind the admin sign-in; `Lake/prod` runs it on AKS. Its adapter-TU, one-registry and trailing-404 rules live there. |
 | `modules/liquify` | `oramasearch/liquify` | `CLAUDE.md`. Native cross-platform IDE (SDL3 + Dear ImGui); hello window; links **libliquid** from the sibling `modules/liquid` via `LIQUIFY_LIQUID_SOURCE_DIR`, not a
 vendored submodule. Never depends on Zetta. |
+| `modules/lake-sqlite` | `oramasearch/lake-sqlite` | `CLAUDE.md`. The web service behind lake's SQLite service kind (Go, pure-Go SQLite); the operator runs its private image. Every service is its own private repo (umbrella rule). |
 
 
 **One level up, not modules here.** `orama-operator` and `marketing-bridge` are pinned by the org
