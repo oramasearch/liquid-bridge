@@ -715,6 +715,13 @@ Issue: https://github.com/oramasearch/liquid-bridge/issues/34. Supersedes the re
 
 ## 47. Which services lake offers and what runs them — **decided (Steve, 2026-09-25): a catalog of seven kinds, each on one permissively licensed upstream operator.**
 
+> **Amended (Steve, 2026-09-26): SQLite is a kind after all**, served by `lake-sqlite`, a small web
+> service we wrote (orama-operator `cmd/lake-sqlite`, pure-Go SQLite driver `modernc.org/sqlite`,
+> BSD-3) that passes HTTP calls through to one SQLite database per service. The Orama operator runs
+> it directly, as a single-replica StatefulSet with a volume and a bearer token. There is no
+> upstream operator, no replication, and exactly one instance. Migration `0026_sqlite_services`.
+> The "SQLite is not a kind" limit below is superseded.
+
 Steve asked for the operators from a licensing-first survey (September 25, 2026) to be added and
 offered as lake services, Kafka included. The survey's selections stand:
 
