@@ -732,7 +732,7 @@ offered as lake services, Kafka included. The survey's selections stand:
 | ClickHouse | Altinity Kubernetes Operator | 0.27.4 | production path; the newer official ClickHouse operator is worth a pilot, not a switch |
 | TiDB | PingCAP TiDB Operator | v1.6.6 | the stable 1.x line; upstream `main` is v2 with removed features, evaluated later |
 | Cassandra | K8ssandra Operator (with cass-operator) | 1.33.0 | needs cert-manager (v1.21.2); Apache Cassandra images only, never DSE |
-| Valkey | valkey-io/valkey-operator | 0.6.0 | **preview**: upstream says not ready for production, `v1alpha1`; lake labels it so |
+| Valkey | valkey-io/valkey-operator | 0.6.0 | upstream says not ready for production, `v1alpha1`; lake no longer labels it (amended below) |
 | Zetta | the Orama operator | — | as decision 46 |
 
 **Why these.** Every operator is Apache 2.0 and actively maintained, with documented failover,
@@ -764,5 +764,12 @@ any kind yet.
 **Revisit if** Valkey's operator reaches a stable API (then drop the preview label after failure,
 upgrade and restore tests); if TiDB v2 regains BackupSchedule and monitoring; if the official
 ClickHouse operator overtakes Altinity in a pilot; or when customer endpoints must leave the cluster.
+
+**Amended 2026-09-26 (Steve, lake#197): the product no longer distinguishes preview kinds.** lake's
+kind table has no `preview` flag and no kind — Valkey included — is labelled *preview, not for
+production* in the menu or on rows. Valkey's upstream operator is still `v1alpha1`; that risk is
+ours to carry (upgrade and restore tests before any customer commitment), not a label to show. The
+menu lists Zetta first, preselected, then every other kind by name, each with its measured start
+time.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/35. Builds on decision 46 (https://github.com/oramasearch/liquid-bridge/issues/34).
