@@ -363,6 +363,18 @@ image that reports its own source revision**: `GET /v1/server_info` returns
 `BackupReady` false. The schema was unchanged since `4e8216b`, so no schema Job ran. Recorded in
 lake `docs/deployment/production-2026-09-08.md` (lake#121, lake#142).
 
+**Deployment 2026-09-26: managed services and the service catalog (decisions 46, 47).** In order:
+operator `main-4c73fbc` (services reconciler, orama-operator#173/#174; Lake CRD first, release
+revision 5), `Lake/prod` `spec.services` enabled with `zettaImage: oramasearch/zetta:dev-f84ab6f`,
+schema `0024` applied, lake `20260925i`/`j`; then the upstream operators from the helmfile
+(`tier=service-operators`, orama-operator#176), operator `main-a93dd44` (catalog kinds, #177, revision
+6), schema `0025`, lake `20260925k` (`7f27e6f`). The Altinity operator had to be told to watch every
+namespace (#178). The decision-45 workspace was adopted as the default Zetta service with its data.
+Verified in the browser: the walkthrough (project → pipeline → approve → run, run report loads,
+zetta#1007 fixed) and every catalog kind created, Ready, connected and deleted from Services —
+Postgres, Zetta, Kafka (2 min), ClickHouse (2.5 min), Valkey (1.3 min), TiDB (3 min), Cassandra
+(8 min). Node memory 58% with no services running.
+
 **Deployment 2026-09-25 (third roll): Design, Train and Ship on per-customer Zetta workspaces
 (decision 45).** Operator `oramasearch/orama-operator:main-04dafde` (orama-operator#171, release
 `orama-operator` revision 4, Lake CRD applied first) provisions a Lake-owned `OramaZettaCluster` per

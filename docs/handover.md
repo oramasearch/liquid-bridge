@@ -40,9 +40,11 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260925h` | `3a3bab1` | `GET /v1/server_info` returns `"revision":"3a3bab1…"` (rolled 2026-09-25; Clerk sign-in and per-customer workspaces on; walk it with lake `docs/deployment/browser-testing.md`) |
-| operator | `oramasearch/orama-operator:main-04dafde` | `04dafde` | `kubectl -n orama-system get deploy orama-operator` — release `orama-operator` revision 4 (workspaces, orama-operator#171) |
-| schema | `0022_session_lookup` | vendored from lake `98af177` | read from `schema_migrations` in the live database |
+| lake | `oramasearch/lake:20260925k` | `7f27e6f` | `GET /v1/server_info` returns `"revision":"7f27e6f…"` (rolled 2026-09-26: managed services with the full catalog; walk it with lake `docs/deployment/browser-testing.md`) |
+| operator | `oramasearch/orama-operator:main-a93dd44` | `a93dd44` | release `orama-operator` revision 6: services reconciler (orama-operator#174) with the catalog kinds (#177) |
+| service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
+| workspace Zetta | `oramasearch/zetta:dev-f84ab6f` | zetta `dev` `f84ab6f` | `Lake/prod` `spec.services.zettaImage`; the adopted workspace `prod-ws-6bb777ba498a` kept its data |
+| schema | `0025_service_catalog` | vendored from lake `0a701ef` | `PostgresSchema lake-prod-controldb-schema` Applied, guard `service_catalog_guard` |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
 R2 backup Secret does not exist — unchanged and tracked separately.
@@ -183,7 +185,7 @@ script itself, where a quoted glob meant `--e2e` checked nothing and reported su
 | | What is needed | What it unblocks |
 |---|---|---|
 | A Linux host with `/dev/fuse` | a reachable machine, or CI that gets past checkout | liquid #299, #300, #302; the libfuse baseline owed by #301; k0s #13 |
-| `ORAMA_SUBMODULES_TOKEN` | an org secret with access to `automerge-cpp`, `corosio`, `oramacore-cpp` — **and now `liquid`**, which lake and liquify check out directly (see the rewiring above) | **all** CI — it fails at `actions/checkout` on every run, including `main`, so every test enforced locally is enforced nowhere else (lake #48) |
+| ~~`ORAMA_SUBMODULES_TOKEN`~~ | **Replaced for lake (2026-09-26)**: one read-only deploy key per private repository (corosio, beast2, oramacore-cpp, automerge-cpp, liquid, zetta), secrets `DEPLOY_KEY_*` on `oramasearch/lake` (lake `docs/build/ci.md`, lake#174). liquify and liquid's own CI still use the token and still fail at checkout; the same keys can be granted to them | lake CI now builds and tests on Linux; its first runs exposed a Linux-only `block_on` bug (liquid#317) |
 | Dependabot version updates | Settings → Code security → Dependabot version updates, off for `oramasearch/k0s` | k0s mirror integrity. The sync script now *catches* a violation; the toggle prevents it |
 | ~~Roll the operator onto `main`~~ | **Done 2026-09-25**: `main-83c6d90` (includes #167) rolled as release `orama-operator` revision 3 | CRDs applied first (additive only; all 70 CRD UIDs unchanged). [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
 | Retire 3 e2e CRDs (~~and the former operator release~~ — **retired 2026-09-25** with `helm uninstall --keep-history`, after finding no caller of its control-plane Service; Lease and CRD UIDs unchanged) | deliberate production changes on `orama-production-cluster-01` | finishing the rename cutover ([operator#120](https://github.com/oramasearch/orama-operator/issues/120)); deleting a CRD deletes its CRs, so check for e2e resources first. [operator#168](https://github.com/oramasearch/orama-operator/issues/168) |
