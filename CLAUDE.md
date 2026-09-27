@@ -178,6 +178,14 @@ wraps it. Say what the licence is, in the same breath as what the library does. 
 write our own, it lands with a conformance suite the previous implementation also passes, so
 "ours" never means "less proven".
 
+## The AKS cluster is development, not production — IMPORTANT
+
+`orama-production-cluster-01`, `Lake/prod` and `lake.oramadev.net` are the **development**
+environment despite their names; **there is no production yet** (Steve, 2026-09-27; the umbrella
+`CLAUDE.md` has the full rule). Rolling lake, the operator and the agents there is a routine dev
+deploy: do it without asking. Destructive database actions still need Steve's explicit yes, and the
+store volume and instance key Secret are never deleted.
+
 ## Builds and deploys stay current — IMPORTANT
 
 **The deploy is part of the work, not a follow-up.** Whenever a change lands that the running system should

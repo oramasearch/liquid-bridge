@@ -52,6 +52,9 @@ or session trailers to commits or PRs.
 
 ## Updating lake on AKS
 
+**This cluster is development, not production** (the names say `production` and `prod`; there is no
+production yet — umbrella `CLAUDE.md`). Rolling it is routine: do it as part of the work.
+
 Cluster: kube context `orama-production-cluster-01`, one node. lake runs from the `Lake` CR `lake/prod`
 (`lakes.orama.cloud`), reconciled by the operator release `orama-operator` in `orama-system`. The
 image build runs on the cluster's BuildKit (namespace `buildkit`, deployment `aks-amd640`, rootless, unix
