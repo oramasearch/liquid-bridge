@@ -232,3 +232,7 @@ service. Every repository here is private and stays private.
 - `/product-review` (`.claude/skills/product-review/SKILL.md`): test the whole product as a customer would,
   compare what is promised against what runs, and file original issues for the gaps. Use it before claiming an
   area is finished.
+- `/lake-ux-review` (`.claude/skills/lake-ux-review/SKILL.md`): lake's UX, job by job (load data, train a model,
+  ship it, build an agent), through the browser, the REST API and MCP; checks each claim lake makes against what
+  runs, writes `docs/reviews/lake-ux/<date>.md` and files an epic of issues. Run it before a demo and after large
+  UI changes.
