@@ -28,7 +28,7 @@ where the moving parts are right now.
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
-| lake | `oramasearch/lake:20260926u` | `01671cf` | `GET /v1/server_info` returns `"revision":"01671cf"` (rolled 2026-09-26: storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
+| lake | `oramasearch/lake:20260926v` | `9d1e10d` | `GET /v1/server_info` returns `"revision":"9d1e10d"` (rolled 2026-09-26: full-height sidebar #222, storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
 | orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -40,7 +40,7 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260926u` | `01671cf` | `GET /v1/server_info` returns `"revision":"01671cf"` (rolled 2026-09-26: storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
+| lake | `oramasearch/lake:20260926v` | `9d1e10d` | `GET /v1/server_info` returns `"revision":"9d1e10d"` (rolled 2026-09-26: full-height sidebar #222, storage phase 1 #217, plus the breadcrumb, Developer → MCP with public llms.txt and skill, measured start times with Zetta first at 30 s, no service limit); `tools/e2e/storage.mjs`, `mcp.mjs` and `start-times.py` proven live |
 | operator | `oramasearch/orama-operator:main-42ba8ad` | `42ba8ad` | release `orama-operator` revision 12: services (every catalog kind, SQLite/DuckDB/Polars wrappers, fast starts #183) and stores (cluster volumes, #184) |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 with real queries and refused escapes (lake#207) |
