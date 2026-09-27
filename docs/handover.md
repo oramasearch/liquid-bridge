@@ -28,7 +28,7 @@ where the moving parts are right now.
 |---|---|---|---|
 | liquid | `main` | `aa60e87` | **699 / 699** serial, 2026-09-09 after the fseventsd restart (was 697 — the armed-watcher tests run now) |
 | liquify | `main` | `e1f49c9` | **140 / 140**, re-run after the liquid rewiring |
-| lake | `oramasearch/lake:20260927b` | `797ce72` | rolled 2026-09-27: agents (epic lake#228): Train → Agents and the Agent Library, launches on agent-runtime, Ask Orama, Discover, the Agent Factory, Pipelines as agent tools, non-expiring keys, and **cron schedules as CronJobs** (lake#244, migration 0031 applied). Live-proven: job and CronJob runs of a Python agent return results; Ask Orama read + delegation; Project Agent S-1 Pipeline; Auto-Suggest 3/5 |
+| lake | `oramasearch/lake:20260927f` | `51cd3ae` (branch of lake#272) | rolled 2026-09-27: **agent turns over Zetta pub/sub** (lake#269, `docs/api/agent-bus.md`): no request waits on a library agent; tasks on `agent-tasks.<agent>` on lake's own Zetta, each library agent with its own bus credential; Design → Opportunities and → Agent Library; workspace pub/sub through `workspace_query`/`workspace_act`. Migration 0032 applied. Live-proven: Ask Orama turn (result over the bus at 11.8 s), Auto-Suggest scan reading the workspace itself (8 Opportunities), Project Agent pipeline, Ask Orama → Project Agent delegation followed on the bus. Earlier: the agents epic lake#228 and cron schedules lake#244 |
 | orama-operator | `main` | `058a7d8` | `go build`/`vet`/`test ./...` green, `helm lint` clean |
 | k0s | `liquid` | `dc5587465` | `go build`/`vet` clean, 15 tests ok |
 
@@ -40,12 +40,13 @@ is what cost four separate sessions before #282 was diagnosed.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260927b` | `797ce72` | rolled 2026-09-27: agents (epic lake#228): Train → Agents and the Agent Library, launches on agent-runtime, Ask Orama, Discover, the Agent Factory, Pipelines as agent tools, non-expiring keys, and **cron schedules as CronJobs** (lake#244, migration 0031 applied). Live-proven: job and CronJob runs of a Python agent return results; Ask Orama read + delegation; Project Agent S-1 Pipeline; Auto-Suggest 3/5 |
-| operator | `oramasearch/orama-operator:main-c2bc15a` | `c2bc15a` | release `orama-operator` revision 15: services, stores, the Agent Library, agent launches (#186, label fix #187) and one CronJob per agent schedule (#189); schema guard `agent_cron_guard` |
+| lake | `oramasearch/lake:20260927f` | `51cd3ae` (branch of lake#272) | rolled 2026-09-27: **agent turns over Zetta pub/sub** (lake#269, `docs/api/agent-bus.md`): no request waits on a library agent; tasks on `agent-tasks.<agent>` on lake's own Zetta, each library agent with its own bus credential; Design → Opportunities and → Agent Library; workspace pub/sub through `workspace_query`/`workspace_act`. Migration 0032 applied. Live-proven: Ask Orama turn (result over the bus at 11.8 s), Auto-Suggest scan reading the workspace itself (8 Opportunities), Project Agent pipeline, Ask Orama → Project Agent delegation followed on the bus. Earlier: the agents epic lake#228 and cron schedules lake#244 |
+| operator | `oramasearch/orama-operator:bus-930749b` | `930749b` (branch of orama-operator#192) | release `orama-operator` revision 16: everything in `main-c2bc15a`, plus Secret `lake-prod-agent-bus` (one bus credential per library agent) and lake's schema with `0032_agent_tasks`; schema guard `agent_tasks_guard` |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 with real queries and refused escapes (lake#207) |
-| workspace Zetta | `oramasearch/zetta:dev-f84ab6f` | zetta `dev` `f84ab6f` | `Lake/prod` `spec.services.zettaImage`; the adopted workspace `prod-ws-6bb777ba498a` kept its data |
-| schema | `0028_stores` | vendored from lake `9aa6141` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:28cc3b7c40b6`, guard `stores_guard` |
+| workspace + bus Zetta | `oramasearch/zetta:dev-f8ad170` | zetta `dev` `f8ad170` (pub/sub, zetta#1035) | `Lake/prod` `spec.services.zettaImage` and `spec.zetta.image` (lake's own Zetta `lake-prod-zetta`, the agent bus); workspaces kept their data |
+| library agents | `agent-ask-orama:2b9e9be`, `agent-project:476f883`, `agent-autosuggest:01c5063`, `agent-creator:eded167-rt5b0b41b` on `agent-runtime:5b0b41b` | their `feat/lake-bus` PRs | each takes tasks from the bus (long polls every 10 s, 200) |
+| schema | `0032_agent_tasks` | vendored from lake `51cd3ae` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:8efb19574f1e`, guard `agent_tasks_guard` |
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
 R2 backup Secret does not exist — unchanged and tracked separately.
