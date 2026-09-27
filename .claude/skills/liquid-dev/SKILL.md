@@ -41,11 +41,20 @@ Decision 33 (`docs/decisions.md`) applies everywhere: nothing here runs `docker`
 - Linux proofs run off this machine (hosted CI once `ORAMA_SUBMODULES_TOKEN` exists); until then a merge
   records "Linux proof deferred (decision 33)" on its issue and `docs/action-plan.md` lists the debt.
 
+## Close each issue the moment its code is on a PR
+
+When the change for an issue is pushed to its PR and complete, **close that issue right then** with a
+comment: what changed (behaviour and files), the PR or commit URL, the proof, and anything deferred (as
+a new linked issue, never a silent leftover). Do not wait for the merge, the deploy or the end of the
+session, and do not batch closings. A shipped issue left open is a process bug. Never use `fixes #N` /
+`closes #N` auto-close keywords. An epic stays open while it has open children and gets a progress
+comment instead.
+
 ## Merging
 
 Merge with a merge commit, `gh pr merge <n> --repo oramasearch/<repo> --merge --delete-branch`, after the suites
 pass on the merged tree; k0s PRs target `liquid`, operator PRs target `main` (production: PR-based only,
-never fast-forwarded). Close the issue with what was done, the proof, and what was deferred; then bump the
+never fast-forwarded). The issue is already closed (above); then bump the
 bridge pointer: `git -C modules/<repo> fetch origin && git -C modules/<repo> checkout origin/main`, commit
 "Bump <repo> submodule (...)", push, and run `python3 tools/issues/master_epic.py`. Never add AI attribution
 or session trailers to commits or PRs.
