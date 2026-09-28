@@ -51,6 +51,8 @@ Every module is private; you need SSH access to the `oramasearch` org.
 | [`modules/lake`](modules/lake/) | The lake binary, the hosted service; live on AKS as `Lake/prod`. |
 | [`modules/liquify`](modules/liquify/) | The IDE: native, cross-platform, links libliquid. |
 | [`modules/lake-sqlite`](modules/lake-sqlite/) | The web service behind lake's SQLite service kind: one SQLite database over HTTP, run by the Orama operator. Private, own private image. |
+| [`modules/app-runtime`](modules/app-runtime/) | The Python base runtime that runs lake Apps from a lake repository at a pinned revision (oramasearch/lake#297). Private, own private image. |
+| [`modules/lake-builder`](modules/lake-builder/) | The image a lake in-cluster build Job runs: rootless BuildKit, pushing to lake's registry (oramasearch/lake#297). Private, own private image. |
 | [`modules/lake-duckdb`](modules/lake-duckdb/) | The web service behind lake's DuckDB service kind, locked down against file, network and extension access. Private, own private image. |
 | [`modules/lake-polars`](modules/lake-polars/) | The web service behind lake's Polars service kind: Parquet datasets and Polars SQL (Rust). Private, own private image. |
 
