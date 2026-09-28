@@ -20,3 +20,9 @@
 [submodule "modules/lake-polars"]
 	path = modules/lake-polars
 	url = git@github.com:oramasearch/lake-polars.git
+[submodule "modules/app-runtime"]
+	path = modules/app-runtime
+	url = git@github.com:oramasearch/app-runtime.git
+[submodule "modules/lake-builder"]
+	path = modules/lake-builder
+	url = git@github.com:oramasearch/lake-builder.git
