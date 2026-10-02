@@ -773,3 +773,28 @@ menu lists Zetta first, preselected, then every other kind by name, each with it
 time.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/35. Builds on decision 46 (https://github.com/oramasearch/liquid-bridge/issues/34).
+
+## 48. Who sees an organization's space — **decided (Claude, 2026-10-02, on Steve's instruction to merge lake#453's fixes and record the decisions): an organization-wide membership grants its role on the organization's own space.**
+
+**What.** A membership of a whole organization also gets a grant on the organization's own space:
+`admin` for owners and admins, `read` for members. Team memberships do not reach the space. Lake
+keeps the grant in step with the membership on create, accept, join, role change and removal
+(lake#461).
+
+**Why.** Without it an invited member sees nothing in the organization (no repositories, workspaces
+or apps), so invitations are useless (lake#443, found by the UX review 2026-10-01). App access
+already works this way. Because the grant follows the membership, removing a member removes the
+access.
+
+**Rejected.** Team-only grants: stricter, but a new organization needs manual setup before anyone
+sees anything. An explicit grant per person: visible, but it drifts from the membership and
+survives removal.
+
+**What it costs.** Every member reads everything in the organization's space by default; anything
+finer still goes through teams and explicit grants. Memberships created before lake#461 get no
+grant (no backfill).
+
+**Revisit if** an organization needs members who must not see the whole space by default, or when
+per-resource roles land.
+
+Issue: https://github.com/oramasearch/lake/issues/464.
