@@ -798,3 +798,26 @@ grant (no backfill).
 per-resource roles land.
 
 Issue: https://github.com/oramasearch/lake/issues/464.
+
+## 49. How lake rolls on a single-replica, ReadWriteOnce store — **decided (Claude, 2026-10-02, on Steve's instruction to merge lake#453's fixes and record the decisions): `Recreate` by default; an overlapping rollout is an explicit opt-in until two lake processes are proven safe on one store.**
+
+**What.** The deploy-time 503s (orama-operator#243) come from `Recreate` on a one-replica Lake whose
+store is ReadWriteOnce: every change stops the only pod before the next can attach the volume. An
+overlapping rollout (RollingUpdate, maxSurge 1, maxUnavailable 0, the surge pod pinned to the node
+holding the volume) removes that window, but runs two lake processes on one store for its duration.
+The operator ships the overlap as an opt-in Lake field; the default stays `Recreate`. Readiness on
+`/readyz`, a startup probe, a 15 s preStop drain and a Ready condition that waits for the updated
+replicas ship regardless (orama-operator#246).
+
+**Why.** The store volume holds data that is not backed up anywhere (see the never-delete rule for
+it). Liquid's per-operation locks and the transparency log's per-append lock suggest two processes
+are safe, but nothing tests it. A short 503 window on a development deploy costs less than a
+corrupted store.
+
+**What it costs.** Each lake deploy still shows 503s until the new pod is ready (about a minute on
+dev).
+
+**Revisit when** lake#467 proves two processes on one store are safe (a concurrent-writer test with
+a shutdown in the middle); then dev turns the opt-in on, and later the default can flip.
+
+Issue: https://github.com/oramasearch/orama-operator/issues/247.
