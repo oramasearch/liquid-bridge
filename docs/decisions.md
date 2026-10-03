@@ -825,3 +825,38 @@ a shutdown in the middle); then dev turns the opt-in on, and later the default c
 **Amended 2026-10-03: the overlap is now safe on dev, and enabled there.** liquid#321 added an exclusive store owner with a bounded wait. Lake#479 (lake PR #480, `c7d24d6`) uses it: the successor binds and reports Ready while the predecessor holds the store, holds store-touching requests, and takes the store when the predecessor drains and releases it. `Lake/prod` runs `spec.rollout.overlapOnSharedStore: true`. A rollout restart answered 129 of 129 one-second polls with 200; the slowest held request took 29.5 s, the successor waited 23 s and opened the store in 13 s. The operator default stays `Recreate` because lake images older than lake#479 refuse to start beside a running lake; set the opt-in only on a Lake whose image includes it.
 
 Issue: https://github.com/oramasearch/orama-operator/issues/247.
+
+## 50. Where identity and sign-in live — **decided (Steve, 2026-10-03): in lake's control Postgres, as multitenancy.**
+
+**What.** Users, sessions, credentials, devices, OAuth and WebAuthn flows, SSO providers, federation
+issuers, offline recovery, PKI, TAAP assertions, custodial identities and the lake identity stay in
+lake's control Postgres. The lake#311 audit had listed them as workspace data.
+
+**Why.** A person signs in before choosing a workspace, and one identity spans many workspaces;
+identity is part of multitenancy, which the umbrella rule keeps central. Moving sign-in into a
+workspace Zetta would make signing in depend on that Zetta being up.
+
+**What it costs.** Identity material stays in one central database rather than per workspace, so its
+protection rests on that database's sealing and access controls.
+
+**Not covered.** Customer secrets (`secrets_*`) still move to their workspace.
+
+**Revisit if** a workspace needs its own identity provider that must not be visible centrally.
+
+Issue: https://github.com/oramasearch/lake/issues/488.
+
+## 51. Where the operator's desired state lives — **decided (Steve, 2026-10-03): in lake's control Postgres.**
+
+**What.** Apps, builds, stores and agent launches and schedules, with their status rows, are
+desired state the orama-operator reconciles into Kubernetes. They stay in lake's control Postgres as
+dispatch, and the operator contract is unchanged.
+
+**Why.** Moving them would make the operator read desired state from every workspace Zetta: an
+operator rewrite and a hard dependency on each Zetta for reconciling.
+
+**What it costs.** These rows remain central; content that is not desired state (logs, event
+history, results, run output) still moves to the workspace under the lake#311 follow-ups that cover it.
+
+**Revisit if** the operator runs per workspace, or desired state starts carrying customer content.
+
+Issue: https://github.com/oramasearch/lake/issues/489.
