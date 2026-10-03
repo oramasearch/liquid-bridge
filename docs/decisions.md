@@ -890,3 +890,27 @@ central, extending decision 50.
 **Revisit if** a workspace needs its own key hierarchy (a KEK per workspace).
 
 Issue: https://github.com/oramasearch/lake/issues/504.
+
+## 54. Workspace storage — **decided (Steve, 2026-10-03): S1–S14 of lake `docs/architecture/workspace-storage-plan.md`.**
+
+**What.**
+- **Store bytes (S1, S2, S3):** a workspace's liquid store (repositories, Drive, models, datasets) lives in its workspace Zetta, through a new Zetta object capability that lake's liquid store backend writes to, encrypted with a per-workspace key wrapped under a key derived from `LAKE_INSTANCE_KEK`. There is no interim partition of lake's shared volume.
+- **Registry (S4–S6):** tenant images move to the workspace (blobs as SHA-256 objects in its liquid store; manifests and tags as conditional records), with image addresses unchanged through a content-free central route. The instance-wide public registry (npm, Python, debuginfod, legacy OCI) stays with the instance.
+- **Instance exceptions (S7, S9):** the transparency log, TUF and timestamp evidence, and lake's process metrics and request logs, stay with the instance. Logs carry route patterns, not raw paths. Each workspace gets its own request series in its Zetta.
+- **Search (S8):** the search index lives beside the workspace store, rebuilt rather than copied.
+- **Repositories (S10, S11):** the `repositories` row stays central as routing and only its description moves; `repository_refs` is dropped.
+- **Deletion (S12):** deleting a workspace cascades to its repositories and tenant images, cutting repository retention short (Steve chose this over refusing).
+- **Backups and the stray repository (S13, S14):** each workspace Zetta volume and lake's store volume gets scheduled CSI snapshots, desired in Postgres and taken by the operator. The `liquid` repository's space gets a workspace.
+
+**Why.** The umbrella rule puts all workspace data in its workspace Zetta. The transparency log is the
+instance's single public commitment, where splitting breaks split-view protection. Process metrics
+and logs are content-free operations data.
+
+**What it costs.** It needs a Zetta object capability, a remote liquid store backend, and an operator
+snapshot reconciler before the store moves. Cascade deletion makes deleting a workspace irreversible
+for its repositories.
+
+**Revisit if** Zetta's object storage proves too slow for push/pull, or a production environment needs a
+deletion grace period.
+
+Issue: https://github.com/oramasearch/lake/issues/512.
