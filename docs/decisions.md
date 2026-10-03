@@ -913,4 +913,10 @@ for its repositories.
 **Revisit if** Zetta's object storage proves too slow for push/pull, or a production environment needs a
 deletion grace period.
 
+**Implementation note, 2026-10-03 (coordinator; Steve may revisit).** S3's per-workspace encryption is
+done *below* liquid: lake's Zetta object backend encrypts the bytes it writes with the workspace's data key
+(wrapped under a key derived from `LAKE_INSTANCE_KEK`). Liquid's object identities are unchanged, so
+whole-repository transfer (liquid#328) needs no re-encryption and chunk-delta compression is kept; the
+workspace Zetta still holds only ciphertext.
+
 Issue: https://github.com/oramasearch/lake/issues/512.
