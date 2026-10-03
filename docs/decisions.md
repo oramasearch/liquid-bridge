@@ -820,4 +820,6 @@ dev).
 **Revisit when** lake#467 proves two processes on one store are safe (a concurrent-writer test with
 a shutdown in the middle); then dev turns the opt-in on, and later the default can flip.
 
+**Evidence, 2026-10-02 (lake#467, lake PR #474).** Two lake processes on one store root, with concurrent pushes, drive writes, OCI uploads and transparency appends and one process stopped mid-run, corrupted the customer store on every run: the store would not reopen and acknowledged writes were lost. Liquid's object store is single-process by design (in-memory pack offsets, object map and chunk index; overwritten metadata). Lake now takes an exclusive lock on `.lake-owner.lock` in the store root and a second process refuses to start, so the opt-in must stay off. Removing the deploy 503 window needs a multi-process liquid store or a store hand-off.
+
 Issue: https://github.com/oramasearch/orama-operator/issues/247.
