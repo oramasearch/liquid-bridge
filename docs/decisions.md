@@ -864,3 +864,29 @@ history, results, run output) still moves to the workspace under the lake#311 fo
 **Revisit if** the operator runs per workspace, or desired state starts carrying customer content.
 
 Issue: https://github.com/oramasearch/lake/issues/489.
+
+## 52. Where lake's audit lives — **decided (Steve, 2026-10-03): split by subject.**
+
+**What.** Control-plane and identity events (sign-in, memberships, grants, workspaces, tokens) stay
+in lake's central hash-chained audit log. Events about a workspace's data (`workspace_act` calls,
+repository, app and secret actions) are written to that workspace's audit. Retention follows each side.
+
+**Why.** Identity and control-plane actions happen before or across workspaces (decision 50); a
+workspace's data history belongs with its data (the umbrella rule).
+
+**What it costs.** Two audit sinks; a full picture of one person's actions spans the central log and
+the workspaces they touched.
+
+**Revisit if** compliance needs one tamper-evident chain across both.
+
+Issue: https://github.com/oramasearch/lake/issues/503.
+
+## 53. Keystore, agent sessions and SSO provisioning logs — **decided (Steve, 2026-10-03): stay in lake's Postgres.**
+
+**What.** The keystore (the root of the encryption chain; a customer KEK spans all of a space's
+workspaces), agent session keys (agent identity) and SSO provisioning logs (identity history) stay
+central, extending decision 50.
+
+**Revisit if** a workspace needs its own key hierarchy (a KEK per workspace).
+
+Issue: https://github.com/oramasearch/lake/issues/504.
