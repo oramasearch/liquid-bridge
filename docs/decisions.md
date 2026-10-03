@@ -851,6 +851,10 @@ Issue: https://github.com/oramasearch/lake/issues/488.
 desired state the orama-operator reconciles into Kubernetes. They stay in lake's control Postgres as
 dispatch, and the operator contract is unchanged.
 
+**The rule.** The orama-operator talks only to lake's Postgres control plane, never to a workspace
+Zetta (Steve, 2026-10-03). Anything the operator needs to reconcile is control-plane dispatch and
+lives in Postgres; a move under lake#311 must never make the operator read or write a workspace Zetta.
+
 **Why.** Moving them would make the operator read desired state from every workspace Zetta: an
 operator rewrite and a hard dependency on each Zetta for reconciling.
 
