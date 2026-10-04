@@ -38,16 +38,20 @@ is what cost four separate sessions before #282 was diagnosed.
 
 ## What is deployed
 
+Updated 2026-10-04 00:59 UTC. Earlier rows are in git history.
+
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20260928a` | `b6327fd` (branch of lake#272) | rolled 2026-09-28 05:45 UTC; adds lake#289: projects get their Opportunity's methodology's pipeline, and pages say what runs (*Runs today* / *Needs M-n* / *Trains nothing yet*). The live suite `tools/e2e/agents.py` passes 10/10 |
-| operator | `oramasearch/orama-operator:bus-930749b` | `930749b` (branch of orama-operator#192) | release `orama-operator` revision 16: everything in `main-c2bc15a`, plus Secret `lake-prod-agent-bus` (one bus credential per library agent) and lake's schema with `0032_agent_tasks`; schema guard `agent_tasks_guard` |
+| lake | `oramasearch/lake:20261003n` | lake `main` `39761f7` (through #521, lake#384), liquid `3ba6f61` (corosio `1d56cba`) | rolled 2026-10-04 00:58 UTC; `/v1/server_info` reports `39761f7`; request log lines carry `route`, not `path` (lake#384) |
+| operator | `oramasearch/orama-operator:main-2456904` | orama-operator `main` (through #265, the workspace-connection fix) | release `orama-operator`; talks only to the Postgres control plane (decision 51) |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
-| wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 with real queries and refused escapes (lake#207) |
-| workspace Zetta | `oramasearch/zetta:dev-425d591` | zetta `deploy/workspace`: `deploy/methodologies` (the registry zetta#1066, all of M-2…M-21, featurization zetta#1069) + distributed M-2 (zetta#1097) + `deploy/dev-sql-run` (the bus fixes) | `Lake/prod` `spec.services.zettaImage`, rolled 2026-09-28 09:42 UTC. **21 of 21 methodologies runnable**; runs follow their feature plan. The live suite passes 10/10 |
-| bus Zetta | `oramasearch/zetta:dev-1a354972` | zetta `deploy/dev-sql-run`: #1039/#1040, #1067 (the crash zetta#1063, owner-loop wake), #1073 and #1086 (linear audit and incremental reconcile), #1100 (long polls hold no thread, zetta#1076), #1099 (ordered shutdown, zetta#1077), #1098 (clean refused start, zetta#1078) | `Lake/prod` `spec.zetta.image`, rolled 2026-09-28 09:30 UTC; no restarts since 02:26. Bus calls take 1.5–3 ms from inside the cluster; `agent_turn` ~18 ms; SIGTERM exits in ~1 s with polls in flight. **Measure from inside the cluster:** `kubectl port-forward` adds ~370 ms per connection |
-| library agents | `agent-creator:d882c37-rt6ba7b68`, `agent-project-corpus:436f70f`, `agent-eval-generator:6e91736`, `agent-ask-orama:65122c3`, `agent-autosuggest-corpus:074169f`, `agent-project:ef6df6c`, `agent-autosuggest:1943036` | the methodology-aware PRs (agent-project#8, agent-ask-orama#5, agent-autosuggest#6, agent-creator#4, agent-eval-generator#2, agent-autosuggest-corpus#2, agent-project-corpus#2) | `Lake/prod` `spec.agents.library`, rolled 2026-09-28 05:45 UTC. agent-autosuggest still carries corpus v1 (see agent-autosuggest#6) |
-| schema | `0032_agent_tasks` | vendored from lake `51cd3ae` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:8efb19574f1e`, guard `agent_tasks_guard` |
+| wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 (lake#207) |
+| Zetta (bus and all three workspaces) | `oramasearch/zetta:dev-b82a5e94` | zetta `dev` with the keyed record store (zetta#1231) and the object store (zetta#1005, PR #1234) | `lake-prod-zetta`, `prod-ws-6bb777ba498a`, `prod-ws-787217d6ec44`, `prod-ws-d2a67e5dcf36` |
+| library agents | `agent-ask-orama:5daeca7`, `agent-project:3559823`, `agent-autosuggest:b9d8bfc`, `agent-creator:313202b`, `agent-eval-generator:1e8aae8`, `agent-project-corpus:d44fe3a`, `agent-autosuggest-corpus:eea39c1`, `agent-application:ad71605`, `agent-experiments:15c06aa` | each agent repo's `main` | `Lake/prod` `spec.agents.library` |
+| schema | lake migrations through `0066` | vendored into orama-operator from lake `main` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:852a0dcf5d35` (2026-10-03 22:26 UTC) |
+
+**Rollout:** `spec.rollout.overlapOnSharedStore: true` on dev (decision 49): 129/129 one-second polls
+answered 200 during a rollout.
 
 `Lake/prod` reports `Ready=True StoreReady=True ZettaReady=True`, and `BackupReady=False` because the
 R2 backup Secret does not exist — unchanged and tracked separately.
