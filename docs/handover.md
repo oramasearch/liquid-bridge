@@ -38,17 +38,17 @@ is what cost four separate sessions before #282 was diagnosed.
 
 ## What is deployed
 
-Updated 2026-10-04 02:12 UTC. Earlier rows are in git history.
+Updated 2026-10-04 04:20 UTC. Earlier rows are in git history.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20261004a` | lake `main` `2443212` (through #523, lake#383 phase A), liquid `3ba6f61` (corosio `1d56cba`) | rolled 2026-10-04 02:05 UTC; `/v1/server_info` reports `2443212`; `oci_tags` copied and verified (7/7) to workspace `6bb777ba`; the `e2e-notes` app pulls through its route |
-| operator | `oramasearch/orama-operator:main-b1ca318` | orama-operator `main` `b1ca318` (through #266, schema `0068`) | release `orama-operator`; talks only to the Postgres control plane (decision 51) |
+| lake | `oramasearch/lake:20261004b` | lake `main` `1bec5ad` (through #525, workspace volumes), liquid `8955519` (liquid#337, #332) | rolled 2026-10-04 03:50 UTC; `/v1/server_info` reports `1bec5ad`; `oci_tags` copied and verified (7/7) to workspace `6bb777ba` |
+| operator | `oramasearch/orama-operator:main-3b59348` | orama-operator `main` `3b59348` (through #269, workspace datastore network policies; #267, volume growth and snapshots) | talks only to the Postgres control plane (decision 51). `Lake/prod` `spec.snapshots.enabled: true`: class `lake-retain` (Retain), daily 03:00 UTC, keep 7; first snapshots of the store and all three workspaces `readyToUse`, one restored into a scratch claim and read. Workspace `787217d6` grown 5 → 10 GiB online (`df` 9.8G, no restart). Both workspace Postgres services healthy |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 (lake#207) |
 | Zetta (bus and all three workspaces) | `oramasearch/zetta:dev-b82a5e94` | zetta `dev` with the keyed record store (zetta#1231) and the object store (zetta#1005, PR #1234) | `lake-prod-zetta`, `prod-ws-6bb777ba498a`, `prod-ws-787217d6ec44`, `prod-ws-d2a67e5dcf36` |
 | library agents | `agent-ask-orama:5daeca7`, `agent-project:3559823`, `agent-autosuggest:b9d8bfc`, `agent-creator:313202b`, `agent-eval-generator:1e8aae8`, `agent-project-corpus:d44fe3a`, `agent-autosuggest-corpus:eea39c1`, `agent-application:ad71605`, `agent-experiments:15c06aa` | each agent repo's `main` | `Lake/prod` `spec.agents.library` |
-| schema | lake migrations through `0068` (`0067` is reserved by lake PR #520) | vendored by orama-operator#266 from lake `2443212` | `PostgresSchema lake-prod-controldb-schema` Applied, guard `oci_repository_routes_guard` |
+| schema | lake migrations through `0069` (`0067` is reserved by lake PR #520) | vendored by orama-operator#267 from lake `1bec5ad` | `PostgresSchema lake-prod-controldb-schema` Applied, guard `workspace_volumes_guard` |
 
 **Rollout:** `spec.rollout.overlapOnSharedStore: true` on dev (decision 49): 129/129 one-second polls
 answered 200 during a rollout.
