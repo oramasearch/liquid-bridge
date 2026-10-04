@@ -38,17 +38,17 @@ is what cost four separate sessions before #282 was diagnosed.
 
 ## What is deployed
 
-Updated 2026-10-04 00:59 UTC. Earlier rows are in git history.
+Updated 2026-10-04 02:12 UTC. Earlier rows are in git history.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20261003n` | lake `main` `39761f7` (through #521, lake#384), liquid `3ba6f61` (corosio `1d56cba`) | rolled 2026-10-04 00:58 UTC; `/v1/server_info` reports `39761f7`; request log lines carry `route`, not `path` (lake#384) |
-| operator | `oramasearch/orama-operator:main-2456904` | orama-operator `main` (through #265, the workspace-connection fix) | release `orama-operator`; talks only to the Postgres control plane (decision 51) |
+| lake | `oramasearch/lake:20261004a` | lake `main` `2443212` (through #523, lake#383 phase A), liquid `3ba6f61` (corosio `1d56cba`) | rolled 2026-10-04 02:05 UTC; `/v1/server_info` reports `2443212`; `oci_tags` copied and verified (7/7) to workspace `6bb777ba`; the `e2e-notes` app pulls through its route |
+| operator | `oramasearch/orama-operator:main-b1ca318` | orama-operator `main` `b1ca318` (through #266, schema `0068`) | release `orama-operator`; talks only to the Postgres control plane (decision 51) |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 (lake#207) |
 | Zetta (bus and all three workspaces) | `oramasearch/zetta:dev-b82a5e94` | zetta `dev` with the keyed record store (zetta#1231) and the object store (zetta#1005, PR #1234) | `lake-prod-zetta`, `prod-ws-6bb777ba498a`, `prod-ws-787217d6ec44`, `prod-ws-d2a67e5dcf36` |
 | library agents | `agent-ask-orama:5daeca7`, `agent-project:3559823`, `agent-autosuggest:b9d8bfc`, `agent-creator:313202b`, `agent-eval-generator:1e8aae8`, `agent-project-corpus:d44fe3a`, `agent-autosuggest-corpus:eea39c1`, `agent-application:ad71605`, `agent-experiments:15c06aa` | each agent repo's `main` | `Lake/prod` `spec.agents.library` |
-| schema | lake migrations through `0066` | vendored into orama-operator from lake `main` | `PostgresSchema lake-prod-controldb-schema` Applied `sha256:852a0dcf5d35` (2026-10-03 22:26 UTC) |
+| schema | lake migrations through `0068` (`0067` is reserved by lake PR #520) | vendored by orama-operator#266 from lake `2443212` | `PostgresSchema lake-prod-controldb-schema` Applied, guard `oci_repository_routes_guard` |
 
 **Rollout:** `spec.rollout.overlapOnSharedStore: true` on dev (decision 49): 129/129 one-second polls
 answered 200 during a rollout.
