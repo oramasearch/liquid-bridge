@@ -86,9 +86,14 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
      --output type=image,name=docker.io/oramasearch/lake:<YYYYMMDD><a|b|c>,push=true --progress plain
    ```
    The final image holds only the `lake` binary and OpenSSL; the Zetta checkout is a build-stage input. Do not
-   point `--local zetta=` at the full checkout (45 GB with build trees): assemble a minimal context first,
-   `rsync -a --exclude .git <zetta>/include/ <tmp>/include/` plus `src/core/connect/http_transport.cpp` and
-   `src/core/api/native_http_transport.cpp` under the same paths (about 2 MB), and pass that directory.
+   point `--local zetta=` at the full checkout (45 GB with build trees): assemble a minimal context first
+   from the commit the zetta-bridge pins, without touching the checkout (about 2.6 MB):
+   `git -C <zetta> archive <pin> include src/core/connect/http_transport.cpp src/core/api/native_http_transport.cpp src/core/runtime.cpp | tar -x -C <tmp>`,
+   and pass that directory. The file list is whatever lake's `CMakeLists.txt` compiles into `zetta-api`
+   (`src/core/runtime.cpp` joined it with lake#380); configure fails naming any file that is missing. Keep the
+   context outside `/private/tmp`, or rebuild it before each build: macOS empties old files there (a
+   context emptied that way failed the 2026-10-05 build with "does not contain the required zetta-api client
+   headers").
 
    Since lake #145 (decision 42) liquid is a second named context, `liquid_source`: add
    `--local liquid=<tmp> --opt context:liquid_source=local:liquid`. **Never pass `modules/liquid`

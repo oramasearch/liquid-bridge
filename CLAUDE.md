@@ -207,11 +207,13 @@ news.
 - **The operator.** Same rule; its next deploy must run `docs/operations/rename-cutover.md` first — the chart
   renders its resource names from `orama-operator` while production runs the release `orama-cloud-v1-operator`,
   and Helm cannot rename in place, so the handoff briefly runs both releases under one leader-election ID.
-- **Order within a roll.** The operator applies lake's schema from a vendored byte-identical copy, guarded on
-  the newest migration's table. When lake's schema changes, the operator is re-vendored, merged and rebuilt
-  **first**, then the `PostgresSchema` is deleted so the Job re-runs, and only then does the new lake binary
-  roll. Out of order, the Job reports `Applied` while applying nothing — the guard table already exists — and
-  the new binary starts against a database missing its migration.
+- **Order within a roll.** The operator applies lake's schema from a vendored byte-identical copy. When
+  lake's schema changes, the operator is re-vendored, merged and rebuilt **first**, the schema must reach
+  `Applied` with every new `schema_migrations` row present, and only then does the new lake binary roll.
+  Since orama-operator#272 the Job skips the file only when the guard table exists **and** every migration row
+  in the vendored schema is recorded, so a migration merged out of order (0067 after 0069, 2026-10-05) is
+  applied rather than skipped. Check the row (`select version from schema_migrations where version like
+  'NNNN%'`) before rolling lake.
 - **liquify.** After a merge that changes what a person sees or runs, rebuild and produce a fresh dmg, and say
   where it is. A screenshot from the headless path is not evidence that the real window works: open the built
   application before claiming a UI change is done.
