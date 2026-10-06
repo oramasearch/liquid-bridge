@@ -38,11 +38,11 @@ is what cost four separate sessions before #282 was diagnosed.
 
 ## What is deployed
 
-Updated 2026-10-06 16:40 UTC. Earlier rows are in git history.
+Updated 2026-10-06 17:30 UTC. Earlier rows are in git history.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20261006a` | lake `main` `f2c41a0` (through #531: migration 0070 drops the moved central tables, `remove_space_store`), liquid `8955519` | rolled 2026-10-06 ~16:35 UTC. All three workspaces' repositories are served from their workspace Zettas. The old space stores of `6bb777ba` (8.3 MB) and `da7cf099` (1.9 MB) were removed with `remove_space_store` after a fresh `lake-prod-store` snapshot (`lake-prod-store-20261006t161152z`); reads are unchanged. Commits take ~5 s (lake#527; PR #532 in review). Search skips switched workspaces until lake#381 (PR #530) |
+| lake | `oramasearch/lake:20261006c` | lake `main` `40d4dd0` (through #528: tenant image blobs in workspace stores, `provision`; #530: search beside the workspace store; #531: 0070 drops), liquid `8955519` | rolled 2026-10-06 ~17:15 UTC. Repositories, their search indexes and tenant image blobs all live in the workspace Zettas. Search on `6bb777ba` returns hits from its own index after a background rebuild. `oci_blobs` copied and verified (22/22); the `e2e-notes` image pulls with every digest matching. `787217d6` was provisioned (lake#529) and takes commits. Old space stores removed. Commits take ~5 s until lake#527 (PR #532, in review) |
 | operator | `oramasearch/orama-operator:main-d6b4515` | orama-operator `main` `d6b4515` (through #274, schema 0070; #272, schema Job checks every migration row; #269, workspace datastore network policies; #267, volume growth and snapshots) | talks only to the Postgres control plane (decision 51). `Lake/prod` `spec.snapshots.enabled: true`: class `lake-retain` (Retain), daily 03:00 UTC, keep 7; first snapshots of the store and all three workspaces `readyToUse`, one restored into a scratch claim and read. Workspace `787217d6` grown 5 → 10 GiB online (`df` 9.8G, no restart). Both workspace Postgres services healthy |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 (lake#207) |
