@@ -38,11 +38,11 @@ is what cost four separate sessions before #282 was diagnosed.
 
 ## What is deployed
 
-Updated 2026-10-06 18:10 UTC. Earlier rows are in git history.
+Updated 2026-10-06 19:00 UTC. Earlier rows are in git history.
 
 | | Running | Built from | Verified |
 |---|---|---|---|
-| lake | `oramasearch/lake:20261006d` | lake `main` `d86f1ca` (through #532 store latency; #528 image blobs; #530 search; #531 0070 drops), liquid `8955519` | rolled 2026-10-06 ~18:00 UTC. Repositories, search indexes and tenant image blobs live in the workspace Zettas (lake#311 moves done). One-file commit 3.1–3.4 s (was 4.5–5.8 s): 104 requests of about 33 ms each, every ordered write an fsync (lake#535). The first request after a roll waits for the old pod's lease, 73 s once (lake#536) |
+| lake | `oramasearch/lake:20261006e` | lake `main` `2754671` (through #537 rollout handoff: drain releases workspace leases, background pre-open; #532 store latency; #528; #530; #531), liquid `8955519` | rolled 2026-10-06 ~18:50 UTC from a pre-#536 image, so no early handoff on this roll. Pre-open timings: store 24–36 s while waiting for the old pod; repositories 0.6–64 s, cold reads (lake#538). One-file commit about 3.2 s (104 requests, each an fsync). lake#535 (PR #539) cuts that to about 1 fsync, but it is **gated on zetta#1235** (segment-roll fsync) |
 | operator | `oramasearch/orama-operator:main-d6b4515` | orama-operator `main` `d6b4515` (through #274, schema 0070; #272, schema Job checks every migration row; #269, workspace datastore network policies; #267, volume growth and snapshots) | talks only to the Postgres control plane (decision 51). `Lake/prod` `spec.snapshots.enabled: true`: class `lake-retain` (Retain), daily 03:00 UTC, keep 7; first snapshots of the store and all three workspaces `readyToUse`, one restored into a scratch claim and read. Workspace `787217d6` grown 5 → 10 GiB online (`df` 9.8G, no restart). Both workspace Postgres services healthy |
 | service operators | cert-manager v1.21.2, Strimzi 1.2.0, Altinity 0.27.4 (watching `.*`, #178), TiDB Operator v1.6.6, K8ssandra 1.33.0, valkey-operator 0.6.0 | orama-operator `helmfile.yaml`, `tier=service-operators` | `helm list -A`; each kind created, Ready, connected and deleted from the UI on 2026-09-26 (decision 47) |
 | wrapper services | `oramasearch/lake-sqlite`, `lake-duckdb:0.1.0`, `lake-polars:0.1.0` (private) | their own private repos, pinned in `modules/` | `tools/e2e/services.mjs sqlite duckdb polars` exit 0 on 2026-09-26 (lake#207) |
