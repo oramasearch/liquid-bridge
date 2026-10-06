@@ -839,7 +839,9 @@ workspace Zetta would make signing in depend on that Zetta being up.
 **What it costs.** Identity material stays in one central database rather than per workspace, so its
 protection rests on that database's sealing and access controls.
 
-**Not covered.** Customer secrets (`secrets_*`) still move to their workspace.
+**Not covered.** Customer secrets (`secrets_*`) still move to their workspace. The identity inside a
+customer's own application (`auth_app_*`: its signing keys, end-users, organizations and authorization
+codes) is workspace data, not lake's identity: see decision 55.
 
 **Revisit if** a workspace needs its own identity provider that must not be visible centrally.
 
@@ -920,3 +922,26 @@ whole-repository transfer (liquid#328) needs no re-encryption and chunk-delta co
 workspace Zetta still holds only ciphertext.
 
 Issue: https://github.com/oramasearch/lake/issues/512.
+
+## 55. Customer-app identity and usage history — **decided (Steve, 2026-10-06): workspace data; the central copies are dropped.**
+
+**What.** Approving lake PR #531 (migration `0070_drop_moved_tables`), Steve chose to drop:
+- the identity inside the applications customers build on lake (`auth_app_signing_keys`,
+  `auth_app_users`, `auth_app_organizations`, `auth_app_authorization_codes`). It lives only in the
+  application's workspace Zetta (lake#352–#354, migrations 0055/0056);
+- the central usage history (`metering_usage`, `metering_build_records`). Usage lives in workspace
+  records (lake#313, migration 0053).
+
+**Why.** A customer app's users and keys are that customer's data, not lake's own sign-in, which stays
+central under decision 50. Keeping central copies that lake no longer writes or reads only invites them to
+drift and to be mistaken for the source.
+
+**What it costs.**
+- A customer app's sign-in and its public JWKS depend on the app's workspace Zetta being up.
+- The central usage history is gone. When billing is designed it reads workspace records or defines its
+  own store; nothing central was kept for it. On dev this lost 21 rows of a retired stored-bytes gauge.
+
+**Revisit if** a customer app needs sign-in to survive an outage of its workspace Zetta (a cache or a
+replica of the JWKS), or billing needs a central ledger.
+
+Issue: https://github.com/oramasearch/lake/issues/533.
