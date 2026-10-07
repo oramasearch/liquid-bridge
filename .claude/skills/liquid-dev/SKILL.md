@@ -117,6 +117,16 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    ```
    The store volume (100 GiB, `managed-csi`) and the instance key Secret `lake-prod-instance-kek` are
    reused; never delete either (the key is not backed up anywhere else yet).
+
+   **Zetta images** (the bus `spec.zetta.image` and every workspace Zetta `spec.services.zettaImage`,
+   which also sets the image of workspaces created later). Zetta's repo carries no Dockerfile; the recipe
+   lives in `codex-work/build/zetta/` (`Dockerfile`, `build-zetta.sh`). It was reconstructed on 2026-10-06
+   from the image history of `dev-b82a5e94` after the only copy, in `/private/tmp`, was emptied. Never keep
+   build recipes or contexts in `/private/tmp`. Build from a Zetta clone on `origin/dev`:
+   `build-zetta.sh ~/dev/oramasearch/codex-work/zetta dev-<sha8>`. Check the push answered, check an anonymous
+   `curl https://hub.docker.com/v2/repositories/oramasearch/zetta/` gives 404, then patch both image fields on
+   `Lake/prod` and wait for every `*-zetta-0` pod to be Ready on the new tag. Since lake#535 lake relies on
+   zetta#1235 (prefix durability, `dev-5f70b306` or later); never roll a workspace Zetta back past that.
 5. Operator: the Helm release is `orama-operator`; the one-time handoff from `orama-cloud-v1-operator`
    (the operator's `docs/operations/rename-cutover.md`) is done. Build the same way from `codex-work/orama-operator` on `main`
    (`--output type=image,name=docker.io/oramasearch/orama-operator:main-<sha>,push=true`, no Zetta context),
