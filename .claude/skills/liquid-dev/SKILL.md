@@ -118,12 +118,26 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    The store volume (100 GiB, `managed-csi`) and the instance key Secret `lake-prod-instance-kek` are
    reused; never delete either (the key is not backed up anywhere else yet).
 
+   **Where the helpers live.** Everything reusable is in `~/dev/oramasearch/codex-work/build/`, never in
+   `/private/tmp` (macOS emptied it on 2026-10-07, taking every helper, the registry credential and the
+   build contexts with it):
+   - `scripts/`: `env.sh` (paths, `DOCKER_CONFIG`), `build-lake.sh <tag>` (builds `wt/lake/deploy-next`,
+     rolls only on success), `build-operator.sh`, `opcall.sh`, `copyrec.sh`;
+   - `contexts/`: `zetta-pin` (from the zetta-bridge pin with `git archive`) and `liquid-<sha>` (rsync of the
+     pinned liquid). Refresh both when a pin moves;
+   - `.dockercfg/`: the registry credential, mode 0700, from the keychain helper. Never commit it or print it;
+   - `lake-linux-test/run-lake-linux-tests.sh <worktree> <label> '<gtest filter>' '<ctest regex>'`: builds
+     lake's tests on Linux on the cluster BuildKit and runs them, pushing nothing. **Any change to lake,
+     liquid or corosio passes its affected tests on Linux before it merges.** lake#545 passed on macOS and
+     broke every connection on Linux (lake#546). Run one at a time: the BuildKit pod has a 12 GiB limit;
+   - `briefs/`: the agent preamble and briefs.
+
    **Zetta images** (the bus `spec.zetta.image` and every workspace Zetta `spec.services.zettaImage`,
    which also sets the image of workspaces created later). Zetta's repo carries no Dockerfile; the recipe
    lives in `codex-work/build/zetta/` (`Dockerfile`, `build-zetta.sh`). It was reconstructed on 2026-10-06
    from the image history of `dev-b82a5e94` after the only copy, in `/private/tmp`, was emptied. Never keep
    build recipes or contexts in `/private/tmp`. Build from a Zetta clone on `origin/dev`:
-   `build-zetta.sh ~/dev/oramasearch/codex-work/zetta dev-<sha8>`. Check the push answered, check an anonymous
+   `build/zetta/build-zetta.sh ~/dev/oramasearch/codex-work/zetta dev-<sha8>`. Check the push answered, check an anonymous
    `curl https://hub.docker.com/v2/repositories/oramasearch/zetta/` gives 404, then patch both image fields on
    `Lake/prod` and wait for every `*-zetta-0` pod to be Ready on the new tag. Since lake#535 lake relies on
    zetta#1235 (prefix durability, `dev-5f70b306` or later); never roll a workspace Zetta back past that.
