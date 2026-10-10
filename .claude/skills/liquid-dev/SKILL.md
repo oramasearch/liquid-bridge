@@ -38,8 +38,10 @@ Decision 33 (`docs/decisions.md`) applies everywhere: nothing here runs `docker`
 - k0s (`liquid` branch): the Makefile wraps Docker by default; always `make DOCKER=""
   EMBEDDED_BINS_BUILDMODE=none BUILD_GO_LDFLAGS_EXTRA="" <target>` or plain `go build ./... && go test ./pkg/... -short`.
 - orama-operator: `go build ./... && go vet ./... && go test ./... && helm lint chart/`.
-- Linux proofs run off this machine (hosted CI once `ORAMA_SUBMODULES_TOKEN` exists); until then a merge
-  records "Linux proof deferred (decision 33)" on its issue and `docs/action-plan.md` lists the debt.
+- **No CI** (Steve, umbrella `CLAUDE.md`): never add, enable or edit a CI workflow, and never wait on
+  or cite CI. Linux proofs run on the cluster BuildKit lane (`lake-linux-test/run-lake-linux-tests.sh`,
+  below); where no lane exists yet, a merge records "Linux proof deferred (decision 33)" on its issue
+  and `docs/action-plan.md` lists the debt.
 
 ## Close each issue the moment its code is on a PR
 
@@ -161,5 +163,5 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
 
 ## What needs Steve
 
-`ORAMA_SUBMODULES_TOKEN` for hosted CI, any Linux proof lane on the cluster, secrets and tokens (Cloudflare,
+Any new Linux proof lane on the cluster, secrets and tokens (Cloudflare,
 registry, R2 backups), destructive database actions, and the decisions listed open on issue #7.
