@@ -56,7 +56,7 @@ every place you had to know something the product did not tell you.
 | J6 | **Train a model** | From data I loaded, how do I train a model? What does it need, what runs, where is the result and its score? |
 | J7 | Evaluate and approve | How good is it? How do I compare runs, approve a Pipeline? |
 | J8 | Ship it | How do I use the model: an API call, a search index, a package, a deployment? Can I call it from outside? |
-| J9 | Agents | Ask Orama a question; create an agent; run it once; schedule it; see its result. |
+| J9 | Agents | Ask Orama a question; create an agent; run it once; schedule it; see its result. Connect an MCP server (Data → MCP Connections, lake#652): add it, test it, allow a read and a change, Try it, ask Ask Orama to use it (the change is proposed), create the connection's agent, and see the calls in Recent Calls. |
 | J10 | Developer | Get an API key, read the API, connect MCP, make the first call from a terminal. |
 | J11 | Organization | Invite someone, share a folder, see usage and activity, manage secrets. |
 | J12 | Recover | A wrong input, an expired session, a job that failed: is the error clear and is there a way forward? |
