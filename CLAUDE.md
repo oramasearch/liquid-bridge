@@ -178,6 +178,26 @@ wraps it. Say what the licence is, in the same breath as what the library does. 
 write our own, it lands with a conformance suite the previous implementation also passes, so
 "ours" never means "less proven".
 
+## Steve's requests: finish first, queue the rest — IMPORTANT
+
+Steve, 2026-10-10: *"always finish what you're working on first... add what I ask to the bottom and
+don't forget it... always create issues for everything I ask and memorize the order of tickets or
+organize them into epics."*
+
+- **Finish what is in progress before starting anything new.** That means built, tested, committed,
+  pushed, deployed and checked. A new request does not interrupt the work in hand unless Steve says
+  it does. If he asks a question mid-task, answer it and carry on.
+- **Every request gets an issue, at once**, in the repository it concerns. That includes a one-line
+  ask, a complaint about something on screen, and a "can we also…". Nothing is held only in the
+  conversation.
+- **The order lives in a queue epic.** For lake it is
+  [lake#571, "Steve's queue: lake requests, in order"](https://github.com/oramasearch/lake/issues/571):
+  a task list, top first. Its first unchecked item is what is being worked on. A new request is added
+  to the **bottom**. Bigger asks become their own epic, listed in the queue as one line.
+- **When an item ships,** close its issue with a closing comment (as always), tick it in the queue,
+  and start the next unchecked item. When reporting progress, say where the queue stands.
+- After a context reset, read the queue epic before doing anything else.
+
 ## The AKS cluster is development, not production — IMPORTANT
 
 `orama-production-cluster-01`, `Lake/prod` and `lake.oramadev.net` are the **development**

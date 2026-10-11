@@ -43,6 +43,16 @@ Decision 33 (`docs/decisions.md`) applies everywhere: nothing here runs `docker`
   below); where no lane exists yet, a merge records "Linux proof deferred (decision 33)" on its issue
   and `docs/action-plan.md` lists the debt.
 
+## Steve's requests: finish first, queue the rest
+
+Finish the work in hand (built, tested, committed, pushed, deployed, checked) before starting a new
+request. File an issue for every request the moment it is made, and add it to the **bottom** of the
+queue epic: [lake#571](https://github.com/oramasearch/lake/issues/571) for lake, or a queue epic of
+the same shape in the repository concerned. The queue's first unchecked item is the current work.
+When it ships, close its issue with a comment, tick it in the queue, and take the next one. Read the
+queue first after any context reset. The full rule is in liquid-bridge `CLAUDE.md` → *Steve's
+requests: finish first, queue the rest*.
+
 ## Close each issue the moment its code is on a PR
 
 When the change for an issue is pushed to its PR and complete, **close that issue right then** with a
