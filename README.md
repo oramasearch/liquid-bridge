@@ -55,6 +55,7 @@ Every module is private; you need SSH access to the `oramasearch` org.
 | [`modules/lake-builder`](modules/lake-builder/) | The image a lake in-cluster build Job runs: rootless BuildKit, pushing to lake's registry (oramasearch/lake#297). Private, own private image. |
 | [`modules/lake-duckdb`](modules/lake-duckdb/) | The web service behind lake's DuckDB service kind, locked down against file, network and extension access. Private, own private image. |
 | [`modules/lake-polars`](modules/lake-polars/) | The web service behind lake's Polars service kind: Parquet datasets and Polars SQL (Rust). Private, own private image. |
+| [`modules/methodology-runtime`](modules/methodology-runtime/) | The sandbox runtime for a workspace's own methodologies: the Python interface, the harness the stage, run and collect pods use, and the image a methodology's own image is built from (oramasearch/lake#655). Private, own private image. |
 
 **Not modules here — one level up.** The **Orama operator** (lake runs on it as a `Lake` CR) and
 **marketing-bridge** are shared across products, so they are pinned once by the org umbrella
