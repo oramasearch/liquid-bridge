@@ -1005,13 +1005,12 @@ Cloud billing, behind lake's existing `PaymentProvider` interface (decision 56):
   id, and audited centrally. The operator no longer records Stripe payments by hand.
 - **We write our own.** Lake calls Stripe's REST API through its own outbound HTTP client, never the
   Stripe SDK (liquid-bridge `CLAUDE.md`).
-- **Keys** live in lake's own secret store, a sealed secret mount in a workspace Zetta (Steve,
-  2026-10-11: Zetta is the secrets store; a Kubernetes Secret only when something must mount it,
-  lake#625). `LAKE_BILLING_SECRETS` names only the mount; lake reads the secret `stripe`
-  (`secret_key`, `webhook_secret`) at use, caches it briefly, never logs it, and picks up a new
-  version on rotation. No Kubernetes Secret holds the keys. Without them the manual ("invoice only")
-  provider stays and lake says so; billing off (an enterprise install) keeps every billing surface
-  absent, Stripe included.
+- **Keys** are Orama's own platform secrets, so they are environment variables of the hosting
+  platform (`LAKE_STRIPE_SECRET_KEY`, `LAKE_STRIPE_WEBHOOK_SECRET`; Railway env vars for Orama's
+  deployments, `spec.env` on the dev cluster), never a user's secret store (Steve, 2026-10-11: *"our
+  secrets are railway env vars... obviously our stripe secrets are not for the user"*). Without them
+  the manual ("invoice only") provider stays and lake says so; billing off (an enterprise install)
+  keeps every billing surface absent, Stripe included.
 
 **Why "for now".** Stripe covers what Orama Cloud needs first, card and bank payment on a hosted
 invoice page, with a documented HTTP API and signed webhooks that lake can call and verify with its
