@@ -1103,3 +1103,34 @@ Issue: https://github.com/oramasearch/liquid-bridge/issues/36. Implements
 https://github.com/oramasearch/lake/issues/625; follows
 https://github.com/oramasearch/lake/issues/628; follow-up
 https://github.com/oramasearch/lake/issues/629.
+
+## 59. The product name is "Lake", with a capital L — **decided (Steve, 2026-10-11).**
+
+Steve, 2026-10-11: *"lake has a capital L."* This amends decision 43, which made the name customers
+see the lowercase "lake".
+
+**What.**
+- **Capitalized:** the product's name for people is **Lake**, and its app is the **Lake Console**.
+  This covers every surface a person reads: the app's chrome and pages, the in-app Docs, the
+  website, docs written for customers, release notes and messages.
+- **Lowercase, as now:** technical names keep their form. That is the repositories
+  (`oramasearch/lake`), the binary, hostnames (`lake.live`, `lake.oramadev.net`), CLI commands, env
+  vars (`LAKE_*`), code identifiers and file paths.
+
+**Why.** It is Steve's call on the brand. A capitalized name reads as a product beside Metis, Zetta
+and Orama Studio. A lowercase brand needed a rule never to start a sentence with it (the website
+draft followed one), which the capital removes.
+
+**What it costs.**
+- **Copy:** a pass over the app's copy and the in-app guide (36 pages), plus the website PRs in
+  flight, where the website's tests that refused a sentence starting with "lake" are reversed.
+- **Internal docs:** engineering docs in `oramasearch/lake` keep "lake" for the system and its
+  code. Only text written for customers changes.
+
+**Limits.** "Lake" is a common word. Search and trademark clarity rest on context ("Orama Lake",
+"Lake Console") rather than on the word alone.
+
+**Revisit** if a trademark or naming review asks for a different public name (decision 43's
+"Orama Cloud" question on orama-website-v2#390 is settled by this: the name is Lake).
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/37. Follow-ups: lake#642, orama-website-v2#390, #392, #393.
