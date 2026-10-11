@@ -26,3 +26,6 @@
 [submodule "modules/lake-builder"]
 	path = modules/lake-builder
 	url = git@github.com:oramasearch/lake-builder.git
+[submodule "modules/methodology-runtime"]
+	path = modules/methodology-runtime
+	url = git@github.com:oramasearch/methodology-runtime.git

@@ -32,6 +32,7 @@ vendored submodule. Never depends on Zetta. |
 | `modules/lake-sqlite` | `oramasearch/lake-sqlite` | `CLAUDE.md`. The web service behind lake's SQLite service kind (Go, pure-Go SQLite); the operator runs its private image. Every service is its own private repo (umbrella rule). |
 | `modules/lake-duckdb` | `oramasearch/lake-duckdb` | `CLAUDE.md`. lake's DuckDB service kind (Go); locked-down engine; private image. |
 | `modules/lake-polars` | `oramasearch/lake-polars` | `CLAUDE.md`. lake's Polars service kind (Rust); private image. |
+| `modules/methodology-runtime` | `oramasearch/methodology-runtime` | `CLAUDE.md`, then `docs/sandbox.md`. The sandbox runtime for workspace methodologies (Python, standard library only); the operator runs its private image in the stage and collect pods, and each methodology's image is built FROM it (lake#655). |
 
 
 **One level up, not modules here.** `orama-operator` and `marketing-bridge` are pinned by the org
