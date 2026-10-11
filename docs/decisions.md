@@ -989,3 +989,52 @@ while a workspace Zetta is down.
 Issue: https://github.com/oramasearch/lake/issues/617. Builds on decision 55
 (https://github.com/oramasearch/lake/issues/533); unblocks the billing half of
 https://github.com/oramasearch/lake/issues/564.
+
+## 57. Lake's payment provider — **decided (Steve, 2026-10-11): Stripe, for now.**
+
+**What.** Steve, 2026-10-11: *"let's use stripe for now"*. Stripe is the payment provider for Orama
+Cloud billing, behind lake's existing `PaymentProvider` interface (decision 56):
+- **Customers.** A lake account is mapped to one Stripe Customer the first time one of its invoices
+  is issued; the Stripe customer id is kept on the account's billing row in lake's control Postgres.
+- **Invoices.** Issuing a lake invoice creates a Stripe Invoice with one invoice item per lake line
+  (amounts in cents, USD), finalizes it and keeps its id and hosted invoice URL on the lake invoice.
+  **Lake's invoice stays the source of truth for amounts**; Stripe collects them.
+- **Payment.** The account pays on Stripe's hosted invoice page, linked from lake's invoice page.
+  Stripe's webhooks (`invoice.paid`, `invoice.payment_failed`, `invoice.voided`) move lake's invoice,
+  verified by the `Stripe-Signature` HMAC with a five-minute tolerance, applied once per Stripe event
+  id, and audited centrally. The operator no longer records Stripe payments by hand.
+- **We write our own.** Lake calls Stripe's REST API through its own outbound HTTP client, never the
+  Stripe SDK (liquid-bridge `CLAUDE.md`).
+- **Keys** (`LAKE_STRIPE_SECRET_KEY`, `LAKE_STRIPE_WEBHOOK_SECRET`) come from a Kubernetes Secret
+  through the Lake CR's `spec.env`. Without them the manual ("invoice only") provider stays, and
+  billing off (an enterprise install) keeps every billing surface absent, Stripe included.
+
+**Why "for now".** Stripe covers what Orama Cloud needs first, card and bank payment on a hosted
+invoice page, with a documented HTTP API and signed webhooks that lake can call and verify with its
+own client and OpenSSL. It lets lake.live take card payments without building a checkout. The choice
+is deliberately reversible: the provider is one implementation of an interface, and lake's invoices,
+plans and amounts do not depend on it.
+
+**What it costs.**
+- Fees, per Stripe's published US pay-as-you-go pricing as of 2026-10: 2.9% + $0.30 per domestic card
+  payment, 0.8% capped at $5 per ACH Direct Debit, plus Stripe Invoicing's 0.4% per paid invoice.
+  Check stripe.com/pricing before relying on these numbers.
+- Customer records and payment state are duplicated in Stripe (a customer id and invoice ids in lake;
+  names, amounts and lines in Stripe). Stripe sees each account's name and its invoice lines, never
+  workspace content.
+- A Stripe account, its keys and its webhook endpoint are operational state outside the cluster that
+  someone at Orama owns.
+
+**Limits.** USD only (two-decimal cents); lake's totals are rounded to the cent for Stripe, with any
+difference carried on a rounding line. No taxes (Stripe Tax is not used), no subscriptions on Stripe's
+side (lake keeps plans and issues each invoice), no refunds or credit notes through lake, no
+automatic retries beyond Stripe's own.
+
+**Revisit if** fees at Orama's volume justify a cheaper processor or negotiated pricing; Orama bills
+in regions or currencies Stripe does not serve well; taxes must be computed and filed; or enterprise
+installs that want lake's billing bring their own processor (then a second `PaymentProvider`
+implementation, chosen by configuration).
+
+Issue: https://github.com/oramasearch/lake/issues/620. Builds on decision 56
+(https://github.com/oramasearch/lake/issues/617); unblocks card payment on lake.live
+(https://github.com/oramasearch/liquid-bridge/issues/17).
