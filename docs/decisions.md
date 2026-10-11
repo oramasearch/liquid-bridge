@@ -1134,3 +1134,51 @@ draft followed one), which the capital removes.
 "Orama Cloud" question on orama-website-v2#390 is settled by this: the name is Lake).
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/37. Follow-ups: lake#642, orama-website-v2#390, #392, #393.
+
+## 60. Lake as an MCP client — **decided (Steve, 2026-10-11): remote servers first, opt-in re-export through Lake's MCP, per-tool auto-approve for unattended agents.**
+
+Steve asked for an MCP Connections page "that will allow us to create MCP clients that will connect
+to other MCP servers", with optional agents and streams per connection (lake#652). Asked the three
+open questions, he chose:
+
+**What.**
+- **Transport:** a connection reaches a **remote** MCP server (Streamable HTTP, SSE for older
+  servers). A server that only speaks stdio comes later, run as a workspace App container that Lake
+  reaches over HTTP (lake#659).
+- **Re-export:** a connection can be marked *expose through Lake's MCP*. Its **allowed** tools then
+  appear in Lake's own `tools/list` under the connection's prefix, so one MCP endpoint reaches Lake
+  and what the workspace connected. Off by default, per connection.
+- **Changes:** a connected tool is a *read* or a *change* (the server's `readOnlyHint` proposes, a
+  person decides). Changes are proposals a person confirms, except where a person marks a specific
+  change tool **auto-approved for one unattended agent**. That choice is per tool and per agent,
+  and audited.
+- **Where things live:** the connection is a workspace record in the workspace Zetta; its token or
+  OAuth refresh token is a workspace secret (decision 58), never on the record and never shown to a
+  model, browser or agent. Lake runs the client server-side, so every call is audited in the
+  workspace and metered.
+
+**Why.** Remote servers cover hosted MCP services without running anyone's code; stdio needs a
+sandboxed runner, which is its own piece of work. Re-export makes Lake the single endpoint an MCP
+client configures, but exposing third-party tools to every Lake MCP client is a choice a workspace
+makes deliberately, hence opt-in. Unattended agents need some way to act; a per-tool, per-agent
+grant keeps the blast radius explicit.
+
+**What it costs.**
+- A re-exported tool runs with Lake's credential to that server for whoever may call Lake's tool.
+  Lake's policy (the caller's workspace permission) is the only gate, so the connection page says so
+  when the switch is turned on.
+- Auto-approve means a model may change something in another system with no person in the loop.
+  Results from external servers are data, never instructions, and the audit names the agent, tool
+  and grant.
+- Lake carries an MCP client: initialize and sessions, tools/resources/prompts lists, OAuth 2.1 with
+  PKCE and dynamic client registration, notifications.
+
+**Limits.** No stdio until lake#659. Re-exported tools' schemas are the remote server's; Lake does
+not rewrite them beyond the prefix.
+
+**Revisit** if a workspace needs re-export for some callers only (then a grant per tool rather than
+per connection), or if a server's own authorization model makes Lake's proxy credential
+inappropriate (then per-person OAuth to that server).
+
+Issue: https://github.com/oramasearch/lake/issues/660. Implements
+https://github.com/oramasearch/lake/issues/652; follow-up https://github.com/oramasearch/lake/issues/659.
