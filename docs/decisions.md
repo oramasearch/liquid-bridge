@@ -945,3 +945,47 @@ drift and to be mistaken for the source.
 replica of the JWKS), or billing needs a central ledger.
 
 Issue: https://github.com/oramasearch/lake/issues/533.
+
+## 56. Where billing records live — **decided (Steve, 2026-10-10): in lake's Postgres control plane; usage stays in each workspace Zetta.**
+
+**What.** Steve, 2026-10-10: *"billing records go in postgres... usage records go in zetta workspace."*
+- **Billing records are multitenancy.** The price list and plans, each account's subscription,
+  invoices, their line items and their payment state are rows in lake's control Postgres. They hold
+  account ids, dimensions, quantities and amounts, never workspace content.
+- **Usage stays in each workspace Zetta** (`lake_usage`, `lake_storage`, lake#564), read through
+  `usage_over_time`. A bill reads usage through those capabilities for its period and freezes the
+  billed quantity of each dimension on the invoice's line items. Billing keeps no usage history.
+- This settles what decision 55 left open ("When billing is designed it reads workspace records or
+  defines its own store"): billing defines its own store, in Postgres, and reads workspace records
+  for its quantities.
+- **Billing is off on enterprise installs.** One configuration value (`LAKE_BILLING`, which the Lake
+  CR sets through `spec.env`) makes the billing pages and capabilities absent. Usage tracking, its
+  charts and its limits stay on everywhere.
+- **No payment provider is chosen.** Lake builds a provider interface with a manual ("invoice only")
+  implementation and no third-party SDK ("We write our own"); the choice of provider is its own
+  decision, still to make.
+
+**Why.** An account is billed before and across its workspaces, like sign-in (decision 50): a bill
+covers every workspace of an account, must survive a workspace's deletion, and must not depend on
+each workspace Zetta being up to be read. An invoice is a financial record lake issues, not data a
+customer put in a workspace. Usage, by contrast, is a fact about a workspace, written where the work
+happens, and keeping a central copy is what decision 55 dropped.
+
+**What it costs.**
+- An invoice's line items are a central copy of one number per dimension per period: the quantity
+  billed. That is the only usage that reaches Postgres, and it is kept for as long as the invoice.
+- Working out a bill reads every workspace of the account. If a workspace Zetta is down, the bill
+  for that period cannot be issued until it answers; lake refuses rather than issuing a short bill.
+- A workspace deleted before its period is billed takes its usage with it (decision 54 S12), so that
+  usage is never billed. Billing a period promptly after it closes keeps this rare.
+
+**Not covered.** The payment provider; taxes; currencies other than one per price list; credits,
+refunds and proration beyond a plan change taking effect at the next period.
+
+**Revisit if** an auditor or a payment provider needs the per-workspace usage behind an invoice to
+outlive the workspace (then the line items carry a per-workspace breakdown), or bills must be issued
+while a workspace Zetta is down.
+
+Issue: https://github.com/oramasearch/lake/issues/617. Builds on decision 55
+(https://github.com/oramasearch/lake/issues/533); unblocks the billing half of
+https://github.com/oramasearch/lake/issues/564.
