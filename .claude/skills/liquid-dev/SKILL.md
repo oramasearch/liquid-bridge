@@ -135,8 +135,15 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    build contexts with it):
    - `scripts/`: `env.sh` (paths, `DOCKER_CONFIG`), `build-lake.sh <tag>` (builds `wt/lake/deploy-next`,
      rolls only on success), `build-operator.sh`, `opcall.sh`, `copyrec.sh`;
-   - `contexts/`: `zetta-pin` (from the zetta-bridge pin with `git archive`) and `liquid-<sha>` (rsync of the
-     pinned liquid). Refresh both when a pin moves;
+   - `contexts/`: `zetta-pin` (from the zetta-bridge pin with `git archive`) and `liquid-<sha7>` (rsync of the
+     pinned liquid). Refresh `zetta-pin` when its pin moves. The liquid context follows this bridge's pin
+     by itself: `liquid_context` in `env.sh` names `contexts/liquid-<sha7>` for the current `modules/liquid`
+     pin and creates it with rsync when it is missing (the checkout must be clean and at the pin).
+     `build-lake.sh` and `run-lake-linux-tests.sh` use it (`LIQUID_CONTEXT=<dir>` overrides it for the lane);
+   - `liquid-linux-test/run-liquid-linux-tests.sh <worktree> <label> '<gtest filter>' <repeat> '<ctest regex>'`
+     and `corosio-linux-test/run-corosio-linux-tests.sh <worktree> <label> '<suite>' <repeat>` are the same
+     lane for liquid and corosio. The liquid lane builds only `liquid-tests`, and its full `ctest` is not
+     green on Linux yet (liquid#356), so a liquid proof compares the failure list with `main`'s;
    - `.dockercfg/`: the registry credential, mode 0700, from the keychain helper. Never commit it or print it;
    - `lake-linux-test/run-lake-linux-tests.sh <worktree> <label> '<gtest filter>' '<ctest regex>'`: builds
      lake's tests on Linux on the cluster BuildKit and runs them, pushing nothing. **Any change to lake,
