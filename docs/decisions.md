@@ -1173,7 +1173,7 @@ grant keeps the blast radius explicit.
 - Lake carries an MCP client: initialize and sessions, tools/resources/prompts lists, OAuth 2.1 with
   PKCE and dynamic client registration, notifications.
 
-**Limits.** No stdio until lake#659. Re-exported tools' schemas are the remote server's; Lake does
+**Limits.** stdio servers run as a workspace App through our own runner, `oramasearch/lake-mcp-runner` (lake#659, lake PR #710); their packages install at start, so the workspace needs HTTPS egress until they are baked into an image (lake#711). Re-exported tools' schemas are the remote server's; Lake does
 not rewrite them beyond the prefix.
 
 **Revisit** if a workspace needs re-export for some callers only (then a grant per tool rather than
