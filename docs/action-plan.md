@@ -401,6 +401,34 @@ and `churn_model` listed under Ship. Found and fixed on the way: Zetta SQL takes
 need approval before `gate` (lake#155). Open: `get_run_report` never answers
 (https://github.com/oramasearch/zetta/issues/1007); lake times reads out at 15 s.
 
+**Deployment 2026-10-12: the first releases. lake v0.1.0, zetta v0.2.0, liquid v0.1.0.** Three
+repositories were tagged for the first time (zetta for the third), each with a GitHub release and
+release notes under its `docs/releases/`, and the cluster was rolled to the tagged source:
+
+| | Git tag | Image deployed | Release tag on the image | Digest |
+|---|---|---|---|---|
+| lake | `v0.1.0` (`2e6f6d7`) | `oramasearch/lake:20261012a` | `oramasearch/lake:v0.1.0` | `sha256:5076598b9bf06bce175588359c466d0c740a87df90e1973d939a2458f728a8ad` |
+| zetta | `v0.2.0` (`4015ef7`) | `oramasearch/zetta:main-4015ef76` | `oramasearch/zetta:v0.2.0` | `sha256:46597d1997d1b373c7d4c781ec2c048d9aa5435d32bcfc616467588c6c1e74a6` |
+| liquid | `v0.1.0` (`f669726`) | compiled into the lake image | none (no image) | |
+
+lake was built on the cluster's BuildKit from lake `main` at the tag, with liquid at this bridge's
+pin `f669726` and the Zetta client transport from `2cfdac2`. `GET /v1/server_info` reports
+`"version":"0.1.0"` and `"revision":"2e6f6d72520e96869a229a134313cc16a81b015f"`; the deployed
+OpenAPI lists 554 paths. There was no schema change since `20261011u`, so no schema Job ran and
+the operator was not touched (`oramasearch/orama-operator:main-61ccfef`). `Lake/prod` reports
+`Ready`, `StoreReady` and `ZettaReady` true, `BackupReady` false (unchanged).
+
+zetta was built from a clone at the tag and rolled to both image fields of `Lake/prod`
+(`spec.zetta.image` and `spec.services.zettaImage`): the bus `lake-prod-zetta-zetta-0` and the
+three workspace Zettas restarted once each, with no container restarts after, and each logs
+`zetta 0.2.0: node started`. While the bus restarted, lake answered 503 on
+`/v1/receive_agent_tasks` for about a minute (81 responses), then recovered without action.
+
+Each release tag in Docker Hub names the digest the running pod reports; it was added through the
+registry API with `retag-image.py`, not by rebuilding. Both repositories still answer 404 to an
+anonymous request. The steps are now in the `liquid-dev` skill (*Release images*) and in each
+repository's `CLAUDE.md` or release conventions.
+
 **Deployment 2026-09-25 (second roll): Clerk sign-in, schema `0023`, operator cutover.** In order:
 the operator CRDs were applied server-side (additive only; all 70 CRD UIDs unchanged); the live
 Helm release `orama-operator` was upgraded to `oramasearch/orama-operator:main-83c6d90`

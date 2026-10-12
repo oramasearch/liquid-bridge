@@ -134,7 +134,8 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    `/private/tmp` (macOS emptied it on 2026-10-07, taking every helper, the registry credential and the
    build contexts with it):
    - `scripts/`: `env.sh` (paths, `DOCKER_CONFIG`), `build-lake.sh <tag>` (builds `wt/lake/deploy-next`,
-     rolls only on success), `build-operator.sh`, `opcall.sh`, `copyrec.sh`;
+     rolls only on success), `build-operator.sh`, `retag-image.py` (a release tag for an existing image;
+     the tracked copy is beside this file), `opcall.sh`, `copyrec.sh`;
    - `contexts/`: `zetta-pin` (from the zetta-bridge pin with `git archive`) and `liquid-<sha7>` (rsync of the
      pinned liquid). Refresh `zetta-pin` when its pin moves. The liquid context follows this bridge's pin
      by itself: `liquid_context` in `env.sh` names `contexts/liquid-<sha7>` for the current `modules/liquid`
@@ -156,7 +157,8 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    lives in `codex-work/build/zetta/` (`Dockerfile`, `build-zetta.sh`). It was reconstructed on 2026-10-06
    from the image history of `dev-b82a5e94` after the only copy, in `/private/tmp`, was emptied. Never keep
    build recipes or contexts in `/private/tmp`. Build from a Zetta clone on `origin/dev`:
-   `build/zetta/build-zetta.sh ~/dev/oramasearch/codex-work/zetta dev-<sha8>`. Check the push answered, check an anonymous
+   `build/zetta/build-zetta.sh ~/dev/oramasearch/codex-work/zetta dev-<sha8>`. For a release, check the clone out at the
+   Git tag and use `main-<sha8>` (v0.2.0 was `main-4015ef76`). Check the push answered, check an anonymous
    `curl https://hub.docker.com/v2/repositories/oramasearch/zetta/` gives 404, then patch both image fields on
    `Lake/prod` and wait for every `*-zetta-0` pod to be Ready on the new tag. Since lake#535 lake relies on
    zetta#1235 (prefix durability, `dev-5f70b306` or later); never roll a workspace Zetta back past that.
@@ -172,11 +174,48 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    helm --kube-context orama-production-cluster-01 upgrade orama-operator chart/ -n orama-system -f /tmp/operator-values.yaml --set operator.image.tag=main-<sha>
    kubectl --context orama-production-cluster-01 -n orama-system rollout status deploy/orama-operator
    ```
-6. Check: `curl -s -o /dev/null -w '%{http_code}' https://lake.oramadev.net/` returns 200 (use GET: lake routes pages for GET only, so `curl -I` answers 404), `GET /v1/server_info` reports the revision you built, and the page references the new hashed
+6. Check: `GET /v1/server_info` reports the revision you built and the version of the release;
+   `curl -s -o /dev/null -w '%{http_code}' -H 'Accept: text/html' https://lake.oramadev.net/` returns 200.
+   Send `Accept: text/html`: lake answers the web app only to a browser's page request, so a bare
+   `curl` of `/` answers 404 by design (seen on the v0.1.0 roll, 2026-10-12). `/readyz` answers 200,
+   and the page references the new hashed
    stylesheet; purge Cloudflare if an unhashed asset is stale (zone `a26a1f7171915e478a51f37f92838065`,
    token in the cluster Secret `cloudflare-api-token`, `POST /client/v4/zones/<zone>/purge_cache` with
    `{"purge_everything":true}`).
 7. Record the deploy in `docs/action-plan.md` (deployment paragraph) and on issue #7.
+
+### Release images: the same tag in Docker Hub
+
+When the build is a release (the source commit carries a `vX.Y.Z` Git tag), the image gets that
+tag too, **naming the digest that is deployed**. Steve, 2026-10-12: *"make sure we tag on docker
+image too in dockerhub"*. Do not rebuild for it; give the existing image a second name through
+the registry API:
+
+```sh
+export DOCKER_CONFIG=~/dev/oramasearch/codex-work/build/.dockercfg
+python3 -I .claude/skills/liquid-dev/retag-image.py lake 20261012a v0.1.0
+python3 -I .claude/skills/liquid-dev/retag-image.py zetta main-4015ef76 v0.2.0
+python3 -I .claude/skills/liquid-dev/retag-image.py orama-operator main-<sha> vX.Y.Z
+```
+
+[`retag-image.py`](retag-image.py) reads the manifest of `oramasearch/<repo>:<existing>` and
+publishes it under the new tag, prints both digests, and refuses to move a release tag that
+already names a different digest. A copy is in `codex-work/build/scripts/`. Then check:
+
+- both tags print the same digest, and it is the `imageID` of the running pod
+  (`kubectl get pod <pod> -o jsonpath='{.status.containerStatuses[0].imageID}'`);
+- an anonymous `curl -s -o /dev/null -w '%{http_code}' https://hub.docker.com/v2/repositories/oramasearch/<repo>/`
+  still answers 404.
+
+The deployed tag stays the immutable build tag (`<YYYYMMDD><letter>` for lake, `main-<sha8>` or
+`dev-<sha8>` for zetta, `main-<sha>` for the operator); the release tag is a second name for the
+same image. A release is finished when the Git tag, the GitHub release and the image tag all
+exist and the cluster runs that image.
+
+**Rolling the Zettas** restarts the bus as well as the workspaces. On the v0.2.0 roll lake answered
+503 on `/v1/receive_agent_tasks` for about a minute while `lake-prod-zetta-zetta-0` restarted, then
+recovered by itself. Check that the 5xx count in `kubectl -n lake logs deploy/lake-prod --since=60s`
+is back to zero before calling the roll done.
 
 ## What needs Steve
 
