@@ -1230,3 +1230,25 @@ does not want that can keep the package private. Downloads by anonymous users st
 and open-source), or if download costs become abusive (then rate limits per package).
 
 Issue: https://github.com/oramasearch/lake/issues/662. Epic: https://github.com/oramasearch/lake/issues/658.
+
+## 63. Mounting a customer's bucket does not open egress — **decided (Steve, 2026-10-11).**
+
+Workspaces deny internet egress by default. When a person mounts their own cloud bucket (S3, R2,
+GCS, Azure; lake#664, lake#666) into a service or app, the workload receives the bucket's connection
+but cannot reach it. Asked what mounting should do, Steve chose **require the existing override**.
+
+**What.** Mounting a bucket changes nothing in the network. A person who wants the workload to
+reach the bucket turns on the workspace's `internetEgress` override themselves. Lake's pages say so
+where a bucket is mounted (the Storage tab, the service and app pages): the mount is recorded, and
+the workload cannot reach the bucket until egress is allowed.
+
+**Why.** Egress is a security boundary a person opens deliberately; a mount is a data choice. Tying
+the two together would open the network as a side effect.
+
+**What it costs.** One extra step for every workspace that mounts a cloud bucket, and a mount that
+looks set up but cannot connect until the step is taken (hence the page wording).
+
+**Revisit** if per-destination egress rules exist (then opening HTTPS to the bucket's host only is
+the narrower choice), or if customers routinely mount buckets and the extra step becomes friction.
+
+Issue: https://github.com/oramasearch/lake/issues/715. Follows lake#664 and lake#666.
