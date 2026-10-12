@@ -1182,3 +1182,51 @@ inappropriate (then per-person OAuth to that server).
 
 Issue: https://github.com/oramasearch/lake/issues/660. Implements
 https://github.com/oramasearch/lake/issues/652; follow-up https://github.com/oramasearch/lake/issues/659.
+
+## 61. A workspace engine's disk is billed as its provisioned volume only — **decided (Steve, 2026-10-11).**
+
+The metering audit (lake#658, issue lake#663) found the workspace engine's disk billed twice: as a
+provisioned volume (`volumes`, $0.20 per GiB-month of the GiB requested) and again as the bytes the
+engine stores on it (`storage`, $0.04 per GiB-month). Asked which a customer pays for, Steve chose
+**the provisioned volume only**.
+
+**What.** The engine's own volume is billed as `volumes` for its requested size. Bytes the engine
+stores on that volume (datasets, models, indexes, run artifacts, topics, files; `storage_usage`,
+zetta#1260) are still **measured and shown** on the Usage page, labelled detail, but are not billed
+as `storage`. `storage` stays billed for bytes Lake holds outside an engine volume (drive files,
+repositories, images, transcripts, registry packages — decision 62).
+
+**Why.** A customer chooses the engine's disk size; billing that size is predictable and covers the
+capacity they reserved. Charging again for what they put in it would bill the same disk twice.
+
+**What it costs.** A workspace that requests a large disk and stores little pays for the whole disk;
+one that fills a small disk pays only for the small disk. The stored-bytes figure is still useful
+for sizing, so it stays visible.
+
+**Revisit** if engines move to elastic storage with no fixed volume (then bill stored bytes instead),
+or if the volume rate is changed to reflect only capacity.
+
+Issue: https://github.com/oramasearch/lake/issues/663. Epic: https://github.com/oramasearch/lake/issues/658.
+
+## 62. Registry packages are the publishing account's usage — **decided (Steve, 2026-10-11).**
+
+Lake's instance-wide public registry (npm, Python, legacy OCI; decision 54 keeps it with the
+instance, not in a workspace) holds packages that accounts publish. Asked whether storing and serving
+them counts toward the publisher's usage, Steve chose **yes, bill the publisher** (issue lake#662).
+
+**What.** A package's bytes count as the **publishing account's** `storage`, and every download as
+that account's `transfer`, whoever downloads it. The registry's records stay instance-level
+(decision 54); only the usage is attributed. Usage is recorded in the publishing account's workspace
+usage series chosen at publish time (the workspace the publish was made from, or the account's
+default workspace), never in lake's Postgres.
+
+**Why.** Whoever publishes a package chooses to put it on Lake's storage and network; the cost
+follows that choice, as it does for drive files and repositories.
+
+**What it costs.** A popular public package's downloads are billed to its publisher. A publisher who
+does not want that can keep the package private. Downloads by anonymous users still count.
+
+**Revisit** if a free tier for open-source packages is wanted (then exempt packages marked public
+and open-source), or if download costs become abusive (then rate limits per package).
+
+Issue: https://github.com/oramasearch/lake/issues/662. Epic: https://github.com/oramasearch/lake/issues/658.
