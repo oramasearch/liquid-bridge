@@ -1311,3 +1311,31 @@ https://github.com/oramasearch/lake/issues/757 (the picker) and
 https://github.com/oramasearch/orama-operator/issues/513 (`lake-prod` to `lake.live`). Later: the
 epic https://github.com/oramasearch/liquid-bridge/issues/40. Also answers part of liquid-bridge#5,
 liquid-bridge#13 and lake#755.
+
+## 65. Clerk is the way in; a person's own TAAP identity is optional, after sign-in — **decided (Steve, 2026-10-17).**
+
+Steve, 2026-10-17: *"we're going to use clerk for signup and signin ... we'll need to make taap an
+optional setting after they log in, so it's easier for users to create accounts and signin"*.
+Amends decision 44.
+
+**What.**
+- **Clerk is how a person signs up and signs in, on every environment.** Each environment has its
+  own Clerk application, created by the operator (orama-operator#541).
+- **Every new account starts with a custodial TAAP identity**, which lake mints and holds, as
+  decision 44 already does for Clerk users.
+- **A person's own identity is optional and comes later.** In Account → Identity they can link the
+  identity from `liquid identity show --document`. The account rotates to it as a linked
+  successor, so grants, audit and repositories carry over, and the custodial seed is destroyed.
+- **Lake's own sign-up without Clerk** (on-prem) also stops requiring the identity document.
+
+**Why.** Requiring liquid and a pasted identity document before an account exists stops anyone
+who only wants to use lake in a browser (seen on `lake-dev`, 2026-10-17). The custodial identity
+already gives policy and audit what they need.
+
+**What it costs.** Until a person links their own identity, lake holds their signing key, so
+lake can sign as them. That is decision 44's trade-off, now the default for everyone.
+
+**Revisit if** an enterprise or a regulated customer requires self-held keys from the first
+sign-in. That would then be a per-organization setting, not the default.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/41. Work: https://github.com/oramasearch/lake/issues/762.
