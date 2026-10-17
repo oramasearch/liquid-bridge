@@ -1321,7 +1321,8 @@ Amends decision 44.
 **What.**
 - **Clerk is how a person signs up and signs in, on every environment.** Each environment has its
   own Clerk application, created by the operator (orama-operator#541).
-- **Every new account starts with a custodial TAAP identity**, which lake mints and holds, as
+- **Every new account starts with a temporary, managed key** (Steve: *"it might generate a temporary
+  (managed) key for the user, automatically, that they can replace"*), the custodial TAAP identity lake mints and holds, as
   decision 44 already does for Clerk users.
 - **A person's own identity is optional and comes later.** In Account → Identity they can link the
   identity from `liquid identity show --document`. The account rotates to it as a linked
