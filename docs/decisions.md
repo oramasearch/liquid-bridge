@@ -1252,3 +1252,57 @@ looks set up but cannot connect until the step is taken (hence the page wording)
 the narrower choice), or if customers routinely mount buckets and the extra step becomes friction.
 
 Issue: https://github.com/oramasearch/lake/issues/715. Follows lake#664 and lake#666.
+
+## 64. lake.live is production, with one host per region and a region picker; oramadev.net is nonprod — **decided (Steve, 2026-10-17).**
+
+Steve, 2026-10-17: *"keep oramadev.net for nonprod environments (dev, testing, staging) ... and use
+lake.live for the production environment"*; *"apex to region domain.... you can switch between them
+in a region picker ... workspaces are bound to a region for now... later, we'll introduce
+multi-region deployments where zetta is connected and geo load balancers are deployed.... but,
+that's not something we want to do now"*; *"a single lakeset can manage all regional deployments,
+even though those zetta instances are not yet connected into a single multi-regional deployment
+yet"*; *"make sure the operator is managing all of this"*; regional hosts *"eu.lake.live /
+us.lake.live"*; the apex is a *"geoip that defaults to the closest in a region picker"*.
+
+**What.**
+- **Domains.** Nonprod (dev, testing, staging: the `lake-nonprod` set, and `Lake/prod` on the
+  managing cluster) stays under `oramadev.net`. Production, the `lake-prod` set, is under
+  `lake.live`. Each zone has its own Cloudflare token Secret on the managing cluster: `lake.live`'s
+  is `cloudflare-api-token-lake-live` in namespace `lake`, with DNS Read and Edit plus Zone Read on
+  that zone only. Both are copied to members by their set.
+- **One host per region.** `eu.lake.live` is member `shared` on `orama-production-cluster-02`
+  (`swedencentral`), and `us.lake.live` is member `shared-us` on `orama-production-cluster-03`
+  (`eastus`). Both are in the one `lake-prod` set.
+- **The apex `lake.live` is a region picker.** It preselects the region closest to the visitor,
+  from the country Cloudflare reports for the request, or the region they picked before. One
+  click goes to that region's host. No region is a silent default.
+- **A workspace belongs to one region**, the region of the Lake it was created on. Each region
+  has its own control plane and workspace Zettas. Nothing joins them.
+- **The operator manages all of it**: the hosts, the DNS records for the apex and each region, each
+  member's region (taken from its cluster, as for `OramaCloudV1Set`), and the region list every
+  member serves to the picker. Nothing is set by hand.
+
+**Why.**
+- Regional hosts let us serve customers in the EU and the US today without the connected,
+  multi-region Zetta that a single global host would need.
+- A picker with a geo default sends visitors to the closest region without a paid Cloudflare load
+  balancer, and lets them choose.
+- Keeping nonprod on a separate zone means no nonprod record can ever answer for production.
+
+**What it costs.**
+- An account exists in one region only. Someone using both regions signs up and signs in twice.
+- Moving a workspace to another region is not possible yet.
+- Geo choice is by country, which is coarse.
+- App and preview wildcards under a region (`*.eu.lake.live`) are two levels deep. Cloudflare's
+  free certificate does not cover them, so enabling apps on production needs a certificate decision
+  first.
+
+**Revisit when** multi-region Zetta and geo load balancing are built (the follow-up epic, liquid-bridge#40):
+then `lake.live` itself can serve every region, and the picker becomes a preference.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/39. Work now:
+https://github.com/oramasearch/orama-operator/issues/512 (LakeSet regions),
+https://github.com/oramasearch/lake/issues/757 (the picker) and
+https://github.com/oramasearch/orama-operator/issues/513 (`lake-prod` to `lake.live`). Later: the
+epic https://github.com/oramasearch/liquid-bridge/issues/40. Also answers part of liquid-bridge#5,
+liquid-bridge#13 and lake#755.
