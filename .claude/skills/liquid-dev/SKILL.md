@@ -121,7 +121,10 @@ socket only) driven by the local `buildctl` (`brew install buildkit`) over `kube
    the owned `PostgresSchema` object so the reconciler recreates it and the Job re-runs:
    `kubectl -n lake delete postgresschema lake-prod-controldb-schema`. Tables created outside the Job must be
    owned by role `lake` (`ALTER TABLE ... OWNER TO lake`).
-4. Roll lake: patch the CR image and watch the rollout:
+4. Roll lake: patch the CR image and watch the rollout. **This patch is a change by hand: it needs
+   Steve's explicit consent each time** (umbrella *Never change a cluster by hand*) until `Lake/prod`
+   has a committed file (orama-operator#536). The nonprod and production Lakes are rolled through
+   their set files instead (umbrella `lake-devops` skill).
    ```sh
    kubectl --context orama-production-cluster-01 -n lake patch lake prod --type merge -p '{"spec":{"image":"oramasearch/lake:<tag>"}}'
    kubectl --context orama-production-cluster-01 -n lake rollout status deploy/lake-prod
