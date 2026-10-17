@@ -1276,6 +1276,11 @@ us.lake.live"*; the apex is a *"geoip that defaults to the closest in a region p
 - **The apex `lake.live` is a region picker.** It preselects the region closest to the visitor,
   from the country Cloudflare reports for the request, or the region they picked before. One
   click goes to that region's host. No region is a silent default.
+- **A picker lists the regions of one environment only** (Steve, 2026-10-17: *"pickers only work
+  within a single environment, not across multiple environments"*; *"why would we need a picker for
+  nonprod? it's not multi region"*). Production is the one multi-region environment. Nonprod
+  (dev, testing, staging) has no regions and no picker. The operator refuses a region list that
+  names the same cloud region twice (orama-operator#532).
 - **A workspace belongs to one region**, the region of the Lake it was created on. Each region
   has its own control plane and workspace Zettas. Nothing joins them.
 - **The operator manages all of it**: the hosts, the DNS records for the apex and each region, each
