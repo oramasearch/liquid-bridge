@@ -1,2 +1,5 @@
 tools/issues/*.tsv
 __pycache__/
+
+# Local git worktrees from agent sessions; never committed
+.claude/worktrees/
