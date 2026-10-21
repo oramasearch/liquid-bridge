@@ -51,7 +51,7 @@ Cloudflare dashboard → *My Profile* → *API Tokens* → *Create Custom Token*
 
 Cache purge is a *different* permission (**Zone → Cache Purge → Purge**). Keep it on a separate
 token held by the on-call, not in the cluster; the cluster token should only be able to do what
-the operator does ([`runbooks/cloudflare-stale-asset.md`](runbooks/cloudflare-stale-asset.md)).
+the operator does ([techops-docs `cloudflare-edge.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/cloudflare-edge.md)).
 
 Zone ID: dashboard → `lake.live` → *Overview* → *API* panel, or
 `GET https://api.cloudflare.com/client/v4/zones?name=lake.live` with the new token.

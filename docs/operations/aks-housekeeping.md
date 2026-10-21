@@ -114,7 +114,7 @@ issue #6 text calls the namespace "empty"; on 2026-09-05 it holds the live build
    (`postgresschema_controller.go`), so the status will stay wrong until the owned
    `PostgresSchema` is deleted and recreated; the idempotent file then finds `agent_guard` and
    exits 0, or adds what is missing. Runbook:
-   [`runbooks/schema-job-failure-or-drift.md`](runbooks/schema-job-failure-or-drift.md).
+   [techops-docs `schema-job-failure.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/schema-job-failure.md).
 3. **CPU requests at 84 % on one node.** A `Lake` rollout surges one pod (no requests, so it
    schedules), but anything with requests — a second lake replica with limits, a CNPG replica, a
    restore Cluster for a rehearsal — may not fit while the builder pod holds 2 CPU / 4 GiB.

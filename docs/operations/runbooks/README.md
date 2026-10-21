@@ -1,50 +1,35 @@
 # Runbooks for lake.live
 
-One page per failure the deployment has shown or can be foreseen. Every runbook has the same
-five parts: **Symptoms**, **Diagnosis**, **Fix**, **Verification**, **Who to page**. Commands
-assume `kubectl` is pointed at `orama-production-cluster-01` and the `Lake` is `prod` in
-namespace `lake`. Refs https://github.com/oramasearch/liquid-bridge/issues/14.
+**The on-call runbooks for production (`lake-prod`: `eu.lake.live`, `us.lake.live`, `lake.live`)
+are in techops-docs**, which describes how production is run:
+[`docs/lake/runbooks/`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/README.md)
+(pull request https://github.com/oramasearch/techops-docs/pull/61, for
+https://github.com/oramasearch/liquid-bridge/issues/14).
 
-| Runbook | Failure | Seen |
+| techops-docs runbook | Failure | Replaces (removed from here 2026-10-21) |
 |---|---|---|
-| [`pod-crash-loop-missing-variable.md`](pod-crash-loop-missing-variable.md) | lake exits at start because a variable is missing or wrong (`LAKE_LOG_MODE` defaulting to `witnessed`, no `LAKE_INSTANCE_KEK`, anchored mode without an aggregator) | 2026-09-05 deploy (log mode) |
-| [`store-volume-permission-or-capacity.md`](store-volume-permission-or-capacity.md) | the store volume is not writable by lake, cannot be provisioned (RWX on Azure disk), or is full | 2026-09-05 (permission, RWX) |
-| [`control-database-unreachable-or-full.md`](control-database-unreachable-or-full.md) | `/readyz` 503, `store_unavailable`, CNPG cluster unhealthy or its 50 Gi volume full | foreseen |
-| [`schema-job-failure-or-drift.md`](schema-job-failure-or-drift.md) | the `PostgresSchema` Job fails, or its recorded version differs from what the database holds | 2026-09-05 (drift) |
-| [`cloudflare-stale-asset.md`](cloudflare-stale-asset.md) | pages render with an old stylesheet because Cloudflare cached `/style.css` | 2026-09-05 |
-| [`operator-rollout-and-crd-update.md`](operator-rollout-and-crd-update.md) | rolling the operator; helm does not update CRDs; RBAC gaps crash the manager | 2026-09-02, 2026-09-05 |
-| [`roll-lake-image.md`](roll-lake-image.md) | shipping a new lake image to `Lake/prod` | routine |
-| [`rollback.md`](rollback.md) | undoing a lake image roll or an operator upgrade | 2026-09-02 (operator) |
-| [`certificate-or-dns-failure.md`](certificate-or-dns-failure.md) | host does not resolve, is not proxied, edge certificate wrong, origin unreachable | foreseen |
-| [`disaster-recovery.md`](disaster-recovery.md) | restoring the control plane from R2, and what has no backup (store volume, instance KEK) | foreseen |
+| [`lake-pod-restarts.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/lake-pod-restarts.md) | restarts and crash loops: lake#772's blocked server, the store-root hand-off, variables, the store volume | `pod-crash-loop-missing-variable.md` |
+| [`schema-job-failure.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/schema-job-failure.md) | the `PostgresSchema` Job fails or drifts; the schema gate holds the image | `schema-job-failure-or-drift.md` |
+| [`dns.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/dns.md) | a host does not resolve or resolves wrong; `CloudflareDNSRecord` ownership | `certificate-or-dns-failure.md` (DNS half) |
+| [`cloudflare-edge.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/cloudflare-edge.md) | Cloudflare 52x, origin TLS, authenticated origin pulls, stale assets | `certificate-or-dns-failure.md` (certificate half), `cloudflare-stale-asset.md` |
 
-## Who to page
+## Older runbooks still here
 
-Roles, not people; the current holder of each role is kept out of git and in the paging tool.
+These were written on 2026-09-05 for the single `Lake/prod` on the managing cluster
+(`orama-production-cluster-01`, namespace `lake`), which is temporary (orama-operator#536). They
+predate the rule that no cluster is changed by hand (orama bridge `CLAUDE.md`, 2026-10-13): where
+they say `kubectl apply -f <cr.json>`, `kubectl delete`, `rollout restart` or a dashboard change,
+read it as a step that needs Steve's explicit consent, and prefer the committed-file path in the
+techops-docs runbooks. Rolling lake and the operator is the `lake-devops` skill's.
 
-| Role | Pages for | Today |
-|---|---|---|
-| **lake on-call** | every runbook's first line | Steve (cluster owner) |
-| **operator maintainer** | operator rollouts, CRD and RBAC failures, `PostgresSchema` behaviour, `CloudflareDNSRecord` behaviour | the `orama-operator` PR reviewer; operator PRs are Steve's to merge (decisions.md §7) |
-| **Cloudflare account owner** | zone settings, tokens, purge, redirects, SSL mode | Steve |
-| **Azure subscription owner** | node pool changes, disk snapshots and restores, quota | Steve |
-| **lake maintainer** | a lake bug found by a runbook (a new failure mode gets a lake issue and a runbook in the same PR) | lake `CLAUDE.md` owners |
+| Runbook | Failure |
+|---|---|
+| [`store-volume-permission-or-capacity.md`](store-volume-permission-or-capacity.md) | the store volume is not writable, cannot be provisioned, or is full (production cases are in techops-docs `lake-pod-restarts.md`, case D) |
+| [`control-database-unreachable-or-full.md`](control-database-unreachable-or-full.md) | `/readyz` 503, CNPG cluster unhealthy or full |
+| [`operator-rollout-and-crd-update.md`](operator-rollout-and-crd-update.md) | rolling the operator; CRDs; RBAC |
+| [`roll-lake-image.md`](roll-lake-image.md) | shipping a new lake image to `Lake/prod` |
+| [`rollback.md`](rollback.md) | undoing a lake image roll or an operator upgrade |
+| [`disaster-recovery.md`](disaster-recovery.md) | restoring the control plane, and what has no backup |
 
-Paging channel: the webhook the status-page prober posts to ([`../status-page.md`](../status-page.md)).
-Until that exists, the on-call reads `kubectl get lake prod -w` and the external probes by hand.
-
-## Conventions shared by every runbook
-
-- **Change the `Lake` CR, not what it owns.** The operator reconciles the Deployment, Service,
-  Ingress, ConfigMap, Secrets, PVC, `PostgresSchema` and DNS record from the CR; a `kubectl
-  edit deploy` or `kubectl set env` is undone on the next reconcile. Apply a full CR manifest
-  with `kubectl apply -f <cr.json>`.
-- **Never read Secret values you do not need.** `kubectl get secret <name> -o
-  jsonpath='{.data}' | jq 'keys'` shows what keys exist without values. The admin bearer is
-  break-glass (lake `docs/api/auth.md`); prefer a scoped token for probes.
-- **Immutable image tags only.** A mutable tag with `IfNotPresent` served a stale image on this
-  cluster before (operator `docs/install.md`).
-- **Build C++ images on the node**, never emulated: the `aks-amd64` buildx builder in the
-  `buildkit` namespace ([`roll-lake-image.md`](roll-lake-image.md)).
-- **Write down what you did** in the incident file ([`../status-page.md`](../status-page.md))
-  and, if the runbook was wrong or incomplete, fix the runbook in the same PR as the review.
+Moving these into techops-docs, rewritten for `lake-prod`, is the follow-up named on
+https://github.com/oramasearch/liquid-bridge/issues/14.

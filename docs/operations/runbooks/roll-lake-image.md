@@ -12,10 +12,10 @@ Silicon are far too slow and hit `Illegal instruction`; never push one.
 - The image is on lake `main` (or the PR is merged) and its CI is green.
 - The schema: if the image needs migrations the database lacks, the operator's vendored copy
   must land first (`PostgresSchema` `VERSION` == the migration set the image expects;
-  [`schema-job-failure-or-drift.md`](schema-job-failure-or-drift.md)). lake reports missing
+  [techops-docs `schema-job-failure.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/schema-job-failure.md)). lake reports missing
   tables as 500s, not at startup.
 - New required variables in the image → add them to `spec.env` in the same CR apply
-  ([`pod-crash-loop-missing-variable.md`](pod-crash-loop-missing-variable.md)).
+  ([techops-docs `lake-pod-restarts.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/lake-pod-restarts.md)).
 - Note the current image for rollback: `kubectl get lake prod -o jsonpath='{.spec.image}'`.
 
 ## Build on the `aks-amd64` builder
@@ -63,7 +63,7 @@ kubectl logs -n lake deploy/lake-prod | head -1                           # star
 curl -sS https://<host>/v1/server_info | jq '.value.version, .value.store'
 curl -sS https://<host>/v1/identity | jq .ok                              # true: KEK and identity intact
 curl -sS -o /dev/null -w '%{http_code}\n' https://<host>/repositories       # 200 or 303
-curl -sSI https://<host>/style.css | grep -i cf-cache-status              # if the stylesheet changed: purge (cloudflare-stale-asset.md)
+curl -sSI https://<host>/style.css | grep -i cf-cache-status              # if the stylesheet changed: see techops-docs docs/lake/runbooks/cloudflare-edge.md, case F
 kubectl get lake prod                                                       # READY 1, PHASE Ready
 ```
 

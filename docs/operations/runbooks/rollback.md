@@ -8,7 +8,7 @@ back, leave the schema".
 ## Lake image
 
 **Symptoms that call for it.** After a roll: crash loop the CR cannot fix in one apply
-([`pod-crash-loop-missing-variable.md`](pod-crash-loop-missing-variable.md)), 500s on routes that
+([techops-docs `lake-pod-restarts.md`](https://github.com/oramasearch/techops-docs/blob/main/docs/lake/runbooks/lake-pod-restarts.md)), 500s on routes that
 worked, a broken sign-in, or the SLO fast-burn alert.
 
 **Fix.** Re-apply the previous CR manifest — the file saved before the roll — or set the previous

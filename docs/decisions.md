@@ -1340,3 +1340,38 @@ lake can sign as them. That is decision 44's trade-off, now the default for ever
 sign-in. That would then be a per-organization setting, not the default.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/41. Work: https://github.com/oramasearch/lake/issues/762.
+
+## 66. lake.live is held to per-region objectives, and its status page lives outside lake — **proposed (2026-10-21), awaiting Steve.**
+
+**What.**
+- **Objectives per region** (`eu`: `eu.lake.live` and the apex `lake.live`; `us`: `us.lake.live`),
+  over a rolling 30 days: **99.5 %** availability of the API and of the web app; API latency
+  **95 % ≤ 0.25 s, 99 % ≤ 1 s** server-side; web time to first byte **95 % ≤ 1.5 s** through
+  Cloudflare. Measured from `lake_http_requests_total`, `lake_http_request_duration_seconds` and
+  `/readyz`, and from an external probe; the lower of the two decides.
+- **Budget policy**: more than half a region's budget spent stops rolls to `lake-prod` except fixes;
+  an exhausted budget needs an incident review and Steve's go-ahead. It adds to the pipeline's gates.
+- **The status page runs outside lake's failure domain.** Proposed: Cloudflare Pages at
+  `status.lake.live`, probed by a Cloudflare Worker. A hosted status vendor is the alternative and
+  is Steve's choice.
+- **Where it lives**: the objectives, the status page and the runbooks are in techops-docs
+  (`docs/lake/slos.md`, `status-page.md`, `runbooks/`), which describes how production is run; this
+  bridge keeps the decision ([`operations/slos.md`](operations/slos.md),
+  [`operations/status-page.md`](operations/status-page.md)).
+
+**Why.** A hosted service needs stated objectives before it has customers: they decide what pages
+someone, what waits, and when a roll stops. Per region, because the regions share nothing (decision
+64). 99.5 % because each region is one pod rolled with `Recreate`, one Postgres instance and no
+control-plane backups: every roll is an outage of that region, and a 99.9 % budget (43 min) would be
+spent by a handful of rolls.
+
+**What it costs.** Nothing measures the objectives yet: no scrape of a production Lake's `/metrics`
+(orama-operator#15) and no prober. Until both exist the objectives are read by hand. The proposed
+status page shares Cloudflare with the service it reports on; a Cloudflare-wide outage takes both,
+and the fallback is email.
+
+**Revisit if** a region gets the surge rollout (decision 49), two Postgres instances and backups,
+and a month of probe data at 99.9 % (then the objective tightens to 99.9 %); or if customer terms
+need a contractual service level; or if incident volume justifies a hosted status vendor.
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/42. Work: https://github.com/oramasearch/liquid-bridge/issues/14, https://github.com/oramasearch/techops-docs/pull/61.
