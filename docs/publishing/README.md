@@ -10,6 +10,13 @@ it and the disclosure policy both repositories ship with.
 | [`security-review.md`](security-review.md) | https://github.com/oramasearch/liquid-bridge/issues/11 | The threat model: trust boundaries, what each component must never do, the findings from reading the code, the open items already tracked as issues, and the checklist of fuzzing targets, sanitizer runs and dependency audits to run before publishing. |
 | [`SECURITY.md.draft`](SECURITY.md.draft) | https://github.com/oramasearch/liquid-bridge/issues/11 | The vulnerability disclosure policy, ready to drop into both repositories as `SECURITY.md` once the owner fills the reporting address and PGP placeholders. |
 
+**Status has moved on.** The October 2026 review, [`../security/review-2026-10.md`](../security/review-2026-10.md),
+re-checks every finding of `security-review.md` at newer code and files them as issues; the
+pre-public checklist is [`../security/pre-public-checklist.md`](../security/pre-public-checklist.md);
+and the `SECURITY.md` text now lives as a draft in each repository, on pull requests into `dev`. The
+documents here remain the September record: read `security-review.md` for the trust boundaries and
+the per-component invariants, which the October review does not repeat.
+
 ## How to use these
 
 1. **A worker applies the edit list** in `scrub-report.md` §9 to liquid and liquify on branches, as
