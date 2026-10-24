@@ -1375,3 +1375,45 @@ and a month of probe data at 99.9 % (then the objective tightens to 99.9 %); or 
 need a contractual service level; or if incident volume justifies a hosted status vendor.
 
 Issue: https://github.com/oramasearch/liquid-bridge/issues/42. Work: https://github.com/oramasearch/liquid-bridge/issues/14, https://github.com/oramasearch/techops-docs/pull/61.
+
+## 67. lake.live is prepaid: an account balance, $20 to start, nag and email, stop creating paid things at $50 below zero — **decided (Steve, 2026-10-24).**
+
+Steve, 2026-10-24 (launch): *"let's add an account balance... they can add $20 to start... it will nag
+them and stop them from creating things when it's too far over their balance (default $50 over)"*, then
+*"it should send them emails when they're about to hit their limits or face interruptions"*. Amends
+decision 56 (billing in the control plane) for Lakes with billing on.
+
+**What.**
+- **Each account (a person's or an organization's) has a balance in USD**, in lake's Postgres control
+  plane beside the other billing records (decision 56). Credits are top-ups; charges are the account's
+  usage at the published price list. Usage stays in each workspace Zetta; the balance reads it through
+  the usage capabilities and keeps only the amounts.
+- **Top-ups through Stripe Checkout** on the Lake's live account. The first is $20; each paid session
+  is one credit, recorded once from Stripe's webhook and audited centrally.
+- **Charges follow usage closely**, refreshed every few minutes, not only at month end; the monthly
+  invoice shows what the balance paid.
+- **Nag in the product**: a banner on every page and a warning on API and MCP answers while the balance
+  is low or negative, with an *Add funds* link.
+- **Email before it bites**, through Resend from `lake.live`: when the balance is about to reach the
+  limit, when it passes zero, and before anything is stopped or refused, saying how much to add.
+- **Stop creating paid things at $50 below zero** (the default overdraft; configurable per instance
+  and, by the operator, per account): every action that creates or starts something that costs money
+  answers `402 payment_required` with the balance and the link. Reading, signing in, stopping and
+  deleting stay open, so an account can always lower its spend. Running things keep running; stopping
+  them for an unpaid balance is a later step (sleep, never delete; orama-operator#897).
+- **Exempt**: the operator, instance administrators, enterprise installs (billing off), and accounts
+  with a paid order whose credit covers them.
+
+**Why.** lake.live had no paywall: usage was billed after the month, invoices by hand (lake#621), and
+any account (with lake#1098, anyone) could use compute and model tokens free. A small prepaid balance
+lets a person start in minutes while capping what an unpaid account can cost.
+
+**What it costs.** Charges must be computed continuously, so a usage read that fails must hold the
+balance rather than guess. The $50 overdraft is credit Orama extends to every account that has topped
+up. Usage between refreshes can pass the limit by a few minutes' worth.
+
+**Revisit if** abuse uses the overdraft at scale (lower it, or require a card), or larger customers
+want postpaid invoicing (a per-account postpaid flag, which the paid orders already approximate).
+
+Issue: https://github.com/oramasearch/liquid-bridge/issues/43. Work: https://github.com/oramasearch/lake/issues/1114.
+
