@@ -1396,6 +1396,11 @@ decision 56 (billing in the control plane) for Lakes with billing on.
   is low or negative, with an *Add funds* link.
 - **Email before it bites**, through Resend from `lake.live`: when the balance is about to reach the
   limit, when it passes zero, and before anything is stopped or refused, saying how much to add.
+  Every email, the banner and every refusal link to one top-up page (Steve: *"the email should link
+  to a place where they can top up"*).
+- **Auto top-up, off by default** (Steve: *"and auto top up (default off)"*): an owner turns it on
+  with a threshold and an amount; lake charges a card saved through Stripe once per crossing, and a
+  declined charge turns it off and emails the owner.
 - **Stop creating paid things at $50 below zero** (the default overdraft; configurable per instance
   and, by the operator, per account): every action that creates or starts something that costs money
   answers `402 payment_required` with the balance and the link. Reading, signing in, stopping and
