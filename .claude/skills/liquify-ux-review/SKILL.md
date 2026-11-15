@@ -27,9 +27,11 @@ drew a blank page. This review looks at the real window.
   `cmake -S ../liquid -B <scratch>/liquid-cli -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF &&
   cmake --build <scratch>/liquid-cli --target liquid`. A CLI whose store format differs from liquify's
   gives false findings.
-- **The test suite first.** `ctest --test-dir build --output-on-failure`. Read every `WILL_FAIL` in
-  `docs/ui/native-acceptance.md`: each one is a known defect of the real window, and belongs in the
-  report's scorecard as **stuck** until its test passes.
+- **Known defects, without running tests.** Tests run only when a release is cut (umbrella
+  `CLAUDE.md`, *No CI*). Read every `WILL_FAIL` in `docs/ui/native-acceptance.md`: each one is a
+  known defect of the real window, and belongs in the report's scorecard as **stuck** until it is
+  fixed. The native acceptance driver is still the way to see the real window: run it to capture
+  frames, not as a test run.
 - **Seeing the real window.** The reviewer must see pixels from the running application, not from
   `--screenshot`:
   - the desktop computer-use tools (`mcp__computer-use__*`, loaded through ToolSearch with the query
