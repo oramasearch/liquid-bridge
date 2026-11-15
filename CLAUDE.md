@@ -262,3 +262,6 @@ service. Every repository here is private and stays private.
   ship it, build an agent), through the browser, the REST API and MCP; checks each claim lake makes against what
   runs, writes `docs/reviews/lake-ux/<date>.md` and files an epic of issues. Run it before a demo and after large
   UI changes.
+- `/liquify-ux-review` (`.claude/skills/liquify-ux-review/SKILL.md`): liquify, the IDE, in its real window, on
+  its own and with lake; judges the look against lake's own style and each job (open, clone from lake, edit,
+  build, push to lake, review) against what runs; writes `docs/reviews/liquify-ux/<date>.md` and files an epic.
