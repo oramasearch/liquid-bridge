@@ -37,25 +37,25 @@ No application code, no build, no runtime here. Code lives in the modules.
 ## Clone
 
 ```sh
-git clone --recurse-submodules git@github.com:oramasearch/liquid-bridge.git
+git clone --recurse-submodules https://github.com/oramasearch/liquid-bridge.git
 ```
 
-Every module is private; you need SSH access to the `oramasearch` org.
+The submodules are fetched over HTTPS, so a recursive clone needs no GitHub key.
 
 ## Modules
 
 | Module | One line |
 |---|---|
 | [`modules/liquid`](modules/liquid/) | The tool, and the specification for everything. Start with its `docs/research/99-synthesis/`. |
-| [`modules/k0s`](modules/k0s/) | Private, upstream-synced copy of k0s; Orama's changes are on the `liquid` branch. |
+| [`modules/k0s`](modules/k0s/) | Upstream-synced copy of k0s; Orama's changes are on the `liquid` branch. |
 | [`modules/lake`](modules/lake/) | The lake binary, the hosted service; live on AKS as `Lake/prod`. |
 | [`modules/liquify`](modules/liquify/) | The IDE: native, cross-platform, links libliquid. |
-| [`modules/lake-sqlite`](modules/lake-sqlite/) | The web service behind lake's SQLite service kind: one SQLite database over HTTP, run by the Orama operator. Private, own private image. |
-| [`modules/app-runtime`](modules/app-runtime/) | The Python base runtime that runs lake Apps from a lake repository at a pinned revision (oramasearch/lake#297). Private, own private image. |
-| [`modules/lake-builder`](modules/lake-builder/) | The image a lake in-cluster build Job runs: rootless BuildKit, pushing to lake's registry (oramasearch/lake#297). Private, own private image. |
-| [`modules/lake-duckdb`](modules/lake-duckdb/) | The web service behind lake's DuckDB service kind, locked down against file, network and extension access. Private, own private image. |
-| [`modules/lake-polars`](modules/lake-polars/) | The web service behind lake's Polars service kind: Parquet datasets and Polars SQL (Rust). Private, own private image. |
-| [`modules/methodology-runtime`](modules/methodology-runtime/) | The sandbox runtime for a workspace's own methodologies: the Python interface, the harness the stage, run and collect pods use, and the image a methodology's own image is built from (oramasearch/lake#655). Private, own private image. |
+| [`modules/lake-sqlite`](modules/lake-sqlite/) | The web service behind lake's SQLite service kind: one SQLite database over HTTP, run by the Orama operator. Its own repository and image. |
+| [`modules/app-runtime`](modules/app-runtime/) | The Python base runtime that runs lake Apps from a lake repository at a pinned revision (oramasearch/lake#297). Its own repository and image. |
+| [`modules/lake-builder`](modules/lake-builder/) | The image a lake in-cluster build Job runs: rootless BuildKit, pushing to lake's registry (oramasearch/lake#297). Its own repository and image. |
+| [`modules/lake-duckdb`](modules/lake-duckdb/) | The web service behind lake's DuckDB service kind, locked down against file, network and extension access. Its own repository and image. |
+| [`modules/lake-polars`](modules/lake-polars/) | The web service behind lake's Polars service kind: Parquet datasets and Polars SQL (Rust). Its own repository and image. |
+| [`modules/methodology-runtime`](modules/methodology-runtime/) | The sandbox runtime for a workspace's own methodologies: the Python interface, the harness the stage, run and collect pods use, and the image a methodology's own image is built from (oramasearch/lake#655). Its own repository and image. |
 
 **Not modules here — one level up.** The **Orama operator** (lake runs on it as a `Lake` CR) and
 **marketing-bridge** are shared across products, so they are pinned once by the org umbrella

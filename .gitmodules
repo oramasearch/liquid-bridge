@@ -1,31 +1,31 @@
 [submodule "modules/liquid"]
 	path = modules/liquid
-	url = git@github.com:oramasearch/liquid.git
+	url = https://github.com/oramasearch/liquid.git
 [submodule "modules/k0s"]
 	path = modules/k0s
-	url = git@github.com:oramasearch/k0s.git
+	url = https://github.com/oramasearch/k0s.git
 	branch = liquid
 [submodule "modules/lake"]
 	path = modules/lake
-	url = git@github.com:oramasearch/lake.git
+	url = https://github.com/oramasearch/lake.git
 [submodule "modules/liquify"]
 	path = modules/liquify
-	url = git@github.com:oramasearch/liquify.git
+	url = https://github.com/oramasearch/liquify.git
 [submodule "modules/lake-sqlite"]
 	path = modules/lake-sqlite
-	url = git@github.com:oramasearch/lake-sqlite.git
+	url = https://github.com/oramasearch/lake-sqlite.git
 [submodule "modules/lake-duckdb"]
 	path = modules/lake-duckdb
-	url = git@github.com:oramasearch/lake-duckdb.git
+	url = https://github.com/oramasearch/lake-duckdb.git
 [submodule "modules/lake-polars"]
 	path = modules/lake-polars
-	url = git@github.com:oramasearch/lake-polars.git
+	url = https://github.com/oramasearch/lake-polars.git
 [submodule "modules/app-runtime"]
 	path = modules/app-runtime
-	url = git@github.com:oramasearch/app-runtime.git
+	url = https://github.com/oramasearch/app-runtime.git
 [submodule "modules/lake-builder"]
 	path = modules/lake-builder
-	url = git@github.com:oramasearch/lake-builder.git
+	url = https://github.com/oramasearch/lake-builder.git
 [submodule "modules/methodology-runtime"]
 	path = modules/methodology-runtime
-	url = git@github.com:oramasearch/methodology-runtime.git
+	url = https://github.com/oramasearch/methodology-runtime.git
