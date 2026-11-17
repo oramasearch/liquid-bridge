@@ -37,7 +37,7 @@ Before touching the product, write the claims down (the report's claims ledger),
   built vs designed vs not);
 - lake's `README.md`, `docs/api/*.md` headers (**Status:** lines), `docs/ui/`;
 - capability descriptions in `/v1/openapi.json` (a description is a claim);
-- the website's content records (`modules/orama-website-v2/src/content/`) when a page links to lake.
+- the website's content records (`src/content/` in the `orama-website-v2` checkout) when a page links to lake.
 
 ## 2. Walk the jobs, on every surface
 
